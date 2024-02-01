@@ -155,13 +155,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Headers\framework.h" />
     <ClInclude Include="Headers\TonicEngine\DLL_API.hpp" />
     <ClInclude Include="Headers\TonicEngine\framework.hpp" />
     <ClInclude Include="Headers\TonicEngine\pch.hpp" />
     <ClInclude Include="Headers\TonicEngine\Test.hpp" />
     <ClInclude Include="Headers\Test.hpp" />
-    <ClInclude Include="Headers\pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sources\dllmain.cpp" />
