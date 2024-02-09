@@ -1,7 +1,7 @@
 #include <iostream>
 #include "TonicEngine/Test.hpp"
 #include <glad/glad.hpp>
-#include "GLFW/glfw3.h"
+#include <GLFW/glfw3.h>
 //#include "glad.h"
 
 
