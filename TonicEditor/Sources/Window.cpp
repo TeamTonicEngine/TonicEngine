@@ -1,6 +1,6 @@
 #include "Window.hpp"
 
-#include <GLFW/glfw3.h>
+#include <GLFW/glfw3.hpp>
 
 void FramebufferResizeCallback(GLFWwindow* _window, int _width, int _height);
 
