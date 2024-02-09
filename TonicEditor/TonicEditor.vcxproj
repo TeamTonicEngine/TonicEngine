@@ -19,8 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Externals\glad\glad.c" />
-    <ClCompile Include="Externals\src\glad\glad.c" />
+    <ClCompile Include="Externals\src\glad\glad.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
