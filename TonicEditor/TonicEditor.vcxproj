@@ -20,7 +20,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Externals\src\glad\glad.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Sources\main.cpp" />
+    <ClCompile Include="Sources\Window.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Headers\Application.hpp" />
+    <ClInclude Include="Headers\Window.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -92,7 +97,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../TonicEngine/Headers/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)TonicEditor\Headers;$(SolutionDir)TonicEngine\Headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -110,7 +115,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../TonicEngine/Headers/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)TonicEditor\Headers;$(SolutionDir)TonicEngine\Headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -128,7 +133,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../TonicEngine/Headers/;./Externals/include/GLM;./Externals/include/GLFW/include;./Externals/include/stb-master/;./Externals/include/tinyobjloader;./Externals/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)TonicEditor\Headers;$(SolutionDir)TonicEngine\Headers;./Externals/include/GLM;./Externals/include/GLFW/include;./Externals/include/stb-master/;./Externals/include/tinyobjloader;./Externals/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -146,7 +151,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../TonicEngine/Headers/;./Externals/include/GLM;./Externals/include/GLFW/include;./Externals/include/stb-master/;./Externals/include/tinyobjloader;./Externals/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)TonicEditor\Headers;$(SolutionDir)TonicEngine\Headers;./Externals/include/GLM;./Externals/include/GLFW/include;./Externals/include/stb-master/;./Externals/include/tinyobjloader;./Externals/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>

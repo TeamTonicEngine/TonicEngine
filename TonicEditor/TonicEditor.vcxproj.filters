@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Externals\src\glad\glad.cpp">
+      <Filter>Externals</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\main.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Window.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Core">
+      <UniqueIdentifier>{6b0d05bb-3ee6-4280-bfb9-2ca4dc3c0fcf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Externals">
+      <UniqueIdentifier>{35f6814b-849e-45be-80f0-1566be7e8579}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Headers\Application.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\Window.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
