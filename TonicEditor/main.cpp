@@ -1,13 +1,15 @@
 #include <iostream>
-
-#include <glad/glad.hpp>
-//#include "glad.h"
-#include "GLFW/glfw3.h"
-
 #include "TonicEngine/Test.hpp"
+#include <glad/glad.hpp>
+#include "GLFW/glfw3.h"
+//#include "glad.h"
+
 
 const unsigned int SCR_WIDTH = 1200;
 const unsigned int SCR_HEIGHT = 800;
+
+void Update();
+GLFWwindow* InitWindow();
 
 int main()
 {
