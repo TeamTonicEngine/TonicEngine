@@ -9,5 +9,7 @@
 
 // ajouter les en-têtes à précompiler ici
 #include "framework.hpp"
+#include "Window.hpp"
+#include "Application.hpp"
 
 #endif //PCH_H

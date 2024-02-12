@@ -1,11 +1,12 @@
 #include <iostream>
 
 #include "Application.hpp"
+using namespace Core::Application;
 
 int main()
 {
-	Core::Application* app = new Core::Application("Tonic Editor");
-	//Core::Application* app = new Core::Application("Tonic Editor", 1280, 720);
+	Application* app = new Application("Tonic Editor");
+	//Application* app = new Application("Tonic Editor", 1280, 720);
 
 	try
 	{

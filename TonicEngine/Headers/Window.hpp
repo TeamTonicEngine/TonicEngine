@@ -1,13 +1,15 @@
 #pragma once
 
+#include "DLL_API.hpp"
+
 #include <string>
 
-namespace Core
+namespace Core::Application
 {
-	class Window
+	class TONIC_ENGINE_API Window
 	{
 	private:
-		void* window_ = nullptr;
+		void* p_window_ = nullptr;
 
 		unsigned width_ = 0, height_ = 0;
 
@@ -16,14 +18,14 @@ namespace Core
 	public:
 		Window(std::string _nameWindow, unsigned _width, unsigned _height);
 
-		void* GetWindow() const;
-		unsigned* GetScreenSize() const; // TODO change to vec2 int when math lib implemented
+		void* GetWindow();
+		unsigned* GetScreenSize(); // TODO change to vec2 int when math lib implemented
 
 		void Resized();
 		void ResizedHandled();
 
-		bool IsClosing() const;
-		bool IsFramebufferResized() const;
+		bool IsClosing();
+		bool IsFramebufferResized();
 
 		void Loop();
 		void Destroy();

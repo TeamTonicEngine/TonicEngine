@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Sources\Window.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\dllmain.cpp">
+      <Filter>DLL_Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\pch.cpp">
+      <Filter>DLL_Core</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Headers\Window.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\DLL_API.hpp">
+      <Filter>DLL_Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\framework.hpp">
+      <Filter>DLL_Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\pch.hpp">
+      <Filter>DLL_Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Headers\Application.hpp">
+      <Filter>Core</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Core">
+      <UniqueIdentifier>{7c628226-e786-4027-940f-9c4acbfe400d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DLL_Core">
+      <UniqueIdentifier>{fef57651-b077-42b8-b891-08b011b2ca31}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
