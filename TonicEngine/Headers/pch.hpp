@@ -4,12 +4,9 @@
 // Toutefois, les fichiers listés ici sont TOUS recompilés si l'un d'entre eux est mis à jour entre les builds.
 // N'ajoutez pas de fichiers fréquemment mis à jour ici, car cela annule les gains de performance.
 
-#ifndef PCH_H
-#define PCH_H
+#pragma once
 
 // ajouter les en-têtes à précompiler ici
 #include "framework.hpp"
 #include "Window.hpp"
 #include "Application.hpp"
-
-#endif //PCH_H

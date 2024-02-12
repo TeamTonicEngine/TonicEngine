@@ -4,8 +4,8 @@
 
 namespace Core::Application
 {
-	constexpr unsigned defaultWidth_CONST = 1200;
-	constexpr unsigned defaultHeight_CONST = 800;
+	constexpr uint32_t DEFAULT_WIDTH = 1200;
+	constexpr uint32_t DEFAULT_HEIGHT = 800;
 
 	class TONIC_ENGINE_API Application
 	{
@@ -19,7 +19,7 @@ namespace Core::Application
 		//RHI* p_renderer_;
 
 	public:
-		Application(std::string _appName, uint32_t _width = defaultWidth_CONST, uint32_t _height = defaultHeight_CONST)
+		Application(std::string _appName, uint32_t _width = DEFAULT_WIDTH, uint32_t _height = DEFAULT_HEIGHT)
 			: appName_(_appName.c_str()), width_(_width), height_(_height)
 		{
 			p_window_ = new Window(_appName, _width, _height);
