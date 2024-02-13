@@ -2,7 +2,8 @@
 
 //Tests based on glm library
 #include <glm/glm.hpp>
-#include <glm/gtx/vector_angle.hpp >
+#include <glm/gtx/vector_angle.hpp>
+#include <glm/gtx/euler_angles.hpp >
 
 #include <Maths.hpp>
 
@@ -408,14 +409,13 @@ TEST(CLASS_NAME, MultiplyMat3byScalar)
 	for (int i = 0; i < 3; i++)
 		for (int j = 0; j < 3; j++)
 			ourResult.data_3_3[i][j] = glmResult[i][j] = RAND_FLOAT;
-	//TODO: FIX IMPLICIT CAST
-     //Implicit conversion issues
-	//ourResult = ourResult * rdFloat;
-//	glmResult = glmResult * rdFloat;
 
-//	for (int i = 0; i < 3; i++)
-//		for (int j = 0; j < 3; j++)
-//			EXPECT_NEAR(ourResult.data_3_3[i][j], glmResult[i][j], TOLERANCE);
+	ourResult = ourResult * rdFloat;
+	glmResult = glmResult * rdFloat;
+
+	for (int i = 0; i < 3; i++)
+		for (int j = 0; j < 3; j++)
+			EXPECT_NEAR(ourResult.data_3_3[i][j], glmResult[i][j], TOLERANCE);
 
 	//Try the *= as Well
 	ourResult *= rdFloat;
@@ -427,7 +427,7 @@ TEST(CLASS_NAME, MultiplyMat3byScalar)
 TEST(CLASS_NAME, DivideMat3byScalar)
 {
 	float rdFloat;
-	do{
+	do {
 		rdFloat = RAND_FLOAT;
 	} while (!rdFloat); //never divide by 0	
 
@@ -459,6 +459,187 @@ TEST(CLASS_NAME, DivideMat3byScalar)
 TEST(CLASS_NAME, Debug_Test)
 {
 	EXPECT_TRUE(true);
+}
+//--Constructors--------------------------------
+TEST(CLASS_NAME, Translate3D)
+{
+	float rd1 = RAND_FLOAT;
+	float rd2 = RAND_FLOAT;
+	float rd3 = RAND_FLOAT;
+
+	Mat4 ourResult = Mat4::Translate(Vec3(rd1, rd2, rd3));
+	glm::mat4 glmResult = glm::translate(glm::vec3(rd1, rd2, rd3));
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
+			EXPECT_NEAR(ourResult.data_4_4[i][j], glmResult[i][j], TOLERANCE);
+}
+TEST(CLASS_NAME, Scale3D)
+{
+	float rd1 = RAND_FLOAT;
+	float rd2 = RAND_FLOAT;
+	float rd3 = RAND_FLOAT;
+
+	Mat4 ourResult = Mat4::Scale(Vec3(rd1, rd2, rd3));
+	glm::mat4 glmResult = glm::scale(glm::vec3(rd1, rd2, rd3));
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
+			EXPECT_NEAR(ourResult.data_4_4[i][j], glmResult[i][j], TOLERANCE);
+}
+TEST(CLASS_NAME, Rotation3D)
+{
+	float rdAngleX = RAND_FLOAT;
+	float rdAngleY = RAND_FLOAT;
+	float rdAngleZ = RAND_FLOAT;
+
+	Mat4 ourResult = Mat4::Rotate(Vec3(rdAngleX, rdAngleY, rdAngleZ));
+	//ourResult.Transpose();
+	//glm::vec3 glmAxisAngle(rdAngleX, rdAngleY, rdAngleZ);
+	//float glmMagnitude = glm::length(glmAxisAngle);
+	//glmAxisAngle /= glmMagnitude; //Normalize
+	//glm::mat4 glmResult = glm::rotate(glm::identity<glm::mat4>(), glmMagnitude, -glmAxisAngle);
+	glm::mat4 glmResult = glm::eulerAngleXYX(rdAngleX, rdAngleY, rdAngleZ);
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
+			EXPECT_NEAR(ourResult.data_4_4[i][j], glmResult[i][j], TOLERANCE);
+}
+TEST(CLASS_NAME, Transform3D)
+{
+	float trs[9];
+	for (int i = 0; i < 9; i++)
+		trs[i] = RAND_FLOAT;
+
+	Mat4 ourResult = Mat4::Transform(Vec3(trs[0], trs[1], trs[2]), Vec3(trs[3], trs[4], trs[5]), Vec3(trs[6], trs[7], trs[8]));
+	//glm::vec3 glmAxisAngle(trs[3], trs[4], trs[5]);
+	//float glmMagnitude = glm::length(glmAxisAngle);
+	//glmAxisAngle /= glmMagnitude; //Normalize
+	//glm::mat4 glmRotation = glm::rotate(glm::identity<glm::mat4>(), glmMagnitude, glmAxisAngle);
+	glm::mat4 glmRotation = glm::eulerAngleXYX(trs[3], trs[4], trs[5]);
+
+	glm::mat4 glmResult = glm::translate(glm::vec3(trs[0], trs[1], trs[2])) * glmRotation * glm::scale(glm::vec3(trs[6], trs[7], trs[8]));
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
+			EXPECT_NEAR(ourResult.data_4_4[i][j], glmResult[i][j], TOLERANCE);
+}
+//--Operators----------------------------------
+TEST(CLASS_NAME, Add2Mat4)
+{
+	Mat4 ourResult, ourResult2;
+	glm::mat4 glmResult, glmResult2;
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
+		{
+			ourResult.data_4_4[i][j] = glmResult[i][j] = RAND_FLOAT;
+			ourResult2.data_4_4[i][j] = glmResult2[i][j] = RAND_FLOAT;
+		};
+	ourResult = ourResult + ourResult2;
+	glmResult = glmResult + glmResult2;
+
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
+			EXPECT_NEAR(ourResult.data_4_4[i][j], glmResult[i][j], TOLERANCE);
+
+	//Try the += as Well
+	ourResult += ourResult2;
+	glmResult += glmResult2;
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
+			EXPECT_NEAR(ourResult.data_4_4[i][j], glmResult[i][j], TOLERANCE);
+}
+TEST(CLASS_NAME, Substract2Mat4)
+{
+	Mat4 ourResult, ourResult2;
+	glm::mat4 glmResult, glmResult2;
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
+		{
+			ourResult.data_4_4[i][j] = glmResult[i][j] = RAND_FLOAT;
+			ourResult2.data_4_4[i][j] = glmResult2[i][j] = RAND_FLOAT;
+		};
+	ourResult = ourResult - ourResult2;
+	glmResult = glmResult - glmResult2;
+
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
+			EXPECT_NEAR(ourResult.data_4_4[i][j], glmResult[i][j], TOLERANCE);
+
+	//Try the -= as Well
+	ourResult -= ourResult2;
+	glmResult -= glmResult2;
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
+			EXPECT_NEAR(ourResult.data_4_4[i][j], glmResult[i][j], TOLERANCE);
+}
+TEST(CLASS_NAME, Multiply2Mat4)
+{
+	Mat4 ourResult, ourResult2;
+	glm::mat4 glmResult, glmResult2;
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
+		{
+			ourResult.data_4_4[i][j] = glmResult[i][j] = RAND_FLOAT;
+			ourResult2.data_4_4[i][j] = glmResult2[i][j] = RAND_FLOAT;
+		};
+	ourResult = ourResult * ourResult2;
+	glmResult = glmResult * glmResult2;
+
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
+			EXPECT_NEAR(ourResult.data_4_4[i][j], glmResult[i][j], TOLERANCE);
+
+	//Try the *= as Well
+	ourResult *= ourResult2;
+	glmResult *= glmResult2;
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
+			EXPECT_NEAR(ourResult.data_4_4[i][j], glmResult[i][j], TOLERANCE);
+}
+TEST(CLASS_NAME, MultiplyMat4byScalar)
+{
+	float rdFloat = RAND_FLOAT;
+	Mat4 ourResult;
+	glm::mat4 glmResult;
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
+			ourResult.data_4_4[i][j] = glmResult[i][j] = RAND_FLOAT;
+	ourResult = ourResult * rdFloat;
+	glmResult = glmResult * rdFloat;
+
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
+			EXPECT_NEAR(ourResult.data_4_4[i][j], glmResult[i][j], TOLERANCE);
+
+	//Try the *= as Well
+	ourResult *= rdFloat;
+	glmResult *= rdFloat;
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
+			EXPECT_NEAR(ourResult.data_4_4[i][j], glmResult[i][j], TOLERANCE);
+}
+TEST(CLASS_NAME, DivideMat4byScalar)
+{
+	float rdFloat;
+	do {
+		rdFloat = RAND_FLOAT;
+	} while (!rdFloat); //never divide by 0	
+
+	Mat4 ourResult;
+	glm::mat4 glmResult;
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
+			ourResult.data_4_4[i][j] = glmResult[i][j] = RAND_FLOAT;
+	ourResult = ourResult / rdFloat;
+	glmResult = glmResult / rdFloat;
+
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
+			EXPECT_NEAR(ourResult.data_4_4[i][j], glmResult[i][j], TOLERANCE);
+
+	//Try the /= as Well
+	ourResult /= rdFloat;
+	glmResult /= rdFloat;
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
+			EXPECT_NEAR(ourResult.data_4_4[i][j], glmResult[i][j], TOLERANCE);
 }
 
 #pragma endregion
