@@ -25,3 +25,4 @@ CMakeLists.txt
 
 !/TonicUnitTest/packages/**/x64/
 !/TonicUnitTest/packages/**/x86/
+!/TonicUnitTest/packages/**/build/
