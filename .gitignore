@@ -25,4 +25,6 @@ CMakeLists.txt
 
 !/TonicUnitTest/packages/**/Debug/
 !/TonicUnitTest/packages/**/Release/
+!/TonicUnitTest/packages/**/x64/
+!/TonicUnitTest/packages/**/x86/
 !/TonicUnitTest/packages/**/build/
