@@ -20,7 +20,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Externals\src\glad\glad.cpp" />
+    <ClCompile Include="Externals\src\ImGui\imgui.cpp" />
+    <ClCompile Include="Externals\src\ImGui\imgui_demo.cpp" />
+    <ClCompile Include="Externals\src\ImGui\imgui_draw.cpp" />
+    <ClCompile Include="Externals\src\ImGui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="Externals\src\ImGui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="Externals\src\ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="Sources\EditorWindow.cpp" />
     <ClCompile Include="Sources\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Headers\EditorWindow.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
