@@ -7,6 +7,13 @@
     <ClCompile Include="Sources\main.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="Externals\src\ImGui\imgui.cpp" />
+    <ClCompile Include="Externals\src\ImGui\imgui_demo.cpp" />
+    <ClCompile Include="Externals\src\ImGui\imgui_draw.cpp" />
+    <ClCompile Include="Externals\src\ImGui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="Externals\src\ImGui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="Externals\src\ImGui\imgui_widgets.cpp" />
+    <ClCompile Include="Sources\EditorWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Externals">
@@ -15,5 +22,8 @@
     <Filter Include="Core">
       <UniqueIdentifier>{5ac5c2d3-46a0-465c-81ef-1a82842ba44e}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Headers\EditorWindow.hpp" />
   </ItemGroup>
 </Project>

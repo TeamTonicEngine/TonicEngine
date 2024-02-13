@@ -2,21 +2,40 @@
 #include "framework.hpp"
 #include "Window.hpp"
 
+#include <glad/glad.hpp>
 #include <GLFW/glfw3.hpp>
+
+#include <iostream>
+
 
 void FramebufferResizeCallback(GLFWwindow* _window, int _width, int _height);
 
 Core::Application::Window::Window(std::string _nameWindow, unsigned _width, unsigned _height)
-	: width_(_width), height_(_height)
+	: width_(_width), height_(_height), nameWindow_(_nameWindow)
+{
+	
+}
+
+void Core::Application::Window::Init()
 {
 	// Initialize glfw
-	glfwInit();
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+	if(!glfwInit())
+		std::cout << "FAIL TO INITIALIZE GLFW" << std::endl;
+
+	//glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// Create the window
-	p_window_ = glfwCreateWindow(_width, _height, _nameWindow.c_str(), nullptr, nullptr);
+	p_window_ = glfwCreateWindow(width_, height_, nameWindow_.c_str(), nullptr, nullptr);
 	glfwSetWindowUserPointer(static_cast<GLFWwindow*>(p_window_), this);
 	glfwSetFramebufferSizeCallback(static_cast<GLFWwindow*>(p_window_), FramebufferResizeCallback);
+	
+	glfwMakeContextCurrent(static_cast<GLFWwindow*>(p_window_)); // Important to initialize GLAD
+
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+		std::cout << "FAIL TO INITIALIZE GLAD" << std::endl;
 }
 
 void FramebufferResizeCallback(GLFWwindow* _window, int _width, int _height)
@@ -66,6 +85,11 @@ bool Core::Application::Window::IsFramebufferResized()
 
 void Core::Application::Window::Loop()
 {
+	// Clear Color
+	glClearColor(0.f, 0.f, 0.f, 1.f);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	glfwSwapBuffers(static_cast<GLFWwindow*>(p_window_));
 	glfwPollEvents();
 }
 

@@ -10,6 +10,7 @@
     <ClCompile Include="Sources\pch.cpp">
       <Filter>DLL_Core</Filter>
     </ClCompile>
+    <ClCompile Include="Externals\src\glad\glad.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Headers\Window.hpp">
