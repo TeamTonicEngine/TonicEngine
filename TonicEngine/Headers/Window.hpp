@@ -15,8 +15,12 @@ namespace Core::Application
 
 		bool bFramebufferResized_ = false;
 
+		std::string nameWindow_ = "";
+
 	public:
 		Window(std::string _nameWindow, unsigned _width, unsigned _height);
+
+		void Init();
 
 		void* GetWindow();
 		unsigned* GetScreenSize(); // TODO change to vec2 int when math lib implemented

@@ -27,6 +27,8 @@ namespace Core::Application
 
 		inline void Run()
 		{
+			p_window_->Init();
+
 			while (!p_window_->IsClosing())
 			{
 				p_window_->Loop();
@@ -42,7 +44,6 @@ namespace Core::Application
 					// renderer
 				}
 			}
-
 			p_window_->Destroy();
 		}
 	};
