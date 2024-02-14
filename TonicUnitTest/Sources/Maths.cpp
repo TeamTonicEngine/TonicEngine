@@ -742,9 +742,9 @@ Mat3 Mat3::Scale2D(const Vec2& _scaling)
 }
 float Mat3::Determinant() const
 {
-    return data_3_3[0][0] * (data_3_3[1][1] * data_3_3[2][2] - data_3_3[2][1] * data_3_3[1][2])
-        - data_3_3[0][1] * (data_3_3[1][0] * data_3_3[2][2] - data_3_3[2][0] * data_3_3[1][2])
-        + data_3_3[0][2] * (data_3_3[1][0] * data_3_3[2][1] - data_3_3[2][0] * data_3_3[1][1]);
+    return data[0] * (data[4] * data[8] - data[7] * data[5])
+        - data[1] * (data[3] * data[8] - data[6] * data[5])
+        + data[2] * (data[3] * data[7] - data[6] * data[4]);
 }
 float Mat3::Trace() const
 {
@@ -1028,7 +1028,7 @@ Vec2 Mat3::operator * (const Vec2& _vec) const
     {
 
         data[0] * _vec.x + data[1] * _vec.y + data[2],
-    
+
         data[3] * _vec.x + data[4] * _vec.y + data[5]
 
     };
@@ -1146,18 +1146,43 @@ Mat4::~Mat4(void) {}
 
 Mat4 Mat4::Transform(Vec3 _translation, Vec3 _anglesInRad, Vec3 _scaling)
 {
-    //FIXME
-    return Translate(_translation) * Rotate(_anglesInRad) * Scale(_scaling);
+    //rotation
+    Mat4 temp = Rotate(_anglesInRad);
+
+    //scaling
+    temp.data[0] *= _scaling.x; temp.data[1] *= _scaling.x; temp.data[2] *= _scaling.x;
+    temp.data[4] *= _scaling.y; temp.data[5] *= _scaling.y; temp.data[6] *= _scaling.y;
+    temp.data[8] *= _scaling.z; temp.data[9] *= _scaling.z; temp.data[10] *= _scaling.z;
+
+    //translation
+    temp.data[12] = _translation.x;
+    temp.data[13] = _translation.y;
+    temp.data[14] = _translation.z;
+
+    return temp;
 }
 Mat4 Mat4::Rotate(Vec3 _anglesInRad)
 {
-    //FIXME
-    return RotateX(_anglesInRad.x)* RotateY(_anglesInRad.y)* RotateZ(_anglesInRad.z);
+    float cosA = cos(_anglesInRad.x);
+    float cosB = cos(_anglesInRad.y);
+    float cosC = cos(_anglesInRad.z);
+
+    float sinA = sin(_anglesInRad.x);
+    float sinB = sin(_anglesInRad.y);
+    float sinC = sin(_anglesInRad.z);
+
+    return
+    {
+        cosB * cosC, sinA* sinB* cosC + cosA * sinC,  -cosA * sinB * cosC + sinA * sinC, 0,
+        -cosB * sinC, -sinA * sinB * sinC + cosA * cosC, cosA* sinB* sinC + sinA * cosC, 0,
+        sinB, -sinA * cosB, cosA * cosB, 0,
+        0,0,0,1
+    };
 }
 Mat4 Mat4::RotateX(float _angleInRad)
 {
-    float cosX = cosf(_angleInRad);
-    float sinX = sinf(_angleInRad);
+    float cosX = cos(_angleInRad);
+    float sinX = sin(_angleInRad);
 
     return
     {
@@ -1186,8 +1211,8 @@ Mat4 Mat4::RotateX(float _angleInRad)
 }
 Mat4 Mat4::RotateY(float _angleInRad)
 {
-    float cosY = cosf(_angleInRad);
-    float sinY = sinf(_angleInRad);
+    float cosY = cos(_angleInRad);
+    float sinY = sin(_angleInRad);
 
     return
     {
@@ -1216,8 +1241,8 @@ Mat4 Mat4::RotateY(float _angleInRad)
 }
 Mat4 Mat4::RotateZ(float _angleInRad)
 {
-    float cosZ = cosf(_angleInRad);
-    float sinZ = sinf(_angleInRad);
+    float cosZ = cos(_angleInRad);
+    float sinZ = sin(_angleInRad);
 
     return
     {
@@ -1319,79 +1344,82 @@ float Mat4::Trace() const
 }
 Mat4 Mat4::Inverse()
 {
-    //FIXME
     float det = Determinant();
     if (det != 0.f)
     {
         det = 1.f / det;
-
         return *this =
         {
 
-        (data_4_4[1][1] * (data_4_4[2][2] * data_4_4[3][3] - data_4_4[2][3] * data_4_4[3][2])
-            - data_4_4[1][2] * (data_4_4[2][1] * data_4_4[3][3] - data_4_4[2][3] * data_4_4[3][1])
-            + data_4_4[1][3] * (data_4_4[2][1] * data_4_4[3][2] - data_4_4[2][2] * data_4_4[3][1])) * det,
+            (data[5] * (data[10] * data[15] - data[11] * data[14])
+            - data[9] * (data[6] * data[15] - data[7] * data[14])
+            + data[13] * (data[6] * data[11] - data[7] * data[10])) * det,
 
-        (data_4_4[0][1] * (data_4_4[2][3] * data_4_4[3][2] - data_4_4[2][2] * data_4_4[3][3])
-            - data_4_4[0][2] * (data_4_4[2][3] * data_4_4[3][1] - data_4_4[2][1] * data_4_4[3][3])
-            + data_4_4[0][3] * (data_4_4[2][2] * data_4_4[3][1] - data_4_4[2][1] * data_4_4[3][2])) * det,
+            -(data[1] * (data[10] * data[15] - data[11] * data[14])
+            - data[9] * (data[2] * data[15] - data[3] * data[14])
+            + data[13] * (data[2] * data[11] - data[3] * data[10])) * det,
 
-        (data_4_4[0][1] * (data_4_4[1][3] * data_4_4[3][2] - data_4_4[1][2] * data_4_4[3][3])
-            - data_4_4[0][2] * (data_4_4[1][3] * data_4_4[3][1] - data_4_4[1][1] * data_4_4[3][3])
-            + data_4_4[0][3] * (data_4_4[1][2] * data_4_4[3][1] - data_4_4[1][1] * data_4_4[3][2])) * det,
+            (data[1] * (data[6] * data[15] - data[7] * data[14])
+            - data[5] * (data[2] * data[15] - data[3] * data[14])
+            + data[13] * (data[2] * data[7] - data[3] * data[6])) * det,
 
-        (data_4_4[0][1] * (data_4_4[1][2] * data_4_4[2][3] - data_4_4[1][3] * data_4_4[2][2])
-            - data_4_4[0][2] * (data_4_4[1][1] * data_4_4[2][3] - data_4_4[1][3] * data_4_4[2][1])
-            + data_4_4[0][3] * (data_4_4[1][1] * data_4_4[2][2] - data_4_4[1][2] * data_4_4[2][1])) * det,
+            -(data[1] * (data[6] * data[11] - data[7] * data[10])
+            - data[5] * (data[2] * data[11] - data[3] * data[10])
+            + data[9] * (data[2] * data[7] - data[3] * data[6])) * det,
 
-        (data_4_4[1][0] * (data_4_4[2][3] * data_4_4[3][2] - data_4_4[2][2] * data_4_4[3][3])
-            - data_4_4[1][2] * (data_4_4[2][3] * data_4_4[3][0] - data_4_4[2][0] * data_4_4[3][3])
-            + data_4_4[1][3] * (data_4_4[2][2] * data_4_4[3][0] - data_4_4[2][0] * data_4_4[3][2])) * det,
 
-        (data_4_4[0][0] * (data_4_4[2][2] * data_4_4[3][3] - data_4_4[2][3] * data_4_4[3][2])
-            - data_4_4[0][2] * (data_4_4[2][2] * data_4_4[3][0] - data_4_4[2][0] * data_4_4[3][2])
-            + data_4_4[0][3] * (data_4_4[2][0] * data_4_4[3][2] - data_4_4[2][2] * data_4_4[3][0])) * det,
 
-        (data_4_4[0][0] * (data_4_4[1][3] * data_4_4[3][2] - data_4_4[1][2] * data_4_4[3][3])
-            - data_4_4[0][2] * (data_4_4[1][3] * data_4_4[3][0] - data_4_4[1][0] * data_4_4[3][3])
-            + data_4_4[0][3] * (data_4_4[1][2] * data_4_4[3][0] - data_4_4[1][0] * data_4_4[3][2])) * det,
+            -(data[4] * (data[10] * data[15] - data[11] * data[14])
+            - data[8] * (data[6] * data[15] - data[7] * data[14])
+            + data[12] * (data[6] * data[11] - data[7] * data[10])) * det,
 
-        (data_4_4[0][0] * (data_4_4[1][2] * data_4_4[2][3] - data_4_4[1][3] * data_4_4[2][2])
-            - data_4_4[0][2] * (data_4_4[1][2] * data_4_4[2][0] - data_4_4[1][0] * data_4_4[2][2])
-            + data_4_4[0][3] * (data_4_4[1][0] * data_4_4[2][2] - data_4_4[1][2] * data_4_4[2][0])) * det,
+            (data[0] * (data[10] * data[15] - data[11] * data[14])
+            - data[8] * (data[2] * data[15] - data[3] * data[14])
+            + data[12] * (data[2] * data[11] - data[3] * data[10])) * det,
 
-        (data_4_4[1][0] * (data_4_4[2][1] * data_4_4[3][3] - data_4_4[2][3] * data_4_4[3][1])
-            - data_4_4[1][1] * (data_4_4[2][0] * data_4_4[3][3] - data_4_4[2][3] * data_4_4[3][0])
-            + data_4_4[1][3] * (data_4_4[2][0] * data_4_4[3][1] - data_4_4[2][1] * data_4_4[3][0])) * det,
+            -(data[0] * (data[6] * data[15] - data[7] * data[14])
+            - data[4] * (data[2] * data[15] - data[3] * data[14])
+            + data[12] * (data[2] * data[7] - data[3] * data[6])) * det,
 
-        (data_4_4[0][0] * (data_4_4[2][3] * data_4_4[3][1] - data_4_4[2][1] * data_4_4[3][3])
-            - data_4_4[0][1] * (data_4_4[2][3] * data_4_4[3][0] - data_4_4[2][0] * data_4_4[3][3])
-            + data_4_4[0][3] * (data_4_4[2][1] * data_4_4[3][0] - data_4_4[2][0] * data_4_4[3][1])) * det,
+            (data[0] * (data[6] * data[11] - data[7] * data[10])
+            - data[4] * (data[2] * data[11] - data[3] * data[10])
+            + data[8] * (data[2] * data[7] - data[3] * data[6])) * det,
 
-        (data_4_4[0][0] * (data_4_4[1][1] * data_4_4[3][3] - data_4_4[1][3] * data_4_4[3][1])
-            - data_4_4[0][1] * (data_4_4[1][0] * data_4_4[3][3] - data_4_4[1][3] * data_4_4[3][0])
-            + data_4_4[0][3] * (data_4_4[1][0] * data_4_4[3][1] - data_4_4[1][1] * data_4_4[3][0])) * det,
 
-        (data_4_4[0][0] * (data_4_4[1][3] * data_4_4[2][1] - data_4_4[1][1] * data_4_4[2][3])
-            - data_4_4[0][1] * (data_4_4[1][3] * data_4_4[2][0] - data_4_4[1][0] * data_4_4[2][3])
-            + data_4_4[0][3] * (data_4_4[1][1] * data_4_4[2][0] - data_4_4[1][0] * data_4_4[2][1])) * det,
 
-        (data_4_4[1][0] * (data_4_4[2][2] * data_4_4[3][1] - data_4_4[2][1] * data_4_4[3][2])
-            - data_4_4[1][1] * (data_4_4[2][0] * data_4_4[3][2] - data_4_4[2][2] * data_4_4[3][0])
-            + data_4_4[1][2] * (data_4_4[2][0] * data_4_4[3][1] - data_4_4[2][1] * data_4_4[3][0])) * det,
+            (data[4] * (data[9] * data[15] - data[11] * data[13])
+            - data[8] * (data[5] * data[15] - data[7] * data[13])
+            + data[12] * (data[5] * data[11] - data[7] * data[9])) * det,
 
-        (data_4_4[0][0] * (data_4_4[2][1] * data_4_4[3][2] - data_4_4[2][2] * data_4_4[3][1])
-            - data_4_4[0][1] * (data_4_4[2][0] * data_4_4[3][2] - data_4_4[2][2] * data_4_4[3][0])
-            + data_4_4[0][2] * (data_4_4[2][0] * data_4_4[3][1] - data_4_4[2][1] * data_4_4[3][0])) * det,
+            -(data[0] * (data[9] * data[15] - data[11] * data[13])
+            - data[8] * (data[1] * data[15] - data[3] * data[13])
+            + data[12] * (data[1] * data[11] - data[3] * data[9])) * det,
 
-        (data_4_4[0][0] * (data_4_4[1][2] * data_4_4[3][1] - data_4_4[1][1] * data_4_4[3][2])
-            - data_4_4[0][1] * (data_4_4[1][0] * data_4_4[3][2] - data_4_4[1][2] * data_4_4[3][0])
-            + data_4_4[0][2] * (data_4_4[1][0] * data_4_4[3][1] - data_4_4[1][1] * data_4_4[3][0])) * det,
+            (data[0] * (data[5] * data[15] - data[7] * data[13])
+            - data[4] * (data[1] * data[15] - data[3] * data[13])
+            + data[12] * (data[1] * data[7] - data[3] * data[5])) * det,
 
-        (data_4_4[0][0] * (data_4_4[1][1] * data_4_4[2][2] - data_4_4[1][2] * data_4_4[2][1])
-            - data_4_4[0][1] * (data_4_4[1][0] * data_4_4[2][2] - data_4_4[1][2] * data_4_4[2][0])
-            + data_4_4[0][2] * (data_4_4[1][0] * data_4_4[2][1] - data_4_4[1][1] * data_4_4[2][0])) * det,
+            -(data[0] * (data[5] * data[11] - data[7] * data[9])
+            - data[4] * (data[1] * data[11] - data[3] * data[9])
+            + data[8] * (data[1] * data[7] - data[3] * data[5])) * det,
 
+
+
+            -(data[4] * (data[9] * data[14] - data[10] * data[13])
+            - data[8] * (data[5] * data[14] - data[6] * data[13])
+            + data[12] * (data[5] * data[10] - data[6] * data[9])) * det,
+
+            (data[0] * (data[9] * data[14] - data[10] * data[13])
+            - data[8] * (data[1] * data[14] - data[2] * data[13])
+            + data[12] * (data[1] * data[10] - data[2] * data[9])) * det,
+
+            -(data[0] * (data[5] * data[14] - data[6] * data[13])
+            - data[4] * (data[1] * data[14] - data[2] * data[13])
+            + data[12] * (data[1] * data[6] - data[2] * data[5])) * det,
+
+            (data[0] * (data[5] * data[10] - data[6] * data[9])
+            - data[4] * (data[1] * data[10] - data[2] * data[9])
+            + data[8] * (data[1] * data[6] - data[2] * data[5])) * det
         };
     }
     return *this;
@@ -1486,9 +1514,9 @@ bool Mat4::operator != (const Mat4& _mat) const
 {
     for (int i = 0; i < 16; i++)
     {
-        if (data[i] == _mat.data[i]) return false;
+        if (data[i] != _mat.data[i]) return true;
     }
-    return true;
+    return false;
 }
 
 Vec4 Mat4::operator [] (int _index) const

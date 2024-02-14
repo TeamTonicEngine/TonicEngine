@@ -4,15 +4,15 @@
 
 namespace Maths
 {
-	namespace Constants
+    namespace Constants
     {
         constexpr float PI = 3.1415927f;
         constexpr double PI_PRECISE = 3.141592653589793;
         constexpr float TOLERANCE = 3e-7f;
     }
 
- 	//multiply your angle in degrees by this value to convert it to radians.
-	float ToRadians(float _angleDegrees);
+    //multiply your angle in degrees by this value to convert it to radians.
+    float ToRadians(float _angleDegrees);
     TONIC_ENGINE_API double ToRadians(double _angleDegrees);
 
     //multiply your angle in radians by this value to convert it to degrees.
@@ -220,26 +220,26 @@ namespace Maths
 
 //------------------------------------------------------------------
 //------------------------------------------------------------------
-	TONIC_ENGINE_API void Normalize(Vec2& _vec2);
-	TONIC_ENGINE_API void Normalize(Vec3& _vec3);
-	TONIC_ENGINE_API void Normalize(Vec4& _vec4);
-	
-	TONIC_ENGINE_API float DotProduct(const Vec2& _vecA, const Vec2& _vecB);
-	TONIC_ENGINE_API float DotProduct(const Vec3& _vecA, const Vec3& _vecB);
-	TONIC_ENGINE_API float DotProduct(const Vec4& _vecA, const Vec4& _vecB);
+    TONIC_ENGINE_API void Normalize(Vec2& _vec2);
+    TONIC_ENGINE_API void Normalize(Vec3& _vec3);
+    TONIC_ENGINE_API void Normalize(Vec4& _vec4);
+    
+    TONIC_ENGINE_API float DotProduct(const Vec2& _vecA, const Vec2& _vecB);
+    TONIC_ENGINE_API float DotProduct(const Vec3& _vecA, const Vec3& _vecB);
+    TONIC_ENGINE_API float DotProduct(const Vec4& _vecA, const Vec4& _vecB);
 
-	TONIC_ENGINE_API float DistanceBetween(const Vec2& _vecA, const Vec2& _vecB);
-	TONIC_ENGINE_API float DistanceBetween(const Vec3& _vecA, const Vec3& _vecB);
-	TONIC_ENGINE_API float DistanceBetween(const Vec4& _vecA, const Vec4& _vecB);
+    TONIC_ENGINE_API float DistanceBetween(const Vec2& _vecA, const Vec2& _vecB);
+    TONIC_ENGINE_API float DistanceBetween(const Vec3& _vecA, const Vec3& _vecB);
+    TONIC_ENGINE_API float DistanceBetween(const Vec4& _vecA, const Vec4& _vecB);
 
-	TONIC_ENGINE_API float AngleBetween(const Vec2& _vecA, const Vec2& _vecB);
-	TONIC_ENGINE_API float AngleBetween(const Vec3& _vecA, const Vec3& _vecB);
-	TONIC_ENGINE_API float AngleBetween(const Vec4& _vecA, const Vec4& _vecB);
+    TONIC_ENGINE_API float AngleBetween(const Vec2& _vecA, const Vec2& _vecB);
+    TONIC_ENGINE_API float AngleBetween(const Vec3& _vecA, const Vec3& _vecB);
+    TONIC_ENGINE_API float AngleBetween(const Vec4& _vecA, const Vec4& _vecB);
 
-	//return the z value
-	TONIC_ENGINE_API float CrossProduct(const Vec2& _vecA, const Vec2& _vecB);
+    //return the z value
+    TONIC_ENGINE_API float CrossProduct(const Vec2& _vecA, const Vec2& _vecB);
 
-	TONIC_ENGINE_API Vec3 CrossProduct(const Vec3& _vecA, const Vec3& _vecB);
+    TONIC_ENGINE_API Vec3 CrossProduct(const Vec3& _vecA, const Vec3& _vecB);
 //------------------------------------------------------------------
 //------------------------------------------------------------------
 
