@@ -1902,3 +1902,11 @@ TEST(CLASS_NAME, FromMat4)
 }
 #pragma endregion
 //--------------------------------------------------
+int main(int argc, char** argv) {
+	// Almost a copy of the Google Test's main
+	testing::InitGoogleTest(&argc, argv);
+	RUN_ALL_TESTS();
+	// returning an error in all cases
+	printf("Press enter key to leave.");
+	getchar();
+}

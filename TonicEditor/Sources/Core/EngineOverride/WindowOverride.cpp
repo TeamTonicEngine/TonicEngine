@@ -19,7 +19,7 @@ void WindowOverride::Init(const char* _name, u32 _width, u32 _height)
 	if (!glfwInit())
 		throw std::exception("FAIL TO INITIALIZE GLFW");
 	else
-		std::cout << "SUCCED TO INITIALIZE GLFW" << std::endl;
+		std::cout << "SUCCEED TO INITIALIZE GLFW" << std::endl;
 
 	// Create the window
 	p_handle_ = glfwCreateWindow(_width, _height, _name, nullptr, nullptr);
