@@ -13,7 +13,8 @@ This project is a game Engine with an Editor written in [![C++](https://img.shie
 |Sound|<a href="https://miniaud.io/">miniaudio</a>|
 |Physics|<a href="https://github.com/NVIDIA-Omniverse/PhysX">Nvidia PhysX</a>|
 |GUI (Editor)|<a href="https://github.com/ocornut/imgui">Dear ImGui</a>|
-
+|Font|<a href="https://freetype.org/">FreeType</a>
+|Reflection|Refureku or rttr|
 
 ## 📷 ScreenShots
 ![SC1](Screenshots\TONICTirangle.png)
