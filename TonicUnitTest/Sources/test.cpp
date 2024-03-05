@@ -84,6 +84,17 @@ TEST(CLASS_NAME, GetNormalized)
 	EXPECT_FLOAT_EQ(ourResult2.y, ourResult.y);
 
 }
+TEST(CLASS_NAME, GetNormalizedOfZero)
+{
+	Vec2 ourResult = Vec2(0.f, 0.f).GetNormalized();
+	Vec2 ourResult2 = ourResult;
+	Vectors::Normalize(ourResult2);
+
+	EXPECT_FLOAT_EQ(0.f, ourResult.x);
+	EXPECT_FLOAT_EQ(0.f, ourResult.y);
+	EXPECT_FLOAT_EQ(0.f, ourResult.x);
+	EXPECT_FLOAT_EQ(0.f, ourResult.y);
+}
 //--Operators----------------------------------
 TEST(CLASS_NAME, DotProduct)
 {
@@ -155,6 +166,17 @@ TEST(CLASS_NAME, GetNormalized)
 	{
 		EXPECT_FLOAT_EQ(glmResult[i], ourResult[i]);
 		EXPECT_FLOAT_EQ(ourResult2[i], ourResult[i]);
+	}
+}
+TEST(CLASS_NAME, GetNormalizedOfZero)
+{
+	Vec3 ourResult = Vec3(0.f, 0.f, 0.f).GetNormalized();
+	Vec3 ourResult2 = ourResult;
+	Vectors::Normalize(ourResult2);
+	for (int i = 0; i < 3; i++)
+	{
+		EXPECT_FLOAT_EQ(0.f, ourResult2[i]);
+		EXPECT_FLOAT_EQ(0.f, ourResult[i]);
 	}
 }
 //--Operators----------------------------------
@@ -243,6 +265,20 @@ TEST(CLASS_NAME, GetNormalized)
 	for (int i = 0; i < 4; i++)
 	{
 		EXPECT_FLOAT_EQ(glmResult[i], ourResult.xyzw[i]);
+		EXPECT_FLOAT_EQ(ourResult2[i], ourResult[i]);
+	}
+}
+TEST(CLASS_NAME, GetNormalizedOfZero)
+{
+	Vec4 ourResult;
+	for (int i = 0; i < 4; i++)
+		ourResult.xyzw[i] = 0.f;
+	ourResult = ourResult.GetNormalized();
+	Vec4 ourResult2 = ourResult;
+	Vectors::Normalize(ourResult2);
+	for (int i = 0; i < 4; i++)
+	{
+		EXPECT_FLOAT_EQ(0.f, ourResult.xyzw[i]);
 		EXPECT_FLOAT_EQ(ourResult2[i], ourResult[i]);
 	}
 }
@@ -480,6 +516,27 @@ TEST(CLASS_NAME, DivideMat3byScalar)
 	//Try the /= as Well
 	ourResult /= rdFloat;
 	glmResult /= rdFloat;
+	for (int i = 0; i < 3; i++)
+		for (int j = 0; j < 3; j++)
+			EXPECT_EQ(ourResult.data_3_3[i][j], glmResult[i][j]);
+}
+TEST(CLASS_NAME, DivideMat3byZero)
+{
+	Mat3 ourResult;
+	glm::mat3 glmResult;
+	for (int i = 0; i < 3; i++)
+		for (int j = 0; j < 3; j++)
+			ourResult.data_3_3[i][j] = glmResult[i][j] = RAND_FLOAT;
+	ourResult = ourResult / 0.f;
+	glmResult = glmResult / 0.f;
+
+	for (int i = 0; i < 3; i++)
+		for (int j = 0; j < 3; j++)
+			EXPECT_EQ(ourResult.data_3_3[i][j], glmResult[i][j]);
+
+	//Try the /= as Well
+	ourResult /= 0.f;
+	glmResult /= 0.f;
 	for (int i = 0; i < 3; i++)
 		for (int j = 0; j < 3; j++)
 			EXPECT_EQ(ourResult.data_3_3[i][j], glmResult[i][j]);
@@ -1286,6 +1343,36 @@ TEST(CLASS_NAME, Mat4DivScaOperator)
 		for (int j = 0; j < 4; j++)
 			EXPECT_EQ(matMR[i][j], matGR[i][j]);
 }
+TEST(CLASS_NAME, Mat4DivByZero)
+{
+	float _1 = RAND_FLOAT;
+	float _2 = RAND_FLOAT;
+	float _3 = RAND_FLOAT;
+	float _4 = RAND_FLOAT;
+	float _5 = RAND_FLOAT;
+	float _6 = RAND_FLOAT;
+	float _7 = RAND_FLOAT;
+	float _8 = RAND_FLOAT;
+	float _9 = RAND_FLOAT;
+	float _10 = RAND_FLOAT;
+	float _11 = RAND_FLOAT;
+	float _12 = RAND_FLOAT;
+	float _13 = RAND_FLOAT;
+	float _14 = RAND_FLOAT;
+	float _15 = RAND_FLOAT;
+	float _16 = RAND_FLOAT;
+
+	Mat4 matM(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16);
+
+	glm::mat4 matG(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16);
+
+	Mat4 matMR = matM / 0.f;
+	glm::mat4 matGR = matG / 0.f;
+
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
+			EXPECT_EQ(matMR[i][j], matGR[i][j]);
+}
 
 TEST(CLASS_NAME, Mat4TimeEqualScaOperator)
 {
@@ -1505,6 +1592,21 @@ TEST(CLASS_NAME, GetNormalized)
 	for (int i = 0; i < 4; i++)
 		EXPECT_FLOAT_EQ(resultM[i], resultG[i]);
 }
+TEST(CLASS_NAME, GetNormalizedOfZero)
+{
+	Quat quatM;
+	glm::quat quatG;
+
+	for (int i = 0; i < 4; i++)
+		quatM[i] = quatG[i] = 0.f;
+
+	Quat resultM = quatM.GetNormalized();
+	glm::quat resultG = glm::normalize(quatG);
+
+	for (int i = 0; i < 4; i++)
+		EXPECT_FLOAT_EQ(resultM[i], resultG[i]);
+}
+
 TEST(CLASS_NAME, GetConjugate)
 {
 	Quat quatM;
@@ -1524,15 +1626,28 @@ TEST(CLASS_NAME, Inverse)
 	Quat quatM;
 	glm::quat quatG;
 
+
 	for (int i = 0; i < 4; i++)
 		quatM[i] = quatG[i] = RAND_FLOAT;
 
 	quatM.GetInverse();
 	Quat resultM = quatM.GetInverse();
 	glm::quat resultG = glm::inverse(quatG);
-
 	for (int i = 0; i < 4; i++)
 		EXPECT_FLOAT_EQ(resultM[i], resultG[i]);
+}
+TEST(CLASS_NAME, InverseOfZero)
+{
+	Quat quatM;
+
+	for (int i = 0; i < 4; i++)
+		quatM[i] = 0.f;
+
+	quatM.GetInverse();
+	Quat resultM = quatM.GetInverse();
+
+	for (int i = 0; i < 4; i++)
+		EXPECT_FLOAT_EQ(resultM[i], 0.f);
 }
 TEST(CLASS_NAME, InversePrecise)
 {
@@ -1542,12 +1657,26 @@ TEST(CLASS_NAME, InversePrecise)
 	for (int i = 0; i < 4; i++)
 		quatM[i] = quatG[i] = RAND_FLOAT;
 
+
 	quatM.GetInversePrecise();
 	Quat resultM = quatM.GetInversePrecise();
 	glm::quat resultG = glm::inverse(quatG);
 
 	for (int i = 0; i < 4; i++)
 		EXPECT_FLOAT_EQ(resultM[i], resultG[i]);
+}
+TEST(CLASS_NAME, InversePreciseOfZero)
+{
+	Quat quatM;
+
+	for (int i = 0; i < 4; i++)
+		quatM[i] = 0.f;
+
+	quatM.GetInversePrecise();
+	Quat resultM = quatM.GetInversePrecise();
+
+	for (int i = 0; i < 4; i++)
+		EXPECT_FLOAT_EQ(resultM[i], 0.f);
 }
 TEST(CLASS_NAME, Nlerp)
 {
@@ -1560,7 +1689,6 @@ TEST(CLASS_NAME, Nlerp)
 		quatM1[i] = quatG1[i] = RAND_FLOAT;
 		quatM2[i] = quatG2[i] = RAND_FLOAT;
 	}
-
 
 	Quat resultM = Quat::Nlerp(quatM1, quatM2, t);
 	glm::quat resultG = glm::fastMix(quatG1, quatG2, t);
@@ -1579,7 +1707,6 @@ TEST(CLASS_NAME, Slerp)
 		quatM1[i] = quatG1[i] = RAND_FLOAT;
 		quatM2[i] = quatG2[i] = RAND_FLOAT;
 	}
-
 
 	Quat resultM = Quat::Slerp(quatM1, quatM2, t);
 	glm::quat resultG = glm::shortMix(quatG1, quatG2, t);
@@ -1684,7 +1811,7 @@ TEST(CLASS_NAME, MultiplyEqual)
 	quatG1 *= quatG2;
 
 	for (int i = 0; i < 4; i++)
-		EXPECT_FLOAT_EQ(quatM1[i], quatG1[i]);
+		EXPECT_NEAR(quatM1[i], quatG1[i], TOLERANCE); // sometimes small difference with GLM
 }
 TEST(CLASS_NAME, Add2Quaternions)
 {

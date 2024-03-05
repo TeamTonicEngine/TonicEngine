@@ -1691,18 +1691,18 @@ Mat4 Mat4::operator * (const Mat4& _mat) const
 
 Mat4 Mat4::operator += (const Mat4& _mat)
 {
-	data[0]  += _mat.data[0];
-	data[1]  += _mat.data[1];
-	data[2]  += _mat.data[2];
-	data[3]  += _mat.data[3];
+	data[0] += _mat.data[0];
+	data[1] += _mat.data[1];
+	data[2] += _mat.data[2];
+	data[3] += _mat.data[3];
 
-	data[4]  += _mat.data[4];
-	data[5]  += _mat.data[5];
-	data[6]  += _mat.data[6];
-	data[7]  += _mat.data[7];
+	data[4] += _mat.data[4];
+	data[5] += _mat.data[5];
+	data[6] += _mat.data[6];
+	data[7] += _mat.data[7];
 
-	data[8]  += _mat.data[8];
-	data[9]  += _mat.data[9];
+	data[8] += _mat.data[8];
+	data[9] += _mat.data[9];
 	data[10] += _mat.data[10];
 	data[11] += _mat.data[11];
 
@@ -2038,8 +2038,8 @@ Quat Maths::Quat::GetNormalized() const
 		};
 	}
 
-	//else return the null Quat or alread
-	return *this;
+	//else return the null Quat or already
+	return Quat::Identity();
 }
 
 Quat Maths::Quat::GetConjugate() const
@@ -2077,8 +2077,8 @@ Vec3 Maths::Quat::RotateVector(const Vec3& _vec) const
 	//GLM method
 	Vec3 const QuatVector(x, y, z);
 	Vec3 const uv(Vectors::CrossProduct(QuatVector, _vec));
-	Vec3 const uuv(Vectors::CrossProduct(QuatVector,uv));
-	
+	Vec3 const uuv(Vectors::CrossProduct(QuatVector, uv));
+
 	return _vec + ((uv * w) + uuv) * 2.f;
 
 	//Aurelien's Method
@@ -2094,7 +2094,7 @@ Quat Maths::Quaternions::LookAt(const Vec3 _from, const Vec3 _to)
 
 	float dot = Quaternions::DotProduct(Vec3::FORWARD, forwardVector);
 
-	if (std::abs(dot - (-1.0f)) < Constants::TOLERANCE )
+	if (std::abs(dot - (-1.0f)) < Constants::TOLERANCE)
 	{
 		return Quat(Constants::PI, Vec3::FORWARD);
 	}
@@ -2260,7 +2260,7 @@ Vec3 NormalizeAngles(Vec3 _angles)
 
 Vec3 Quat::ToEulerAngles() const
 {
-//glm way
+	//glm way
 	float ww = w * w;
 	float xx = x * x;
 	float yy = y * y;
@@ -2281,5 +2281,5 @@ Vec3 Quat::ToEulerAngles() const
 	// yaw
 	float yaw = asin(std::min(std::max(-2.f * (x * z - w * y), -1.f), 1.f)); //clamp
 	return { pitch,yaw,roll };
-	
+
 }
