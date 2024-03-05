@@ -1,16 +1,18 @@
 #include <iostream>
-
-#include "Application.hpp"
-using namespace Core::Application;
-
-int main()
+#include "Core/Applications/AppEditor.hpp"
+using namespace Core::Applications;
+ 
+int main(int argc, char** argv)
 {
-	Application* app = new Application("Tonic Editor");
-	//Application* app = new Application("Tonic Editor", 1280, 720);
+	for (int i = 0; i < argc; i++)
+	{
+		std::cout << *argv << std::endl;
+	}
+	AppEditor app("Tonic Editor");
 
 	try
 	{
-		app->Run();
+		app.Run();
 	}
 	catch (const std::exception& e)
 	{

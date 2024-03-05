@@ -134,14 +134,14 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.hpp</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)Externals\include;$(ProjectDir)Headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Externals\include;$(ProjectDir)Headers\TonicEngine;$(ProjectDir)Headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -154,7 +154,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.hpp</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)Externals\include;$(ProjectDir)Headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Externals\include;$(ProjectDir)Headers\TonicEngine;$(ProjectDir)Headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -163,26 +163,48 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Headers\Application.hpp" />
-    <ClInclude Include="Headers\DLL_API.hpp" />
-    <ClInclude Include="Headers\framework.hpp" />
-    <ClInclude Include="Headers\pch.hpp" />
-    <ClInclude Include="Headers\Window.hpp" />
+    <ClInclude Include="Headers\Core\Window.hpp" />
+    <ClInclude Include="Headers\TonicEngine\Core\Log.hpp" />
+    <ClInclude Include="Headers\TonicEngine\Core\RHI.hpp" />
+    <ClInclude Include="Headers\TonicEngine\Core\Utils\Color.hpp" />
+    <ClInclude Include="Headers\TonicEngine\Core\Utils\f32_4.hpp" />
+    <ClInclude Include="Headers\TonicEngine\Core\Utils\s32_2.hpp" />
+    <ClInclude Include="Headers\TonicEngine\Core\Utils\s32_3.hpp" />
+    <ClInclude Include="Headers\TonicEngine\Core\Utils\s32_4.hpp" />
+    <ClInclude Include="Headers\TonicEngine\Core\Utils\Type.hpp" />
+    <ClInclude Include="Headers\TonicEngine\Core\Window.hpp" />
+    <ClInclude Include="Headers\TonicEngine\DLL_API.hpp" />
+    <ClInclude Include="Headers\TonicEngine\Engine.hpp" />
+    <ClInclude Include="Headers\TonicEngine\framework.hpp" />
+    <ClInclude Include="Headers\TonicEngine\pch.hpp" />
+    <ClInclude Include="Headers\Resources\IResource.hpp" />
+    <ClInclude Include="Headers\Resources\ResourceManager.hpp" />
+    <ClInclude Include="Headers\Resources\Shader.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Externals\src\glad\glad.cpp" />
+    <ClCompile Include="Sources\Core\Log.cpp" />
+    <ClCompile Include="Sources\Resources\IResource.cpp" />
+    <ClCompile Include="Sources\Resources\ResourceManager.cpp" />
+    <ClCompile Include="Sources\Resources\Shader.cpp" />
+    <ClCompile Include="Sources\Core\RHI.cpp" />
+    <ClCompile Include="Sources\Core\Utils\Color.cpp" />
     <ClCompile Include="Sources\dllmain.cpp" />
+    <ClCompile Include="Sources\Engine.cpp" />
     <ClCompile Include="Sources\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Sources\Window.cpp" />
+    <ClCompile Include="Sources\Core\Window.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Shaders\basicFragment.shader" />
+    <None Include="Assets\Shaders\basicVertex.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
