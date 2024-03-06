@@ -32,7 +32,7 @@ void GL_RHI::Init(uint32_t width, uint32_t height)
 	}
 	else
 	{
-		std::cout << "SUCCED TO INITIALIZE GLAD" << std::endl;
+        DEBUG_SUCCESS("SUCCED TO INITIALIZE GLAD");
 	}
 }
 
@@ -62,17 +62,26 @@ void GL_RHI::InitShader()
     const char* vcode = shader_->vertexCode_.c_str();
     const char* fcode = shader_->fragmentCode_.c_str();
 
+    if (!glCreateShader)
+    {
+        DEBUG_WARNING("SHADERS NOT SUPPORTED");
+    }
+    else
+        DEBUG_SUCCESS("SHADERS SUPPORTED");
+
     shader_->vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(shader_->vertexShader, 1, &vcode, NULL);
     glCompileShader(shader_->vertexShader);
+
     // check for shader compile errors
     int success;
     char infoLog[512];
     glGetShaderiv(shader_->vertexShader, GL_COMPILE_STATUS, &success);
+
     if (!success)
     {
         glGetShaderInfoLog(shader_->vertexShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+        DEBUG_WARNING("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n %s", infoLog);
     }
 
     // fragment shader
@@ -84,7 +93,7 @@ void GL_RHI::InitShader()
     if (!success)
     {
         glGetShaderInfoLog(shader_->fragmentShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+        DEBUG_WARNING("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n %s", infoLog);
     }
 
     // link shaders
@@ -96,7 +105,7 @@ void GL_RHI::InitShader()
     glGetProgramiv(shader_->shaderProgram, GL_LINK_STATUS, &success);
     if (!success) {
         glGetProgramInfoLog(shader_->shaderProgram, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+        DEBUG_WARNING("ERROR::SHADER::PROGRAM::LINKING_FAILED\n %s", infoLog);
     }
     glDeleteShader(shader_->vertexShader);
     glDeleteShader(shader_->fragmentShader);
@@ -143,7 +152,7 @@ void GL_RHI::InitFrameBuffer()
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, shader_->RBO);
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!\n";
+        DEBUG_WARNING("ERROR::FRAMEBUFFER:: Framebuffer is not complete!\n");
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glBindTexture(GL_TEXTURE_2D, 0);
