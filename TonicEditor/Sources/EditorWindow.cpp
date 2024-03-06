@@ -162,8 +162,8 @@ void EditorWindow::InitUIWindow()
             ImGui::DockBuilderDockWindow("Scene Tree", dock_id_left);
             ImGui::DockBuilderDockWindow("Project", dock_id_bottom);
             ImGui::DockBuilderDockWindow("Debug", dock_id_bottom_right);
-            ImGui::DockBuilderDockWindow("Scene", dock_id_top);
-            ImGui::DockBuilderDockWindow("Game", dock_id_top);
+            ImGui::DockBuilderDockWindow("Scene", mainDockSpaceId);
+            ImGui::DockBuilderDockWindow("Game", mainDockSpaceId);
 
             ImGui::DockBuilderFinish(mainDockSpaceId);
         }
