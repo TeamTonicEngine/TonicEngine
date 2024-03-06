@@ -16,7 +16,7 @@ namespace Core::Applications
 		Engine* p_engine_;
 		EditorWindow* p_editorWindow_;
 		WindowOverride* p_windowOW_;
-		GL_RHI* p_GLRenderer_;
+		RHI* p_Renderer_;
 	public:
 		
 		AppEditor(const char* _appName, u32 _width = DEFAULT_WIDTH, u32 _height = DEFAULT_HEIGHT);

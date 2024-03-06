@@ -12,9 +12,9 @@ AppEditor::AppEditor(const char* _appName, u32 _width, u32 _height)
 	p_engine_ = new Engine();
 	p_editorWindow_ = new EditorWindow();
 	p_windowOW_ = new WindowOverride();
-	p_GLRenderer_ = new GL_RHI();
+	p_Renderer_ = new GL_RHI();
 	p_engine_->SetWindow(p_windowOW_);
-	p_engine_->SetRenderer(p_GLRenderer_);
+	p_engine_->SetRenderer(p_Renderer_);
 
 	p_engine_->Init(_appName, _width, _height);
 };
@@ -23,7 +23,7 @@ AppEditor::~AppEditor()
 	delete p_engine_;
 	delete p_editorWindow_;
 	delete p_windowOW_;
-	delete p_GLRenderer_;
+	delete p_Renderer_;
 };
 void AppEditor::Run()
 {
