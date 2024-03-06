@@ -27,6 +27,8 @@ void WindowOverride::Init(const char* _name, u32 _width, u32 _height)
 
 	if (!p_handle_)
 		throw std::exception("FAIL TO CREATE GLFW WINDOW");
+	else
+		DEBUG_SUCCESS("SUCCEED TO CREATE GLFW WINDOW");
 
 	glfwSetWindowUserPointer(static_cast<GLFWwindow*>(p_handle_), this);
 	glfwSetFramebufferSizeCallback(static_cast<GLFWwindow*>(p_handle_), FramebufferResizeCallback);
