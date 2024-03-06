@@ -32,7 +32,7 @@ void GL_RHI::Init(uint32_t width, uint32_t height)
 	}
 	else
 	{
-		std::cout << "SUCCED TO INITIALIZE GLAD" << std::endl;
+		std::cout << "SUCCEED TO INITIALIZE GLAD" << std::endl;
 	}
 }
 
