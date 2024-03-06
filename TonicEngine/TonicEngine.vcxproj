@@ -181,9 +181,9 @@
     <ClInclude Include="Headers\TonicEngine\Engine.hpp" />
     <ClInclude Include="Headers\TonicEngine\framework.hpp" />
     <ClInclude Include="Headers\TonicEngine\pch.hpp" />
-    <ClInclude Include="Headers\Resources\IResource.hpp" />
-    <ClInclude Include="Headers\Resources\ResourceManager.hpp" />
-    <ClInclude Include="Headers\Resources\Shader.hpp" />
+    <ClInclude Include="Headers\TonicEngine\Resources\IResource.hpp" />
+    <ClInclude Include="Headers\TonicEngine\Resources\ResourceManager.hpp" />
+    <ClInclude Include="Headers\TonicEngine\Resources\Shader.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sources\Core\Log.cpp" />

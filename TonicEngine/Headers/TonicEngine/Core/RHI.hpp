@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 #include "TonicEngine\DLL_API.hpp"
-#include "Resources/Shader.hpp"
+#include "TonicEngine\Resources\Shader.hpp"
 
 namespace Core
 {
