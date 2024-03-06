@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include <GLFW/glfw3.hpp>
+#include "TonicEngine/Core/Log.hpp"
 
 void FramebufferResizeCallback(GLFWwindow* _window, int _width, int _height)
 {
@@ -19,7 +20,7 @@ void WindowOverride::Init(const char* _name, u32 _width, u32 _height)
 	if (!glfwInit())
 		throw std::exception("FAIL TO INITIALIZE GLFW");
 	else
-		std::cout << "SUCCEED TO INITIALIZE GLFW" << std::endl;
+		DEBUG_SUCCESS("SUCCEED TO INITIALIZE GLFW");
 
 	// Create the window
 	p_handle_ = glfwCreateWindow(_width, _height, _name, nullptr, nullptr);
