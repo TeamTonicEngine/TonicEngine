@@ -68,24 +68,15 @@ void Engine::CleanUp()
 	
 }
 
-Core::Window* Engine::GetWindow()
-{
-	return p_window_;
-}
+Core::Window* Engine::GetWindow() { return p_window_; }
+Core::RHI* Engine::GetRenderer() { return p_renderer_; }
 
-Core::RHI* Engine::GetRenderer()
-{
-	return p_renderer_;
-}
+void Engine::SetWindow(Core::Window* _window) { p_window_ = _window; }
+void Engine::SetRenderer(Core::RHI* _renderer) { p_renderer_ = _renderer; }
 
-void Engine::SetWindow(Core::Window* _window)
-{
-	p_window_ = _window;
-}
-void Engine::SetRenderer(Core::RHI* _renderer)
-{
-	p_renderer_ = _renderer;
-}
+
+
+
 
 void Engine::RescaleFB(float width_, float height_)
 {
