@@ -18,7 +18,7 @@
 {\
 std::ostringstream debugLogStream;\
 debugLogStream << __FILENAME__ << "(" << __LINE__ << "): ";\
-const int bufferSize = 1024;\
+const s32 bufferSize = 1024;\
 char buffer[bufferSize];\
 Core::Debug::FormatString(buffer, bufferSize, format, ##__VA_ARGS__);\
 debugLogStream << buffer << std::endl;\
@@ -55,7 +55,7 @@ Core::Debug::Log::ResetColor();\
 
 namespace Core::Debug
 {
-	void TONIC_ENGINE_API FormatString(char* _buffer, size_t _bufferSize, const char* _format, ...);
+	void TONIC_ENGINE_API FormatString(char* _buffer, u64 _bufferSize, const char* _format, ...);
 
 	class TONIC_ENGINE_API Log
 	{
@@ -97,7 +97,7 @@ namespace Core::Debug
 		static void ResetColor();
 
 	private:
-		enum class Color : const unsigned char
+		enum class Color : const u8
 		{
 			Default = 15,
 			Yellow_Black_BG = 14,
@@ -105,7 +105,7 @@ namespace Core::Debug
 			// RED  BG   WHITE OFFSET
 			White_Red_BG = (12 * 16 + 15)
 		};
-		void ChangeColor(unsigned char _handleWindowsId) const;
+		void ChangeColor(u8 _handleWindowsId) const;
 		void ChangeColor(Color _handleWindowsId) const;
 	};
 }

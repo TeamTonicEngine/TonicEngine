@@ -21,7 +21,7 @@ namespace Resources
 		bool bRead_ = false;
 		bool bLoaded_ = false;
 
-		unsigned int resourceId_ = -1;
+		u32 resourceId_ = -1;
 		string resourcePath_ = "";
 
 		enum class ResourceType

@@ -4,7 +4,7 @@
 #include <iostream>
 #include <chrono>
 
-void Core::Debug::FormatString(char* _buffer, size_t _bufferSize, const char* _format, ...)
+void Core::Debug::FormatString(char* _buffer, u64 _bufferSize, const char* _format, ...)
 {
 	va_list args;
 	va_start(args, _format);
@@ -16,7 +16,7 @@ Core::Debug::Log* Core::Debug::Log::s_instance_ = nullptr;
 
 Core::Debug::Log::~Log()
 {
-	time_t now = time(0);
+	s64 now = time(0);
 	char buffer[26];
 	ctime_s(buffer, sizeof(buffer), &now);
 	GetInstance()->Print("End of log entry at %s", buffer);
@@ -58,7 +58,7 @@ void Core::Debug::Log::InstanceOpenFile(std::filesystem::path const& _fileName, 
 		output_.open(_fileName, std::ios::out | std::ios::app);
 	if (output_.is_open())
 	{
-		time_t now = time(0);
+		s64 now = time(0);
 		char buffer[26];
 		ctime_s(buffer, sizeof(buffer), &now);
 		Print("Core::Debug::Log entry :%s", buffer);
@@ -70,7 +70,7 @@ void Core::Debug::Log::InstanceOpenFile(std::filesystem::path const& _fileName, 
 void Core::Debug::Log::InstancePrint(const char* _format, va_list _args)
 {
 	//vsnprintf instead of manually checking the format[i]
-	const int bufferSize = 1024;
+	const s32 bufferSize = 1024;
 	char buffer[bufferSize];
 	vsnprintf(buffer, bufferSize, _format, _args);
 	std::cout << std::string(buffer) << "\n";
@@ -98,7 +98,7 @@ void Core::Debug::Log::ResetColor()
 	SetConsoleTextAttribute(GetInstance()->handle_, 15); // Text in white (default)
 }
 
-void Core::Debug::Log::ChangeColor(unsigned char _handleWindowsId) const
+void Core::Debug::Log::ChangeColor(u8 _handleWindowsId) const
 {
 	SetConsoleTextAttribute(handle_, _handleWindowsId);
 }

@@ -31,6 +31,6 @@ public:
 	Core::Window* GetWindow();
 	Core::RHI* GetRenderer();
 
-	void RescaleFB(float width_, float height_);
-	unsigned int GetTextureId();
+	void RescaleFB(f32 width_, f32 height_);
+	u32 GetTextureId();
 };

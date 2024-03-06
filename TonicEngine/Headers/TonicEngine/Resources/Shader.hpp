@@ -20,14 +20,14 @@ public:
 	std::string vertexCode_;
 	std::string fragmentCode_;
 
-	unsigned int vertexShader = 0;
-	unsigned int fragmentShader = 0;
-	unsigned int shaderProgram = 0;
+	u32 vertexShader = 0;
+	u32 fragmentShader = 0;
+	u32 shaderProgram = 0;
 
-	unsigned int texture_id = 0;
-	unsigned int shader_id = 0;
+	u32 texture_id = 0;
+	u32 shader_id = 0;
 
-	unsigned int VBO, VAO, EBO, FBO, RBO;
+	u32 VBO, VAO, EBO, FBO, RBO;
 
 	void Init(std::filesystem::path const _vertexPath, std::filesystem::path const _fragmentPath);
 	std::string ReadFile(std::filesystem::path const _path);

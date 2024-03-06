@@ -9,7 +9,7 @@ namespace Core
 	{
 	public:
 
-		virtual void Init(uint32_t width, uint32_t height);
+		virtual void Init(u32 width, u32 height);
 		virtual void StartFrame();
 
 		// Shader
@@ -20,10 +20,10 @@ namespace Core
 		virtual void InitFrameBuffer();
 		virtual void BindFrameBuffer();
 		virtual void UnbindFrameBuffer();
-		virtual void RescaleFrameBuffer(float width, float height);
-		virtual void ResetViewPort(float width, float height);
+		virtual void RescaleFrameBuffer(f32 width, f32 height);
+		virtual void ResetViewPort(f32 width, f32 height);
 
-		virtual unsigned int GetTextureID();
+		virtual u32 GetTextureID();
 		virtual void CleanUp();
 	};
 }

@@ -1,7 +1,7 @@
 #include "pch.hpp"
 #include "Core/RHI.hpp"
 
-void Core::RHI::Init(uint32_t width, uint32_t height)
+void Core::RHI::Init(u32 width, u32 height)
 {
 
 }
@@ -36,17 +36,17 @@ void Core::RHI::UnbindFrameBuffer()
 
 }
 
-void Core::RHI::RescaleFrameBuffer(float width, float height)
+void Core::RHI::RescaleFrameBuffer(f32 width, f32 height)
 {
 
 }
 
-void Core::RHI::ResetViewPort(float width, float height)
+void Core::RHI::ResetViewPort(f32 width, f32 height)
 {
 
 }
 
-unsigned int Core::RHI::GetTextureID()
+u32 Core::RHI::GetTextureID()
 {
 	return 0;
 }

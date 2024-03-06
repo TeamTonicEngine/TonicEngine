@@ -84,7 +84,7 @@ void Engine::RescaleFB(float width_, float height_)
 	
 }
 
-unsigned int Engine::GetTextureId()
+u32 Engine::GetTextureId()
 {
 	return p_renderer_->GetTextureID();
 }
