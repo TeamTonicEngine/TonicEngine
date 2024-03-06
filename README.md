@@ -22,7 +22,7 @@ This project is a game Engine with an Editor written in [![C++](https://img.shie
 ![SC3](Screenshots/UnitTest.png)
 
 ## ✒ Authors
-- <a href = "mailto: j.perrochaud@student.isartdigital.com">Jessica Perrochaud</a>
 - <a href = "mailto: f.becaud@student.isartdigital.com">Félix BECAUD</a>
-- <a href = "mailto: m.robion@student.isartdigital.com">Morgane DERO</a>
+- <a href = "mailto: j.perrochaud@student.isartdigital.com">Jessica PERROCHAUD</a>
 - <a href = "mailto: m.robion@student.isartdigital.com">Mathieu ROBION</a>
+- <a href = "mailto: m.dero@student.isartdigital.com">Morgane DERO</a>
