@@ -200,6 +200,7 @@ void EditorWindow::StartWindow()
 
 void EditorWindow::EndWindow(unsigned int texture_id)
 {
+    /*
     ImGui::GetWindowDrawList()->AddImage(
         (void*)texture_id,
         ImVec2(pos.x, pos.y),
@@ -207,7 +208,14 @@ void EditorWindow::EndWindow(unsigned int texture_id)
         ImVec2(0, 1),
         ImVec2(1, 0)
     );
+    */
+    ImGui::Image(
+        (void*)texture_id,
+        ImGui::GetContentRegionAvail(),
+        ImVec2(0, 1),
+        ImVec2(1, 0)
+    );
 
     ImGui::End();
-    ImGui::Render();
+    //ImGui::Render();
 }

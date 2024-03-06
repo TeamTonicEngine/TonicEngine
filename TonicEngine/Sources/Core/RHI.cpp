@@ -16,6 +16,16 @@ void Core::RHI::InitShader()
 
 }
 
+void Core::RHI::CheckCompileErrors(unsigned int shader, std::string type)
+{
+
+}
+
+void Core::RHI::InitShaderData()
+{
+
+}
+
 void Core::RHI::DrawTriangle()
 {
 

@@ -21,7 +21,9 @@ public:
 	void Init(const char* _nameWindow, u32 _width, u32 _height);
 
 	void StartFrame();
+	void BindFBO();
 	void RunFrame();
+	void UnBindFBO();
 	void EndFrame();
 	void CleanUp();
 

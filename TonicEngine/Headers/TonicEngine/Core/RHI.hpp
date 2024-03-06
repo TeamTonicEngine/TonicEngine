@@ -14,6 +14,8 @@ namespace Core
 
 		// Shader
 		virtual void InitShader();
+		virtual void CheckCompileErrors(unsigned int shader, std::string type);
+		virtual void InitShaderData();
 		virtual void DrawTriangle();
 
 		

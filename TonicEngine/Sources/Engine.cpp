@@ -46,14 +46,21 @@ void Engine::StartFrame()
 	}
 }
 
-void Engine::RunFrame()
+void Engine::BindFBO()
 {
 	p_renderer_->BindFrameBuffer();
-	p_renderer_->DrawTriangle();
-	RescaleFB(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-	p_renderer_->UnbindFrameBuffer();
 }
 
+void Engine::RunFrame()
+{
+	p_renderer_->DrawTriangle();
+	RescaleFB(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+}
+
+void Engine::UnBindFBO()
+{
+	p_renderer_->UnbindFrameBuffer();
+}
 
 void Engine::EndFrame()
 {
@@ -81,7 +88,6 @@ void Engine::SetRenderer(Core::RHI* _renderer) { p_renderer_ = _renderer; }
 void Engine::RescaleFB(float width_, float height_)
 {
 	p_renderer_->RescaleFrameBuffer(width_, height_);
-	
 }
 
 u32 Engine::GetTextureId()

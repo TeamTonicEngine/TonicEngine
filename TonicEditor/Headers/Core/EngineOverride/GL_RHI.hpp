@@ -15,6 +15,8 @@ public:
 
 	// Shader
 	void InitShader() override;
+	void CheckCompileErrors(unsigned int shader, std::string type) override;
+	void InitShaderData() override;
 	void DrawTriangle() override;
 
 	void InitFrameBuffer() override;
