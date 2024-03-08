@@ -4,9 +4,11 @@ using namespace Core::Applications;
  
 int main(int argc, char** argv)
 {
+	std::cout << "argc = " << argc << ";\n";
+
 	for (int i = 0; i < argc; i++)
 	{
-		std::cout << *argv << std::endl;
+		std::cout << argv[i] << std::endl;
 	}
 	AppEditor app("Tonic Editor");
 
