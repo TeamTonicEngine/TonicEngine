@@ -16,7 +16,7 @@ public:
 	void Init(uint32_t width, uint32_t height) override;
 
 	void StartFrame() override;
-
+	void EndFrame() override;
 	// Shader
 	void InitShader() override;
 	void CheckCompileErrors(unsigned int shader, std::string type) override;

@@ -12,6 +12,11 @@ void Core::RHI::StartFrame()
 
 }
 
+void Core::RHI::EndFrame()
+{
+
+}
+
 void Core::RHI::InitShader()
 {
 

@@ -13,6 +13,7 @@ namespace Core
 
 		virtual void Init(u32 width, u32 height);
 		virtual void StartFrame();
+		virtual void EndFrame();
 
 		// Shader
 		virtual void InitShader();

@@ -65,6 +65,7 @@ void Engine::UnBindFBO()
 void Engine::EndFrame()
 {
 	p_window_->EndFrame();
+	p_renderer_->EndFrame();
 }
 
 

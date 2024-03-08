@@ -36,14 +36,20 @@ void GL_RHI::Init(uint32_t width, uint32_t height)
 
 void GL_RHI::StartFrame()
 {
-	glClearColor(109.f/255.f, 7.f/255.f, 26.f/255.f, 1.f);
-	glClear(GL_COLOR_BUFFER_BIT);
+    glClearColor(109.f / 255.f, 7.f / 255.f, 26.f / 255.f, 1.f);
+    glClear(GL_COLOR_BUFFER_BIT);
 
     // bind textures on corresponding texture units
     //glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, shader_->texture1);
    // glActiveTexture(GL_TEXTURE1);
     //glBindTexture(GL_TEXTURE_2D, shader_->texture2);
+}
+
+void GL_RHI::EndFrame()
+{
+    glClearColor(109.f / 255.f, 7.f / 255.f, 26.f / 255.f, 1.f);
+    glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void GL_RHI::DrawTriangle()
