@@ -15,7 +15,6 @@ protected:
 
 public:
 	/* Input : Name of application, (optional)width of window, (optional)height of window */
-	
 	Engine();
 
 	void Init(const char* _nameWindow, u32 _width, u32 _height);

@@ -217,5 +217,5 @@ void EditorWindow::EndWindow(unsigned int texture_id)
     );
 
     ImGui::End();
-    //ImGui::Render();
+    ImGui::Render();
 }

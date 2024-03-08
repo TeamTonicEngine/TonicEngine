@@ -1,7 +1,9 @@
 #pragma once
 #include <iostream>
+
 #include "TonicEngine\DLL_API.hpp"
-#include "TonicEngine\Resources\Shader.hpp"
+
+#include "TonicEngine\Resources\IResource.hpp"
 
 namespace Core
 {
@@ -18,6 +20,8 @@ namespace Core
 		virtual void InitShaderData();
 		virtual void DrawTriangle();
 
+		void LoadResource(const Resources::IResource* _p_resource);
+		void UnloadResource(const Resources::IResource* _p_resource);
 		
 		virtual void InitFrameBuffer();
 		virtual void BindFrameBuffer();

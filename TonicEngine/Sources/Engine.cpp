@@ -27,11 +27,10 @@ void Engine::Init(const char* _nameWindow, u32 _width, u32 _height)
 	p_renderer_->InitFrameBuffer();
 }
 
-
 void Engine::StartFrame()
 {
 	p_window_->StartFrame();
-	p_renderer_->StartFrame();
+	
 	p_window_->ProcessInput();
 
 	if (p_window_->IsFramebufferResized())
@@ -53,6 +52,7 @@ void Engine::BindFBO()
 
 void Engine::RunFrame()
 {
+	p_renderer_->StartFrame();
 	p_renderer_->DrawTriangle();
 	RescaleFB(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 }
@@ -80,10 +80,6 @@ Core::RHI* Engine::GetRenderer() { return p_renderer_; }
 
 void Engine::SetWindow(Core::Window* _window) { p_window_ = _window; }
 void Engine::SetRenderer(Core::RHI* _renderer) { p_renderer_ = _renderer; }
-
-
-
-
 
 void Engine::RescaleFB(float width_, float height_)
 {

@@ -1,5 +1,9 @@
 #pragma once
 #include "TonicEngine/Core/RHI.hpp"
+#include <TonicEngine/Resources/Shader.hpp>
+
+
+using namespace Resources;
 
 
 class GL_RHI : public Core::RHI
@@ -26,6 +30,8 @@ public:
 	void ResetViewPort(float width, float height) override;
 	unsigned int GetTextureID() override;
 	void CleanUp() override;
+
+	void ShaderUse();
 
 private:
 	

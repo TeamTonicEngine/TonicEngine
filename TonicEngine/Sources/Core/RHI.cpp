@@ -1,5 +1,6 @@
 #include "pch.hpp"
-#include "Core/RHI.hpp"
+#include "TonicEngine/Core/RHI.hpp"
+#include "TonicEngine\Resources\IResource.hpp"
 
 void Core::RHI::Init(u32 width, u32 height)
 {
@@ -29,6 +30,21 @@ void Core::RHI::InitShaderData()
 void Core::RHI::DrawTriangle()
 {
 
+}
+
+void Core::RHI::LoadResource(const Resources::IResource* _p_resource)
+{
+	if (!_p_resource)
+	{
+		DEBUG_WARNING("RESOURCE NULL");
+		return;
+	}
+}
+
+void Core::RHI::UnloadResource(const Resources::IResource* _p_resource)
+{
+	if (!_p_resource)
+		DEBUG_WARNING("RESOURCE NULL");
 }
 
 void Core::RHI::InitFrameBuffer()
