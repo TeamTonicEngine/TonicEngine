@@ -18,9 +18,11 @@ void* Core::Window::GetHandle()
 	return p_handle_;
 }
 
+
+
 s32_2 Core::Window::GetWindowSize()
 {
-	return { 0, 0 };
+	return { width_, height_ };
 }
 
 void Core::Window::Resized()

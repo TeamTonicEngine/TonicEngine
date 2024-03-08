@@ -1,12 +1,10 @@
 #pragma once
 
-#include "pch.hpp"
+#include "../Core/Log.hpp"
 
 #include <string>
 #include <cstring>
 #include <fstream>
-
-#include <Core/Log.hpp>
 
 namespace Resources
 {
@@ -53,7 +51,7 @@ namespace Resources
 				(duration<float>(system_clock::now() - start).count()));
 		}
 
-		virtual void ReadFile(const string _name) = 0;
+		virtual std::string ReadFile(std::filesystem::path const _path) = 0;
 		virtual void MetaWriteFile(const string _name) = 0;
 		virtual void MetaReadFile(const string _name) = 0;
 

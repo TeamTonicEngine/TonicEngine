@@ -37,13 +37,17 @@ void AppEditor::Run()
 		p_engine_->StartFrame();
 		p_editorWindow_->StartFrame();
 		p_editorWindow_->SetUpWindows();
-
 		// ----------- OPENGL ON IMGUI WINDOW ------------------------------------------------
-		p_editorWindow_->StartWindow();
-		p_editorWindow_->EndWindow(p_engine_->GetTextureId());
+		//p_engine_->RescaleFB(p_windowOW_->GetWindowSize().x, p_windowOW_->GetWindowSize().y); // NOT WORKING : TO-DO : RESCALE THE FRAMEBUFFER 
 
-		// Bind, Triangle, Unbind
+		p_engine_->BindFBO();
+		p_editorWindow_->StartWindow();
 		p_engine_->RunFrame();
+		p_editorWindow_->EndWindow(p_engine_->GetTextureId());
+		p_engine_->UnBindFBO();
+
+		// 
+		// Bind, Triangle, Unbind
 		// ----------- END -------------------------------------------------------------------
 
 		p_editorWindow_->EndFrame();

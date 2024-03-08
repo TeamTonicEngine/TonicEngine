@@ -15,13 +15,14 @@ protected:
 
 public:
 	/* Input : Name of application, (optional)width of window, (optional)height of window */
-	
 	Engine();
 
 	void Init(const char* _nameWindow, u32 _width, u32 _height);
 
 	void StartFrame();
+	void BindFBO();
 	void RunFrame();
+	void UnBindFBO();
 	void EndFrame();
 	void CleanUp();
 
@@ -31,6 +32,6 @@ public:
 	Core::Window* GetWindow();
 	Core::RHI* GetRenderer();
 
-	void RescaleFB(f32 width_, f32 height_);
+	void RescaleFB(s32 width_, s32 height_);
 	u32 GetTextureId();
 };

@@ -38,6 +38,13 @@
     <ClInclude Include="Headers\Core\EngineOverride\WindowOverride.hpp" />
     <ClInclude Include="Headers\EditorWindow.hpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Shaders\basicFragment.shader" />
+    <None Include="Assets\Shaders\basicVertex.shader" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\Textures\container.jpg" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

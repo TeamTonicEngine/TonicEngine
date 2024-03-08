@@ -156,7 +156,6 @@ void EditorWindow::InitUIWindow()
             ImGuiID dock_id_top = ImGui::DockBuilderSplitNode(mainDockSpaceId, ImGuiDir_Up, 0.5f, NULL, &mainDockSpaceId);
 
             ImGuiID dock_id_bottom_right = ImGui::DockBuilderSplitNode(dock_id_bottom, ImGuiDir_Right, 0.2f, NULL, &dock_id_bottom);
-            //ImGuiID dock_id_center = ImGui::DockBuilderSplitNode(mainDockSpaceId, ImGuiDir_COUNT, 1.f, NULL, &mainDockSpaceId);
 
             ImGui::DockBuilderDockWindow("Property", dock_id_right);
             ImGui::DockBuilderDockWindow("Scene Tree", dock_id_left);
@@ -201,10 +200,9 @@ void EditorWindow::StartWindow()
 
 void EditorWindow::EndWindow(unsigned int texture_id)
 {
-    ImGui::GetWindowDrawList()->AddImage(
+    ImGui::Image(
         (void*)texture_id,
-        ImVec2(pos.x, pos.y),
-        ImVec2(pos.x + window_width, pos.y + window_height),
+        ImGui::GetContentRegionAvail(),
         ImVec2(0, 1),
         ImVec2(1, 0)
     );
