@@ -54,7 +54,7 @@ void Engine::RunFrame()
 {
 	p_renderer_->StartFrame();
 	p_renderer_->DrawTriangle();
-	RescaleFB(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+	
 }
 
 void Engine::UnBindFBO()
@@ -81,7 +81,7 @@ Core::RHI* Engine::GetRenderer() { return p_renderer_; }
 void Engine::SetWindow(Core::Window* _window) { p_window_ = _window; }
 void Engine::SetRenderer(Core::RHI* _renderer) { p_renderer_ = _renderer; }
 
-void Engine::RescaleFB(float width_, float height_)
+void Engine::RescaleFB(s32 width_, s32 height_)
 {
 	p_renderer_->RescaleFrameBuffer(width_, height_);
 }

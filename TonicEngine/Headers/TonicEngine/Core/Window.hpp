@@ -42,6 +42,7 @@ namespace Core
 		
 		/* Output : Returns pointer to window (current window type is GLFWwindow) */
 		void* GetHandle();
+		
 		/* Called when window resizing has been handled by all that need the info (Renderer, ...) */
 		void ResizedHandled();
 		/* Output : Returns true if window has been resized & not handled */

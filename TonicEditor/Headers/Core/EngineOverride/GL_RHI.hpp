@@ -26,7 +26,7 @@ public:
 	void InitFrameBuffer() override;
 	void BindFrameBuffer() override;
 	void UnbindFrameBuffer() override;
-	void RescaleFrameBuffer(float width, float height) override;
+	void RescaleFrameBuffer(s32 width, s32 height) override;
 	void ResetViewPort(float width, float height) override;
 	unsigned int GetTextureID() override;
 	void CleanUp() override;

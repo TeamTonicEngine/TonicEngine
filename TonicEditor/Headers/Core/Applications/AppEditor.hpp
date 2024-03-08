@@ -18,6 +18,7 @@ namespace Core::Applications
 		WindowOverride* p_windowOW_;
 		RHI* p_Renderer_;
 	public:
+
 		
 		AppEditor(const char* _appName, u32 _width = DEFAULT_WIDTH, u32 _height = DEFAULT_HEIGHT);
 		~AppEditor();

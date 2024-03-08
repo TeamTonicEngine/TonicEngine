@@ -62,7 +62,7 @@ void Core::RHI::UnbindFrameBuffer()
 
 }
 
-void Core::RHI::RescaleFrameBuffer(f32 width, f32 height)
+void Core::RHI::RescaleFrameBuffer(s32 width, s32 height)
 {
 
 }

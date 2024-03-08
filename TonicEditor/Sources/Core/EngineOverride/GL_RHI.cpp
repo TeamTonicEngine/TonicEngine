@@ -48,16 +48,9 @@ void GL_RHI::StartFrame()
 
 void GL_RHI::DrawTriangle()
 {
-    // draw our first triangle
-    //glUseProgram(shader_->shaderProgram);
-    //glBindVertexArray(shader_->VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-    // render container
     ShaderUse();
     glBindVertexArray(shader_->VAO);
-    //glDrawArrays(GL_TRIANGLES, 0, 6);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-    //glBindVertexArray(0); // no need to unbind it every time 
-    //glUseProgram(0);
 }
 
 void GL_RHI::InitShader()
@@ -184,6 +177,7 @@ void GL_RHI::InitShaderData()
     // set texture filtering parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
     // load image, create texture and generate mipmaps
     int width, height, nrChannels;
     //shader_->FlipVertically(true); // tell stb_image.h to flip loaded texture's on the y-axis.
@@ -205,13 +199,6 @@ void GL_RHI::InitShaderData()
         std::cout << "Failed to load texture" << std::endl;
     }
     shader_->FreeImage(data);
-
-    // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
-    // -------------------------------------------------------------------------------------------
-   // ShaderUse(); // don't forget to activate/use the shader before setting uniforms!
-    // either set it manually like so:
-    //glUniform1i(glGetUniformLocation(shader_->shaderProgram, "texture1"), 0);
-
 }
 
 void GL_RHI::InitFrameBuffer()
@@ -256,7 +243,7 @@ void GL_RHI::UnbindFrameBuffer()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void GL_RHI::RescaleFrameBuffer(float width, float height)
+void GL_RHI::RescaleFrameBuffer(s32 width, s32 height)
 {
     glBindTexture(GL_TEXTURE_2D, shader_->texture_id);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
@@ -284,6 +271,8 @@ void GL_RHI::CleanUp()
     glDeleteVertexArrays(1, &shader_->VAO);
     glDeleteBuffers(1, &shader_->VBO);
     glDeleteBuffers(1, &shader_->EBO);
+    glDeleteBuffers(1, &shader_->FBO);
+    glDeleteBuffers(1, &shader_->RBO);
 }
 
 void GL_RHI::ShaderUse()

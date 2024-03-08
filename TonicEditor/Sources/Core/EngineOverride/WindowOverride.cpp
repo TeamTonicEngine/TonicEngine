@@ -38,19 +38,18 @@ void WindowOverride::Init(const char* _name, u32 _width, u32 _height)
 
 s32_2 WindowOverride::GetWindowSize()
 {
-	s32 width, height;
-	glfwGetWindowSize(static_cast<GLFWwindow*>(p_handle_), &width, &height);
-	return { width , height };
+	glfwGetWindowSize(static_cast<GLFWwindow*>(p_handle_), &width_, &height_);
+	return { width_ , height_ };
 }
 
 void WindowOverride::Resized()
 {
 	bFramebufferResized_ = true;
-	int newWidth, newHeight;
-	glfwGetFramebufferSize(static_cast<GLFWwindow*>(p_handle_), &newWidth, &newHeight);
-	while (newWidth == 0 || newHeight == 0)
+	glfwGetFramebufferSize(static_cast<GLFWwindow*>(p_handle_), &width_, &height_);
+	while (width_ == 0 || height_ == 0)
 	{
-		glfwGetFramebufferSize(static_cast<GLFWwindow*>(p_handle_), &newWidth, &newHeight);
+		glfwGetFramebufferSize(static_cast<GLFWwindow*>(p_handle_), &width_, &height_);
+		
 		glfwWaitEvents();
 	}
 }

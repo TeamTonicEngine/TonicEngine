@@ -26,7 +26,7 @@ namespace Core
 		virtual void InitFrameBuffer();
 		virtual void BindFrameBuffer();
 		virtual void UnbindFrameBuffer();
-		virtual void RescaleFrameBuffer(f32 width, f32 height);
+		virtual void RescaleFrameBuffer(s32 width, s32 height);
 		virtual void ResetViewPort(f32 width, f32 height);
 
 		virtual u32 GetTextureID();
