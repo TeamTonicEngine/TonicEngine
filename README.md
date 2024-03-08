@@ -1,5 +1,6 @@
 # Tonic Engine
 <a href="https://www.isart.fr/"><img width="255" height="255" src ="https://pbs.twimg.com/profile_images/1554747272897990659/vh39_Bj2_400x400.jpg"></a>
+<a href="#"><img width="255" height="255" src ="Screenshots/Logo_Dark.jpg"></a>
 ## ⭐ About the Project
 This project is a game Engine with an Editor written in [![C++](https://img.shields.io/badge/C%2B%2B-v17-blue)](https://isocpp.org/) and compiled with MSVC 2019.
 
