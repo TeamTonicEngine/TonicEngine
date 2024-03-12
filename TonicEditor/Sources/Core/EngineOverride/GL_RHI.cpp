@@ -80,13 +80,23 @@ void GL_RHI::StartFrame()
 
 void GL_RHI::Transform()
 {
-    Maths::Mat4 transform = Maths::Mat4(1.0f); // make sure to initialize matrix to identity matrix first
-    //transform = Maths::Mat4::Translate(Maths::Vec3(0.5f, -0.5f, 0.0f));
-    //transform = Maths::Mat4::Rotate(glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
-
     ShaderUse("BasicShader");
-    unsigned int transformLoc = glGetUniformLocation(shader_["BasicShader"]->shaderProgram, "transform");
-    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, &transform.data[0]);
+
+    Maths::Mat4 model(1.0f);
+    Maths::Mat4 view(1.0f);
+    Maths::Mat4 projection(1.0f);
+
+    model = Maths::Mat4::RotateX(-55.0f * Maths::Constants::DEG2RAD);
+    view = Maths::Mat4::Translate(Maths::Vec3(0.0f, 0.0f, -3.0f));
+    projection = Maths::Matrices::Perspective(45.0f * Maths::Constants::DEG2RAD, (float)width_ / (float)height_, 0.1f, 100.0f);
+
+    unsigned int modelLoc = glGetUniformLocation(shader_["BasicShader"]->shaderProgram, "model");
+    unsigned int viewLoc = glGetUniformLocation(shader_["BasicShader"]->shaderProgram, "view");
+
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &model.data[0]);
+    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view.data[0]);
+
+    SetMat4("BasicShader", "projection", projection);
 }
 
 void GL_RHI::EndFrame()
