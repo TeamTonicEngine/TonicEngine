@@ -53,7 +53,7 @@ void Engine::BindFBO()
 void Engine::RunFrame()
 {
 	p_renderer_->StartFrame();
-	p_renderer_->DrawTriangle();
+	p_renderer_->Draw();
 	
 }
 

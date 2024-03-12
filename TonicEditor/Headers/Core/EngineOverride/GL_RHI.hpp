@@ -9,32 +9,60 @@ using namespace Resources;
 class GL_RHI : public Core::RHI
 {
 public:
+	/*********************************************
+				FUNCTIONS BLOC
+		*********************************************/
 	GL_RHI();
-
 	~GL_RHI();
 
 	void Init(uint32_t width, uint32_t height) override;
-
 	void StartFrame() override;
+	void Draw() override;
 	void EndFrame() override;
-	// Shader
-	void InitShader() override;
-	void CheckCompileErrors(unsigned int shader, std::string type) override;
-	void InitShaderData() override;
-	void DrawTriangle() override;
 
-	void InitFrameBuffer() override;
+	//---Callbacks--------------------------------------------------
+	//void FrameBufferResized(s32 width, s32 height);
+	void Transform() override;
+	//---Low-Renderer-----------------------------------------------
+	// 
+	//------Model----------------------------------------------
+	//------Camera---------------------------------------------
+	//------Light----------------------------------------------
+
+
+	//---Resources---------------------------------------------------
+	// 
+	//------Shader---------------------------------------------
+	void InitShader() override;
+	void InitShaderData() override;
+	void CheckShaderCompileErrors(unsigned int shader, std::string type) override;
 	void BindFrameBuffer() override;
 	void UnbindFrameBuffer() override;
-	void RescaleFrameBuffer(s32 width, s32 height) override;
-	void ResetViewPort(float width, float height) override;
-	unsigned int GetTextureID() override;
-	void CleanUp() override;
+	void InitFrameBuffer() override;
+	//unsigned int GetTextureID(std::string _name) override;
+	void ShaderUse(std::string _shaderName);
+	// utility uniform functions
+	void SetBool(const std::string& name, bool value) const;
+	void SetInt(const std::string& _shaderName, const std::string& _name, int _value) override;
+	void SetFloat(const std::string& name, float value) const;
+	void SetVec2(const std::string& name, const Maths::Vec2& value) const;
+	void SetVec2(const std::string& name, float x, float y) const;
+	void SetVec3(const std::string& name, const Maths::Vec3& value) const;
+	void SetVec3(const std::string& name, float x, float y, float z) const;
+	void SetVec4(const std::string& name, const Maths::Vec4& value) const;
+	void SetVec4(const std::string& name, float x, float y, float z, float w);
+	void SetMat3(const std::string& name, const Maths::Mat3& mat) const;
+	void SetMat4(const std::string& _shaderName, const std::string& name, const Maths::Mat4& mat);
+	//------Textures-------------------------------------------
+	//void InitTexture() override;
+	//unsigned int LoadTexture(std::string _name) override;
+	//------Materials------------------------------------------
+	//------Mesh-----------------------------------------------
 
-	void ShaderUse();
+	void CleanUp() override;
+	u32 GetTextureID() override;
+	void RescaleFrameBuffer(s32 width, s32 height) override;
 
 private:
-	
-	Shader* shader_;
 	uint32_t width_, height_;
 };

@@ -22,7 +22,7 @@ void Core::RHI::InitShader()
 
 }
 
-void Core::RHI::CheckCompileErrors(unsigned int shader, std::string type)
+void Core::RHI::CheckShaderCompileErrors(unsigned int shader, std::string type)
 {
 
 }
@@ -32,27 +32,17 @@ void Core::RHI::InitShaderData()
 
 }
 
-void Core::RHI::DrawTriangle()
+void Core::RHI::Draw()
 {
 
-}
-
-void Core::RHI::LoadResource(const Resources::IResource* _p_resource)
-{
-	if (!_p_resource)
-	{
-		DEBUG_WARNING("RESOURCE NULL");
-		return;
-	}
-}
-
-void Core::RHI::UnloadResource(const Resources::IResource* _p_resource)
-{
-	if (!_p_resource)
-		DEBUG_WARNING("RESOURCE NULL");
 }
 
 void Core::RHI::InitFrameBuffer()
+{
+
+}
+
+void Core::RHI::Transform()
 {
 
 }
@@ -67,12 +57,12 @@ void Core::RHI::UnbindFrameBuffer()
 
 }
 
-void Core::RHI::RescaleFrameBuffer(s32 width, s32 height)
+void Core::RHI::SetInt(const std::string& _shaderName, const std::string& _name, int _value)
 {
 
 }
 
-void Core::RHI::ResetViewPort(f32 width, f32 height)
+void Core::RHI::RescaleFrameBuffer(s32 width, s32 height)
 {
 
 }

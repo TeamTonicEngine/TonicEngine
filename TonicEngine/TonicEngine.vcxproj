@@ -169,6 +169,7 @@
   <ItemGroup>
     <ClInclude Include="Headers\Core\Window.hpp" />
     <ClInclude Include="Headers\TonicEngine\Core\Log.hpp" />
+    <ClInclude Include="Headers\TonicEngine\Core\Maths.hpp" />
     <ClInclude Include="Headers\TonicEngine\Core\RHI.hpp" />
     <ClInclude Include="Headers\TonicEngine\Core\Utils\Color.hpp" />
     <ClInclude Include="Headers\TonicEngine\Core\Utils\f32_4.hpp" />
@@ -184,9 +185,11 @@
     <ClInclude Include="Headers\TonicEngine\Resources\IResource.hpp" />
     <ClInclude Include="Headers\TonicEngine\Resources\ResourceManager.hpp" />
     <ClInclude Include="Headers\TonicEngine\Resources\Shader.hpp" />
+    <ClInclude Include="Headers\TonicEngine\Resources\Texture.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sources\Core\Log.cpp" />
+    <ClCompile Include="Sources\Core\Maths.cpp" />
     <ClCompile Include="Sources\Resources\IResource.cpp" />
     <ClCompile Include="Sources\Resources\ResourceManager.cpp" />
     <ClCompile Include="Sources\Resources\Shader.cpp" />
@@ -201,6 +204,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Sources\Core\Window.cpp" />
+    <ClCompile Include="Sources\Resources\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\basicFragment.shader" />

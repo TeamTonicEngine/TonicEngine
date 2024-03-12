@@ -43,6 +43,7 @@
     <None Include="Assets\Shaders\basicVertex.shader" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Assets\Textures\awesomeface.jpg" />
     <Image Include="Assets\Textures\container.jpg" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
