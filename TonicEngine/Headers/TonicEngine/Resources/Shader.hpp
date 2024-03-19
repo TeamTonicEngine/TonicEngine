@@ -25,7 +25,7 @@ namespace Resources
 		u32 texture_id = 0;
 		u32 shader_id = 0;
 
-		u32 VBO, VAO, EBO, FBO, RBO;
+		u32 FBO, RBO;
 
 		unsigned int texture1, texture2;
 		/*********************************************
@@ -40,13 +40,8 @@ namespace Resources
 
 		void ResourceUnload() override;
 
-
 		std::filesystem::path GetVertexPath() const;
 		std::filesystem::path GetFragmentPath() const;
-
-		void FlipVertically(bool _isOn);
-		void* LoadTexture(std::string _path, int* width, int* height, int* nrChannels);
-		void FreeImage(void* _data);
 	};
 }
 

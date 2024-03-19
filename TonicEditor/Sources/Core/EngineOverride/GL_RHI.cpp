@@ -5,49 +5,16 @@
 #include <filesystem>
 #include "TonicEngine/Core/Log.hpp"
 
+
 // SHADER ID IN OPENGL IS PROGRAM IN OUR CODE !!!
 
 GL_RHI::GL_RHI()
 {
     
-    std::filesystem::path currentPath = std::filesystem::current_path();
-
-    std::filesystem::path vertexPath = currentPath;
-    std::filesystem::path fragmentPath = currentPath;
-
-    std::filesystem::path containerTexturePath = currentPath;
-    std::filesystem::path faceTexturePath = currentPath;
-
-    // Vertex and Fragment shaders Path
-    vertexPath += "\\Assets\\Shaders\\basicVertex.shader";
-    fragmentPath += "\\Assets\\Shaders\\basicFragment.shader";
-    Shader* shader = new Shader(vertexPath, fragmentPath);
-
-    // Container Texture
-    containerTexturePath += "\\Assets\\Textures\\container.jpg";
-    Texture* containerTexture = new Texture(containerTexturePath, "Container");
-
-    // AwesomeFace Texture
-    faceTexturePath += "\\Assets\\Textures\\awesomeface.jpg";
-    Texture* faceTexture = new Texture(faceTexturePath, "AwesomeFace");
-
-    // Shader map
-    shader_["BasicShader"] = shader;
-
-    // Texture map
-    texture_.push_back(containerTexture);
-    texture_.push_back(faceTexture);
-
-    for (const auto &iter : texture_)
-    {
-        std::cout << iter->name << std::endl;
-    }
 }
 GL_RHI::~GL_RHI()
 {
     delete shader_["BasicShader"];
-    delete texture_[0];
-    delete texture_[1];
 }
 
 void GL_RHI::Init(uint32_t width, uint32_t height)
@@ -66,7 +33,16 @@ void GL_RHI::Init(uint32_t width, uint32_t height)
         DEBUG_SUCCESS("SUCCEED TO INITIALIZE GLAD");
 	}
 
+    std::filesystem::path currentPath = std::filesystem::current_path();
 
+    std::filesystem::path vertexPath = currentPath;
+    std::filesystem::path fragmentPath = currentPath;
+
+    // Vertex and Fragment shaders Path
+    vertexPath += "\\Assets\\Shaders\\basicVertex.shader";
+    fragmentPath += "\\Assets\\Shaders\\basicFragment.shader";
+    Shader* shader = new Shader(vertexPath, fragmentPath);
+    shader_["BasicShader"] = shader;
 }
 
 void GL_RHI::StartFrame(FreeCamera* _camera)
@@ -75,10 +51,12 @@ void GL_RHI::StartFrame(FreeCamera* _camera)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // bind textures on corresponding texture units
+    /*
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, shader_["BasicShader"]->texture1);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, shader_["BasicShader"]->texture2);
+    */
 
     Transform(_camera);
 }
@@ -103,33 +81,65 @@ void GL_RHI::Transform(FreeCamera* _camera)
     //view = Maths::Matrices::LookAt(_camera->eye, _camera->center, _camera->up);
     SetMat4("BasicShader", "view", view);
 
-    model = Maths::Mat4::RotateX(-55.0f * Maths::Constants::DEG2RAD); // TODO : ADD TIME
-
-    unsigned int modelLoc = glGetUniformLocation(shader_["BasicShader"]->shaderProgram, "model");
-    //unsigned int viewLoc = glGetUniformLocation(shader_["BasicShader"]->shaderProgram, "view");
-
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &model.data[0]);
-    //glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view.data[0]);
-
+    model = Maths::Mat4::Translate(Maths::Vec3(0.0f, 0.0f, 0.0f));
+    model = Maths::Mat4::Scale(Maths::Vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+    SetMat4("BasicShader", "model", model);
 }
 
 void GL_RHI::EndFrame()
 {
-    //glClearColor(109.f / 255.f, 7.f / 255.f, 26.f / 255.f, 1.f);
-    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor(109.f / 255.f, 7.f / 255.f, 26.f / 255.f, 1.f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void GL_RHI::Draw()
 {
-    
-    ShaderUse("BasicShader");
-    glBindVertexArray(shader_["BasicShader"]->VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    for (int j = 0; j < model_.size(); j++)
+    {
+       
+        for (unsigned int i = 0; i < model_[j]->meshes.size(); i++)
+        {
+            // bind appropriate textures
+            unsigned int diffuseNr = 1;
+            unsigned int specularNr = 1;
+            unsigned int normalNr = 1;
+            unsigned int heightNr = 1;
+            for (unsigned int k = 0; k < model_[j]->meshes[i].textures.size(); k++)
+            {
+                glActiveTexture(GL_TEXTURE0 + i); // active proper texture unit before binding
+                // retrieve texture number (the N in diffuse_textureN)
+                string number;
+                string name = model_[j]->meshes[i].textures[k].type;
+                if (name == "texture_diffuse")
+                    number = std::to_string(diffuseNr++);
+                else if (name == "texture_specular")
+                    number = std::to_string(specularNr++); // transfer unsigned int to string
+                else if (name == "texture_normal")
+                    number = std::to_string(normalNr++); // transfer unsigned int to string
+                else if (name == "texture_height")
+                    number = std::to_string(heightNr++); // transfer unsigned int to string
+
+                // now set the sampler to the correct texture unit
+                glUniform1i(glGetUniformLocation(shader_["BasicShader"]->shaderProgram, (name + number).c_str()), i);
+                // and finally bind the texture
+                glBindTexture(GL_TEXTURE_2D, model_[j]->meshes[i].textures[k].ID);
+            }
+
+            // draw mesh
+            glBindVertexArray(model_[j]->meshes[i].VAO);
+            glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(model_[j]->meshes[i].indices.size()), GL_UNSIGNED_INT, 0);
+            glBindVertexArray(0);
+
+            // always good practice to set everything back to defaults once configured.
+            glActiveTexture(GL_TEXTURE0);
+        }
+    }
 }
 
 void GL_RHI::InitShader()
 {
-
+    Resources::FlipVertically(true);
     glEnable(GL_DEPTH_TEST);
     // build and compile our shader program
     // ------------------------------------
@@ -171,7 +181,14 @@ void GL_RHI::InitShader()
     glDeleteShader(shader_["BasicShader"]->vertexShader);
     glDeleteShader(shader_["BasicShader"]->fragmentShader);
 
-    InitShaderData();
+
+    // --------------------------------------------------------------------- TEST ------------------------------------------------------------------------------------------------
+    std::filesystem::path currentPath = std::filesystem::current_path();
+    std::filesystem::path modelPath = currentPath;
+    modelPath += "\\Assets\\Model\\Back\\backpack.obj";
+    GL_Model* model = new GL_Model(modelPath);
+    model_.push_back(model);
+    model_[0]->LoadModel(modelPath.string());
 }
 
 void GL_RHI::CheckShaderCompileErrors(unsigned int shader, std::string type)
@@ -201,132 +218,6 @@ void GL_RHI::CheckShaderCompileErrors(unsigned int shader, std::string type)
 			DEBUG_SUCCESS("PROGRAM LINKED SUCCESSFULLY of type: %s", type.c_str());
     }
 }
-
-void GL_RHI::InitShaderData()
-{
-    // set up vertex data (and buffer(s)) and configure vertex attributes
-    // ------------------------------------------------------------------
-    float vertices[] = {
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-    };
-
-    glGenVertexArrays(1, &shader_["BasicShader"]->VAO);
-    glGenBuffers(1, &shader_["BasicShader"]->VBO);
-    //glGenBuffers(1, &shader_["BasicShader"]->EBO);
-
-    glBindVertexArray(shader_["BasicShader"]->VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, shader_["BasicShader"]->VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    // texture coord attribute
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    // load and create a texture 
-    // -------------------------
-    
-    // texture 1
-    // ---------
-    glGenTextures(1, &shader_["BasicShader"]->texture1);
-    glBindTexture(GL_TEXTURE_2D, shader_["BasicShader"]->texture1);
-    // set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // load image, create texture and generate mipmaps
-    int width, height, nrChannels;
-    shader_["BasicShader"]->FlipVertically(true); // tell stb_image.h to flip loaded texture's on the y-axis.
-    // The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
-
-    unsigned char* data = static_cast<unsigned char*>(shader_["BasicShader"]->LoadTexture(texture_[0]->texturePath_.string(), &width, &height, &nrChannels));
-
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    shader_["BasicShader"]->FreeImage(data);
-
-    // texture 2
-    // ---------
-    glGenTextures(1, &shader_["BasicShader"]->texture2);
-    glBindTexture(GL_TEXTURE_2D, shader_["BasicShader"]->texture2);
-    // set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    data = static_cast<unsigned char*>(shader_["BasicShader"]->LoadTexture(texture_[1]->texturePath_.string(), &width, &height, &nrChannels));
-
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    shader_["BasicShader"]->FreeImage(data);
-
-    ShaderUse("BasicShader");
-    SetInt("BasicShader", "texture1", 0);
-    SetInt("BasicShader", "texture2", 1);
-}
-
 
 void GL_RHI::InitFrameBuffer()
 {
@@ -382,9 +273,7 @@ u32 GL_RHI::GetTextureID()
 
 void GL_RHI::CleanUp()
 {
-    glDeleteVertexArrays(1, &shader_["BasicShader"]->VAO);
-    glDeleteBuffers(1, &shader_["BasicShader"]->VBO);
-    glDeleteBuffers(1, &shader_["BasicShader"]->EBO);
+
     glDeleteBuffers(1, &shader_["BasicShader"]->FBO);
     glDeleteBuffers(1, &shader_["BasicShader"]->RBO);
 }
@@ -448,3 +337,4 @@ void GL_RHI::SetMat4(const std::string& _shaderName, const std::string& name, co
 {
     glUniformMatrix4fv(glGetUniformLocation(shader_[_shaderName]->shaderProgram, name.c_str()), 1, GL_FALSE, &mat.data[0]);
 }
+

@@ -6,7 +6,6 @@
 #include "TonicEngine\DLL_API.hpp"
 
 #include <TonicEngine/Resources/Shader.hpp>
-#include <TonicEngine/Resources/Texture.hpp>
 #include <TonicEngine/LowRenderer/Camera.hpp>
 #include "Maths.hpp"
 
@@ -19,7 +18,8 @@ namespace Core
 				VARIABLES BLOC
 		*********************************************/
 		std::map < std::string, Resources::Shader* > shader_;
-		std::vector<Resources::Texture*> texture_;
+		
+		//std::vector<Resources::Mesh*> mesh_;
 		//std::map < std::string, Resources::Texture* > texture_;
 
 		/*********************************************
@@ -39,7 +39,6 @@ namespace Core
 		//---Low-Renderer-----------------------------------------------
 		// 
 		//------Model----------------------------------------------
-		//------Camera---------------------------------------------
 		//------Light----------------------------------------------
 
 
@@ -47,7 +46,6 @@ namespace Core
 		// 
 		//------Shader---------------------------------------------
 		virtual void InitShader();
-		virtual void InitShaderData();
 		virtual void CheckShaderCompileErrors(unsigned int shader, std::string type);
 		virtual void BindFrameBuffer();
 		virtual void UnbindFrameBuffer();

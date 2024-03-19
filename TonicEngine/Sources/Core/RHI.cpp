@@ -27,10 +27,6 @@ void Core::RHI::CheckShaderCompileErrors(unsigned int shader, std::string type)
 
 }
 
-void Core::RHI::InitShaderData()
-{
-
-}
 
 void Core::RHI::Draw()
 {

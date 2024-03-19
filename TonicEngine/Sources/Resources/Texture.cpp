@@ -1,6 +1,11 @@
 #include "pch.hpp"
 #include "TonicEngine/Resources/Texture.hpp"
 
+Resources::Texture::Texture()
+{
+
+}
+
 Resources::Texture::Texture(std::filesystem::path const _texturePath, std::string _fileName)
 {
 	texturePath_ = _texturePath;
