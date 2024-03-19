@@ -167,6 +167,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Headers\TonicEngine\LowRenderer\Camera.hpp" />
     <ClInclude Include="Headers\Core\Window.hpp" />
     <ClInclude Include="Headers\TonicEngine\Core\Log.hpp" />
     <ClInclude Include="Headers\TonicEngine\Core\Maths.hpp" />
@@ -188,6 +189,7 @@
     <ClInclude Include="Headers\TonicEngine\Resources\Texture.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Sources\LowRenderer\Camera.cpp" />
     <ClCompile Include="Sources\Core\Log.cpp" />
     <ClCompile Include="Sources\Core\Maths.cpp" />
     <ClCompile Include="Sources\Resources\IResource.cpp" />

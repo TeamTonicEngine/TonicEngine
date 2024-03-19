@@ -7,7 +7,7 @@ void Core::RHI::Init(u32 width, u32 height)
 
 }
 
-void Core::RHI::StartFrame()
+void Core::RHI::StartFrame(FreeCamera* _camera)
 {
 
 }
@@ -42,7 +42,7 @@ void Core::RHI::InitFrameBuffer()
 
 }
 
-void Core::RHI::Transform()
+void Core::RHI::Transform(FreeCamera* _camera)
 {
 
 }

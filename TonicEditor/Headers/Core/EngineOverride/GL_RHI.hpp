@@ -16,13 +16,13 @@ public:
 	~GL_RHI();
 
 	void Init(uint32_t width, uint32_t height) override;
-	void StartFrame() override;
+	void StartFrame(FreeCamera* _camera) override;
 	void Draw() override;
 	void EndFrame() override;
 
 	//---Callbacks--------------------------------------------------
 	//void FrameBufferResized(s32 width, s32 height);
-	void Transform() override;
+	void Transform(FreeCamera* _camera) override;
 	//---Low-Renderer-----------------------------------------------
 	// 
 	//------Model----------------------------------------------

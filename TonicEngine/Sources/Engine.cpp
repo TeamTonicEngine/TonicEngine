@@ -52,8 +52,11 @@ void Engine::BindFBO()
 
 void Engine::RunFrame()
 {
-	p_renderer_->StartFrame();
+	p_window_->freeCamera_->Update();
+	p_renderer_->StartFrame(p_window_->freeCamera_);
 	p_renderer_->Draw();
+	p_window_->freeCamera_->ProcessInput(p_window_->deltaTime, p_window_->input_.cameraInput);
+
 	
 }
 

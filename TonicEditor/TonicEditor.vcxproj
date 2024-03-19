@@ -34,6 +34,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Headers\Core\Applications\AppEditor.hpp" />
+    <ClInclude Include="Headers\Core\Applications\Input.hpp" />
     <ClInclude Include="Headers\Core\EngineOverride\GL_RHI.hpp" />
     <ClInclude Include="Headers\Core\EngineOverride\WindowOverride.hpp" />
     <ClInclude Include="Headers\EditorWindow.hpp" />

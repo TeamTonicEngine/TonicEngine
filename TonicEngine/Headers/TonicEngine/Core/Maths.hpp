@@ -78,7 +78,7 @@ namespace Maths
 
 #pragma region Operators
 		//ASSINGMENT AND EQUALITY OPERATIONS :
-		Vec2 operator = (const Vec2& _vec);
+		//Vec2 operator = (const Vec2& _vec);
 		Vec2 operator = (const Vec3& _vec);
 		Vec2 operator = (const Vec4& _vec);
 		Vec2 operator = (float _sca);

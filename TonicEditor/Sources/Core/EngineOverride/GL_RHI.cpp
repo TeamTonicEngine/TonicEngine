@@ -55,6 +55,8 @@ void GL_RHI::Init(uint32_t width, uint32_t height)
     width_ = width;
     height_ = height;
 
+    
+
 	if (!gladLoadGL())
 	{
 		throw std::exception("FAIL TO INITIALIZE GLAD");
@@ -63,9 +65,11 @@ void GL_RHI::Init(uint32_t width, uint32_t height)
 	{
         DEBUG_SUCCESS("SUCCEED TO INITIALIZE GLAD");
 	}
+
+
 }
 
-void GL_RHI::StartFrame()
+void GL_RHI::StartFrame(FreeCamera* _camera)
 {
     glClearColor(109.f / 255.f, 7.f / 255.f, 26.f / 255.f, 1.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -76,34 +80,43 @@ void GL_RHI::StartFrame()
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, shader_["BasicShader"]->texture2);
 
-    Transform();
+    Transform(_camera);
 }
 
-void GL_RHI::Transform()
+void GL_RHI::Transform(FreeCamera* _camera)
 {
     ShaderUse("BasicShader");
+    _camera->width = width_;
+    _camera->height = height_;
+
 
     Maths::Mat4 model(1.0f);
     Maths::Mat4 view(1.0f);
     Maths::Mat4 projection(1.0f);
 
+    projection = _camera->projection;
+    //projection = Maths::Matrices::Perspective(45.0f * Maths::Constants::DEG2RAD, (float)width_ / (float)height_, 0.1f, 100.0f);
+    SetMat4("BasicShader", "projection", projection);
+
+    //view = Maths::Mat4::Translate(Maths::Vec3(0.0f, 0.0f, -3.0f));
+    view = _camera->view;
+    //view = Maths::Matrices::LookAt(_camera->eye, _camera->center, _camera->up);
+    SetMat4("BasicShader", "view", view);
+
     model = Maths::Mat4::RotateX(-55.0f * Maths::Constants::DEG2RAD); // TODO : ADD TIME
-    view = Maths::Mat4::Translate(Maths::Vec3(0.0f, 0.0f, -3.0f));
-    projection = Maths::Matrices::Perspective(45.0f * Maths::Constants::DEG2RAD, (float)width_ / (float)height_, 0.1f, 100.0f);
 
     unsigned int modelLoc = glGetUniformLocation(shader_["BasicShader"]->shaderProgram, "model");
-    unsigned int viewLoc = glGetUniformLocation(shader_["BasicShader"]->shaderProgram, "view");
+    //unsigned int viewLoc = glGetUniformLocation(shader_["BasicShader"]->shaderProgram, "view");
 
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &model.data[0]);
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view.data[0]);
+    //glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view.data[0]);
 
-    SetMat4("BasicShader", "projection", projection);
 }
 
 void GL_RHI::EndFrame()
 {
-    glClearColor(109.f / 255.f, 7.f / 255.f, 26.f / 255.f, 1.f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //glClearColor(109.f / 255.f, 7.f / 255.f, 26.f / 255.f, 1.f);
+    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void GL_RHI::Draw()

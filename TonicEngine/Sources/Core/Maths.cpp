@@ -7,25 +7,23 @@
 
 using namespace Maths;
 
-float ToRadians(float _angleDegrees)
+float Maths::ToRadians(float _angleDegrees)
 {
 	return _angleDegrees * Constants::DEG2RAD;
 }
-double ToRadians(double _angleDegrees)
+double Maths::ToRadians(double _angleDegrees)
 {
 	return _angleDegrees * Constants::DEG2RAD_PRECISE;
 }
 
-float ToDegrees(float _angleRadians)
+float Maths::ToDegrees(float _angleRadians)
 {
 	return _angleRadians * Constants::RAD2DEG;
 }
-double ToDegrees(double _angleRadians)
+double Maths::ToDegrees(double _angleRadians)
 {
 	return _angleRadians * Constants::RAD2DEG_PRECISE;
 }
-
-
 
 Vec2::Vec2(void) : x(0.f), y(0.f) {}
 Vec2::Vec2(float _xy) : x(_xy), y(_xy) {}

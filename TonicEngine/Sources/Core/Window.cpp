@@ -6,11 +6,13 @@
 
 //void FramebufferResizeCallback(GLFWwindow* _window, int _width, int _height);
 
-Core::Window::Window() {}
+Core::Window::Window() 
+{
+}
 
 void Core::Window::Init(const char* _name, u32 _width, u32 _height)
 {
-
+	
 }
 
 void* Core::Window::GetHandle()
@@ -23,6 +25,11 @@ void* Core::Window::GetHandle()
 s32_2 Core::Window::GetWindowSize()
 {
 	return { width_, height_ };
+}
+
+FreeCamera* Core::Window::GetCamera()
+{
+	return freeCamera_;
 }
 
 void Core::Window::Resized()

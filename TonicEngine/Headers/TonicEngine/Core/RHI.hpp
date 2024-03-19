@@ -7,6 +7,7 @@
 
 #include <TonicEngine/Resources/Shader.hpp>
 #include <TonicEngine/Resources/Texture.hpp>
+#include <TonicEngine/LowRenderer/Camera.hpp>
 #include "Maths.hpp"
 
 namespace Core
@@ -25,7 +26,7 @@ namespace Core
 				FUNCTIONS BLOC
 		*********************************************/
 		virtual void Init(u32 width, u32 height);
-		virtual void StartFrame();
+		virtual void StartFrame(FreeCamera* _camera);
 		virtual void Draw();
 		virtual void EndFrame();
 
@@ -34,7 +35,7 @@ namespace Core
 		virtual void RescaleFrameBuffer(s32 width, s32 height);
 		virtual u32 GetTextureID();
 		virtual void InitFrameBuffer();
-		virtual void Transform();
+		virtual void Transform(FreeCamera* _camera);
 		//---Low-Renderer-----------------------------------------------
 		// 
 		//------Model----------------------------------------------

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "TonicEngine\Core\Utils\s32_2.hpp"
-
 #include "TonicEngine\DLL_API.hpp"
+#include "..\..\TonicEditor\Headers\Core\Applications\Input.hpp"
 
 namespace Core
 {
@@ -18,6 +18,12 @@ namespace Core
 		const char* nameWindow_ = "";
 
 	public:
+		Input input_;
+		FreeCamera* freeCamera_;
+
+		float deltaTime = 0.0f;
+		float lastFrame = 0.0f;
+
 		/* Input : Name of window, width of window, height of window */
 		Window();
 
@@ -25,6 +31,8 @@ namespace Core
 		
 		/* Output : Returns unsigned array size 2, width & height */
 		virtual s32_2 GetWindowSize();
+
+		virtual FreeCamera* GetCamera();
 
 		/* Called when window gets resized */
 		virtual void Resized();
@@ -48,8 +56,7 @@ namespace Core
 		/* Output : Returns true if window has been resized & not handled */
 		bool IsFramebufferResized();
 
-
-
 		virtual void ProcessInput();
+
 	};
 }
