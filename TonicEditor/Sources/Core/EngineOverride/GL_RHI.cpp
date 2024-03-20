@@ -107,7 +107,7 @@ void GL_RHI::Draw()
             unsigned int heightNr = 1;
             for (unsigned int k = 0; k < model_[j]->meshes[i].textures.size(); k++)
             {
-                glActiveTexture(GL_TEXTURE0 + i); // active proper texture unit before binding
+                glActiveTexture(GL_TEXTURE0 + k); // active proper texture unit before binding
                 // retrieve texture number (the N in diffuse_textureN)
                 string number;
                 string name = model_[j]->meshes[i].textures[k].type;
@@ -121,7 +121,7 @@ void GL_RHI::Draw()
                     number = std::to_string(heightNr++); // transfer unsigned int to string
 
                 // now set the sampler to the correct texture unit
-                glUniform1i(glGetUniformLocation(shader_["BasicShader"]->shaderProgram, (name + number).c_str()), i);
+                glUniform1i(glGetUniformLocation(shader_["BasicShader"]->shaderProgram, (name + number).c_str()), k);
                 // and finally bind the texture
                 glBindTexture(GL_TEXTURE_2D, model_[j]->meshes[i].textures[k].ID);
             }
