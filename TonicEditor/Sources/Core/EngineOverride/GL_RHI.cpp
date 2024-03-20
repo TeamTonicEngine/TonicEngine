@@ -22,8 +22,6 @@ void GL_RHI::Init(uint32_t width, uint32_t height)
     width_ = width;
     height_ = height;
 
-    
-
 	if (!gladLoadGL())
 	{
 		throw std::exception("FAIL TO INITIALIZE GLAD");
@@ -38,11 +36,21 @@ void GL_RHI::Init(uint32_t width, uint32_t height)
     std::filesystem::path vertexPath = currentPath;
     std::filesystem::path fragmentPath = currentPath;
 
+    std::filesystem::path soundPath = currentPath;
+
     // Vertex and Fragment shaders Path
     vertexPath += "\\Assets\\Shaders\\basicVertex.shader";
     fragmentPath += "\\Assets\\Shaders\\basicFragment.shader";
     Shader* shader = new Shader(vertexPath, fragmentPath);
     shader_["BasicShader"] = shader;
+
+    soundPath += "\\Assets\\Sound\\Applaudissements.wav";
+
+    Sound* sound = new Sound(soundPath);
+    soundClap = sound;
+
+    soundClap->LoadSound();
+    soundClap->Play();
 }
 
 void GL_RHI::StartFrame(FreeCamera* _camera)

@@ -2,7 +2,7 @@
 #include "TonicEngine/Core/RHI.hpp"
 #include <TonicEngine/Resources/Shader.hpp>
 #include "Core/EngineOverride/GL_Model.hpp"
-
+#include <TonicEngine/Resources/Sound.hpp>
 
 using namespace Resources;
 
@@ -15,6 +15,7 @@ public:
 		*********************************************/
 	GL_RHI();
 	~GL_RHI();
+	Sound* soundClap;
 	std::vector<GL_Model*> model_;
 
 	void Init(uint32_t width, uint32_t height) override;
