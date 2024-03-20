@@ -54,7 +54,6 @@ protected:
 	Maths::Mat4 Perspective(float _fovY, float _aspect, float _near, float _far);
 	Maths::Mat4 Orthographic(float _left, float _right, float _bottom, float _top);
 
-
 	void Move(const Maths::Vec3& _velocity);
 	void Turn(float _angle, Maths::Vec3 _axis);
 };

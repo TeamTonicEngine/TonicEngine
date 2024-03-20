@@ -7,7 +7,7 @@ void Core::RHI::Init(u32 width, u32 height)
 
 }
 
-void Core::RHI::StartFrame(FreeCamera* _camera)
+void Core::RHI::StartFrame(FreeCamera* _camera, float _deltaTime)
 {
 
 }

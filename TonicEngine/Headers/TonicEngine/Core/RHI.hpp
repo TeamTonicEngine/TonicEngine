@@ -26,7 +26,7 @@ namespace Core
 				FUNCTIONS BLOC
 		*********************************************/
 		virtual void Init(u32 width, u32 height);
-		virtual void StartFrame(FreeCamera* _camera);
+		virtual void StartFrame(FreeCamera* _camera, float _deltaTime);
 		virtual void Draw();
 		virtual void EndFrame();
 

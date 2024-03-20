@@ -30,6 +30,8 @@ void Sound::Init()
     {
         DEBUG_ERROR("MINI AUDIO INIT FAIL");
     }
+    DEBUG_SUCCESS("MINI AUDIO INIT SUCCESSFULLY");
+
 }
 
 void Sound::LoadSound()
@@ -41,7 +43,9 @@ void Sound::LoadSound()
     {
         DEBUG_ERROR("MINI AUDIO LOAD FAIL");
     }
-    
+    DEBUG_SUCCESS("MINI AUDIO LOAD SUCCESSFULLY");
+
+    // TODO : .OGG SOUND FILE
 }
 
 void Sound::Play(const float& _millisecond)

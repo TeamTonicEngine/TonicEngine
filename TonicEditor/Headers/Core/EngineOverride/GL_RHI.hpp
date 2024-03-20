@@ -17,9 +17,11 @@ public:
 	~GL_RHI();
 	Sound* soundClap;
 	std::vector<GL_Model*> model_;
+	float deltaTime;
+	FreeCamera* camera;
 
 	void Init(uint32_t width, uint32_t height) override;
-	void StartFrame(FreeCamera* _camera) override;
+	void StartFrame(FreeCamera* _camera, float _deltaTime) override;
 	void Draw() override;
 	void EndFrame() override;
 
@@ -46,22 +48,26 @@ public:
 	void ShaderUse(std::string _shaderName);
 
 	// utility uniform functions
-	void SetBool(const std::string& name, bool value) const;
+	void SetBool(const std::string& _shaderName, const std::string& name, bool value);
 	void SetInt(const std::string& _shaderName, const std::string& _name, int _value) override;
-	void SetFloat(const std::string& name, float value) const;
-	void SetVec2(const std::string& name, const Maths::Vec2& value) const;
-	void SetVec2(const std::string& name, float x, float y) const;
-	void SetVec3(const std::string& name, const Maths::Vec3& value) const;
-	void SetVec3(const std::string& name, float x, float y, float z) const;
-	void SetVec4(const std::string& name, const Maths::Vec4& value) const;
-	void SetVec4(const std::string& name, float x, float y, float z, float w);
-	void SetMat3(const std::string& name, const Maths::Mat3& mat) const;
+	void SetFloat(const std::string& _shaderName, const std::string& name, float value);
+	void SetVec2(const std::string& _shaderName, const std::string& name, const Maths::Vec2& value);
+	void SetVec2(const std::string& _shaderName, const std::string& name, float x, float y);
+	void SetVec3(const std::string& _shaderName, const std::string& name, const Maths::Vec3& value);
+	void SetVec3(const std::string& _shaderName, const std::string& name, float x, float y, float z);
+	void SetVec4(const std::string& _shaderName, const std::string& name, const Maths::Vec4& value);
+	void SetVec4(const std::string& _shaderName, const std::string& name, float x, float y, float z, float w);
+	void SetMat3(const std::string& _shaderName, const std::string& name, const Maths::Mat3& mat);
 	void SetMat4(const std::string& _shaderName, const std::string& name, const Maths::Mat4& mat);
 	
 	//------Textures-------------------------------------------
 	//void InitTexture() override;
 	//unsigned int LoadTexture(std::string _name) override;
 	//------Materials------------------------------------------
+	unsigned int sphereVAO = 0;
+	unsigned int indexCount;
+	void RenderSphere();
+	
 	//------Model----------------------------------------------
 
 	void CleanUp() override;

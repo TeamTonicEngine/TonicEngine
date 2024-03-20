@@ -42,8 +42,10 @@
     <ClInclude Include="Headers\EditorWindow.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Shaders\basicFragment.shader" />
-    <None Include="Assets\Shaders\basicVertex.shader" />
+    <None Include="Assets\Shaders\BASIC\basicFragment.shader" />
+    <None Include="Assets\Shaders\BASIC\basicVertex.shader" />
+    <None Include="Assets\Shaders\PBR\pbrFragment.shader" />
+    <None Include="Assets\Shaders\PBR\pbrVertex.shader" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Textures\awesomeface.jpg" />
