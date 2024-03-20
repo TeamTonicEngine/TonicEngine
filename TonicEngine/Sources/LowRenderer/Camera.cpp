@@ -200,11 +200,11 @@ void FreeCamera::ProcessInput(float _deltaTime, const CameraInput& _input)
 	if (_input.NoInputs())
 		return;
 	bViewChanged = true;
-	if (_input.deltaX)
-		Turn(_input.deltaX * _deltaTime * camRotationSpeed, up);
+	
 	if (_input.deltaY)
 		Turn(_input.deltaY * _deltaTime * camRotationSpeed, Vectors::CrossProduct(up, forward).GetNormalized());
-
+	if (_input.deltaX)
+		Turn(_input.deltaX * _deltaTime * camRotationSpeed, Vec3::UP);
 	// MOVEMENTS
 	// ---------
 	if (_input.bMoveForward)

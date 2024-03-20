@@ -27,7 +27,7 @@ void GL_Model::LoadModel(std::string const& _path)
         return;
     }
      //retrieve the directory path of the filepath
-    directory = _path.substr(0, _path.find_last_of('/'));
+    directory = _path.substr(0, _path.find_last_of('\\'));
 
      //process ASSIMP's root node recursively
     ProcessNode(scene->mRootNode, scene);
@@ -162,7 +162,7 @@ std::vector<Texture> GL_Model::LoadMaterialTextures(aiMaterial* _mat, aiTextureT
 unsigned int GL_Model::TextureFromFile(const char* _path, const std::string& _directory)
 {
     string filename = string(_path);
-    filename = directory + '/' + filename;
+    filename = _directory + '\\'+ filename;
 
     unsigned int textureID;
     glGenTextures(1, &textureID);

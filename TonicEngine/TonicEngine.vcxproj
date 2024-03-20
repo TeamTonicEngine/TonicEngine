@@ -189,8 +189,10 @@
     <ClInclude Include="Headers\TonicEngine\Resources\ResourceManager.hpp" />
     <ClInclude Include="Headers\TonicEngine\Resources\Shader.hpp" />
     <ClInclude Include="Headers\TonicEngine\Resources\Texture.hpp" />
+    <ClInclude Include="Headers\TonicEngine\Resources\Sound.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Sources\Resources\Sound.cpp" />
     <ClCompile Include="Sources\LowRenderer\Camera.cpp" />
     <ClCompile Include="Sources\Core\Log.cpp" />
     <ClCompile Include="Sources\Core\Maths.cpp" />
