@@ -4,6 +4,40 @@
 ## ⭐ About the Project
 This project is a game Engine with an Editor written in [![C++](https://img.shields.io/badge/C%2B%2B-v17-blue)](https://isocpp.org/) and compiled with MSVC 2019.
 
+## 📑 Editor Feature
+
+### Project viewer:
+
+![ProjectViewer](Screenshots/ProjectViewer.png)
+
+- It allows you to view and interact with the project files and creating new files and folders.
+
+### Debug Panel:
+
+![DebugPanel](Screenshots/Debug.png)
+
+- It shows debug information in the editor. for now it only shows the FPS.
+
+### Menu Bar:
+
+![MenuBar](Screenshots/MenuBar.png)
+
+- The menu bar allows you to open the project and save it. It also allows you to quit the application and use some aditional features.
+    
+    ### aditional features :
+        
+    #### Settings
+
+    ![MenuBar_Settings](Screenshots/MenuBar_Settings.png)
+
+    - It allow you to change the settings of the application.
+
+    #### Tools
+
+    ![MenuBar_Tools](Screenshots/MenuBar_Tools.png)
+
+    - It allow you to open the tools to help you develop your game.
+
 ## 📚 External libraries
 |Functionality	| Library |
 |---------------|---------|
@@ -21,6 +55,10 @@ This project is a game Engine with an Editor written in [![C++](https://img.shie
 ![SC1](Screenshots/TONICTirangle.png)
 ![SC2](Screenshots/TONICTriangle.png)
 ![SC3](Screenshots/UnitTest.png)
+![SC4](Screenshots/EditorBeta.png)
+![SC5](Screenshots/SceneOutWindow.png)
+![SC6](Screenshots/Terminal.png)
+![SC5](Screenshots/HUB.png)
 
 ## ✒ Authors
 - <a href = "mailto: f.becaud@student.isartdigital.com">Félix BECAUD</a>
