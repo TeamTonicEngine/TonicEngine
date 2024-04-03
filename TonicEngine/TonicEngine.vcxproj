@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -94,14 +94,15 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.hpp</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)TonicEngine\Externals\include\STB;$(SolutionDir)TonicEngine\Headers;$(SolutionDir)TonicEngine\Headers\TonicEngine</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Externals\include;$(ProjectDir)Headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)TonicEngine\Externals\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -114,7 +115,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.hpp</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)TonicEngine\Externals\include\STB;$(SolutionDir)TonicEngine\Headers;$(SolutionDir)TonicEngine\Headers\TonicEngine</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Externals\include;$(ProjectDir)Headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -123,7 +124,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)TonicEngine\Externals\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -134,16 +136,19 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.hpp</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)TonicEngine\Externals\include\STB;$(SolutionDir)TonicEngine\Headers;$(SolutionDir)TonicEngine\Headers\TonicEngine</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Externals\include;$(ProjectDir)Headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)$(IntDir);./Externals/libs</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)TonicEngine\Externals\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /Y  $(ProjectDir)Externals\libs\assimp-vc143-mt.dll $(SolutionDir)$(Platform)\$(Configuration)\</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -155,7 +160,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.hpp</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)TonicEngine\Externals\include\STB;$(SolutionDir)TonicEngine\Headers;$(SolutionDir)TonicEngine\Headers\TonicEngine</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Externals\include;$(ProjectDir)Headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -164,57 +169,156 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)$(IntDir);./Externals/libs</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)TonicEngine\Externals\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /Y  $(ProjectDir)Externals\libs\assimp-vc143-mt.dll $(SolutionDir)$(Platform)\$(Configuration)\</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Headers\TonicEngine\LowRenderer\Camera.hpp" />
+    <ClInclude Include="Headers\ECS\Components\Camera.hpp" />
+    <ClInclude Include="Headers\Core\Engine.hpp" />
+    <ClInclude Include="Headers\Core\ImGuiEngine.hpp" />
+    <ClInclude Include="Headers\Core\Log.hpp" />
+    <ClInclude Include="Headers\Core\OpenGLWrapper.hpp" />
+    <ClInclude Include="Headers\Core\RHI.hpp" />
+    <ClInclude Include="Headers\Core\ThreadPool.hpp" />
+    <ClInclude Include="Headers\Core\Utils\Color.hpp" />
+    <ClInclude Include="Headers\Core\Utils\f32_4.hpp" />
+    <ClInclude Include="Headers\Core\Utils\s32_2.hpp" />
+    <ClInclude Include="Headers\Core\Utils\s32_3.hpp" />
+    <ClInclude Include="Headers\Core\Utils\s32_4.hpp" />
+    <ClInclude Include="Headers\Core\Utils\Type.hpp" />
     <ClInclude Include="Headers\Core\Window.hpp" />
-    <ClInclude Include="Headers\TonicEngine\Core\Log.hpp" />
-    <ClInclude Include="Headers\TonicEngine\Core\Maths.hpp" />
-    <ClInclude Include="Headers\TonicEngine\Core\RHI.hpp" />
-    <ClInclude Include="Headers\TonicEngine\Core\Utils\Color.hpp" />
-    <ClInclude Include="Headers\TonicEngine\Core\Utils\f32_4.hpp" />
-    <ClInclude Include="Headers\TonicEngine\Core\Utils\s32_2.hpp" />
-    <ClInclude Include="Headers\TonicEngine\Core\Utils\s32_3.hpp" />
-    <ClInclude Include="Headers\TonicEngine\Core\Utils\s32_4.hpp" />
-    <ClInclude Include="Headers\TonicEngine\Core\Utils\Type.hpp" />
-    <ClInclude Include="Headers\TonicEngine\Core\Window.hpp" />
-    <ClInclude Include="Headers\TonicEngine\DLL_API.hpp" />
-    <ClInclude Include="Headers\TonicEngine\Engine.hpp" />
-    <ClInclude Include="Headers\TonicEngine\framework.hpp" />
-    <ClInclude Include="Headers\TonicEngine\pch.hpp" />
-    <ClInclude Include="Headers\TonicEngine\Resources\IResource.hpp" />
-    <ClInclude Include="Headers\TonicEngine\Resources\ResourceManager.hpp" />
-    <ClInclude Include="Headers\TonicEngine\Resources\Shader.hpp" />
-    <ClInclude Include="Headers\TonicEngine\Resources\Texture.hpp" />
-    <ClInclude Include="Headers\TonicEngine\Resources\Sound.hpp" />
+    <ClInclude Include="Headers\DLL_API.hpp" />
+    <ClInclude Include="Headers\ECS\Base\BaseComponent.hpp" />
+    <ClInclude Include="Headers\ECS\Base\BaseSystem.hpp" />
+    <ClInclude Include="Headers\ECS\Base\CompList.hpp" />
+    <ClInclude Include="Headers\ECS\Base\Entity.hpp" />
+    <ClInclude Include="Headers\ECS\Base\EntityManager.hpp" />
+    <ClInclude Include="Headers\ECS\Base\Types.hpp" />
+    <ClInclude Include="Headers\ECS\Components.hpp" />
+    <ClInclude Include="Headers\ECS\Systems\TransformSystem.hpp" />
+    <ClInclude Include="Headers\ECS\Systems.hpp" />
+    <ClInclude Include="Headers\ECS\Systems\ModelRendererSystem.hpp" />
+    <ClInclude Include="Headers\ECS\Components\SpotLightComponent.hpp" />
+    <ClInclude Include="Headers\ECS\Components\DirectionalLightComponent.hpp" />
+    <ClInclude Include="Headers\ECS\Systems\PointLightSystem.hpp" />
+    <ClInclude Include="Headers\ECS\Systems\SpotLightSystem.hpp" />
+    <ClInclude Include="Headers\LowRenderer\SpotLight.hpp" />
+    <ClInclude Include="Headers\LowRenderer\DirectionalLight.hpp" />
+    <ClInclude Include="Headers\ECS\Systems\DirectionalLightSystem.hpp" />
+    <ClInclude Include="Headers\Resources\Material.hpp" />
+    <ClInclude Include="Headers\ECS\Components\MeshRenderer.hpp" />
+    <ClInclude Include="Headers\ECS\Components\Transform.hpp" />
+    <ClInclude Include="Headers\ECS\ECS.hpp" />
+    <ClInclude Include="Headers\ECS\Systems\CameraSystem.hpp" />
+    <ClInclude Include="Headers\ECS\Systems\MeshRendererSystem.hpp" />
+    <ClInclude Include="Headers\framework.hpp" />
+    <ClInclude Include="Headers\LowRenderer\Camera.hpp" />
+    <ClInclude Include="Headers\Maths\Maths.hpp" />
+    <ClInclude Include="Headers\Maths\MathsStream.hpp" />
+    <ClInclude Include="Headers\pch.hpp" />
+    <ClInclude Include="Headers\Resources\IResource.hpp" />
+    <ClInclude Include="Headers\Resources\Mesh.hpp" />
+    <ClInclude Include="Headers\Resources\ResourceManager.hpp" />
+    <ClInclude Include="Headers\Resources\Resources.hpp" />
+    <ClInclude Include="Headers\Resources\Shader.hpp" />
+    <ClInclude Include="Headers\LowRenderer\ILight.hpp" />
+    <ClInclude Include="Headers\LowRenderer\PointLight.hpp" />
+    <ClInclude Include="Headers\ECS\Components\PointLightComponent.hpp" />
+    <ClInclude Include="Headers\Resources\Sound.hpp" />
+    <ClInclude Include="Headers\Resources\Texture.hpp" />
+    <ClInclude Include="Sources\ECS\Components\Camera.cpp" />
+    <ClInclude Include="Sources\ECS\Systems\CameraSystem.cpp" />
+    <ClInclude Include="Sources\ECS\Systems\PointLightSystem.cpp" />
+    <ClInclude Include="Sources\ECS\Systems\TransformSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Sources\Resources\Sound.cpp" />
-    <ClCompile Include="Sources\LowRenderer\Camera.cpp" />
+    <ClCompile Include="Externals\src\glad\glad.cpp" />
+    <ClCompile Include="Externals\src\ImGui\imgui.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\src\ImGui\imgui_demo.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\src\ImGui\imgui_draw.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\src\ImGui\imgui_impl_glfw.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\src\ImGui\imgui_impl_opengl3.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\src\ImGui\imgui_widgets.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Sources\Resources\Mesh.cpp" />
+    <ClCompile Include="Sources\ECS\Components\PointLightComponent.cpp" />
+    <ClCompile Include="Sources\ECS\Components\SpotLightComponent.cpp" />
+    <ClCompile Include="Sources\ECS\Components\DirectionalLightComponent.cpp" />
+    <ClCompile Include="Sources\LowRenderer\PointLight.cpp" />
+    <ClCompile Include="Sources\LowRenderer\ILight.cpp" />
+    <ClCompile Include="Sources\ECS\Components\Transform.cpp" />
+    <ClCompile Include="Sources\ECS\Systems\ModelRendererSystem.cpp" />
+    <ClCompile Include="Sources\ECS\Systems\SpotLightSystem.cpp" />
+    <ClCompile Include="Sources\LowRenderer\SpotLight.cpp" />
+    <ClCompile Include="Sources\LowRenderer\DirectionalLight.cpp" />
+    <ClCompile Include="Sources\ECS\Systems\DirectionalLightSystem.cpp" />
+    <ClCompile Include="Sources\Resources\Material.cpp" />
+    <ClCompile Include="Sources\ECS\Components\MeshRenderer.cpp" />
+    <ClCompile Include="Sources\Core\Engine.cpp" />
+    <ClCompile Include="Sources\Core\ImGuiEngine.cpp" />
     <ClCompile Include="Sources\Core\Log.cpp" />
-    <ClCompile Include="Sources\Core\Maths.cpp" />
+    <ClCompile Include="Sources\Core\OpenGLWrapper.cpp" />
+    <ClCompile Include="Sources\Core\RHI.cpp" />
+    <ClCompile Include="Sources\Core\Utils\Color.cpp" />
+    <ClCompile Include="Sources\Core\Window.cpp" />
+    <ClCompile Include="Sources\dllmain.cpp" />
+    <ClCompile Include="Sources\ECS\Base\BaseSystem.cpp" />
+    <ClCompile Include="Sources\ECS\Base\EntityManager.cpp" />
+    <ClCompile Include="Sources\ECS\Systems\MeshRendererSystem.cpp" />
+    <ClCompile Include="Sources\LowRenderer\Camera.cpp" />
+    <ClCompile Include="Sources\Maths\Maths.cpp" />
+    <ClCompile Include="Sources\Maths\MathsStream.cpp" />
+    <ClCompile Include="Sources\pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Sources\Resources\IResource.cpp" />
     <ClCompile Include="Sources\Resources\ResourceManager.cpp" />
     <ClCompile Include="Sources\Resources\Shader.cpp" />
-    <ClCompile Include="Sources\Core\RHI.cpp" />
-    <ClCompile Include="Sources\Core\Utils\Color.cpp" />
-    <ClCompile Include="Sources\dllmain.cpp" />
-    <ClCompile Include="Sources\Engine.cpp" />
-    <ClCompile Include="Sources\pch.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="Sources\Core\Window.cpp" />
+    <ClCompile Include="Sources\Resources\Sound.cpp" />
     <ClCompile Include="Sources\Resources\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Shaders\basicFragment.shader" />
-    <None Include="Assets\Shaders\basicVertex.shader" />
+    <None Include="cpp.hint" />
+    <None Include="Headers\ECS\Base\Entity.inl" />
+    <None Include="Headers\ECS\Base\EntityManager.inl" />
+    <None Include="Headers\ECS\Base\Types.inl" />
+    <None Include="Headers\Resources\ResourceManager.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

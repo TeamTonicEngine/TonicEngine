@@ -23,9 +23,3 @@ CMakeLists.txt
 #To exclude imgui.ini and other .ini file
 #Need to create a default docking position for imgui to not break the UI
 *.ini
-
-!/TonicUnitTest/packages/**/Debug/
-!/TonicUnitTest/packages/**/Release/
-!/TonicUnitTest/packages/**/x64/
-!/TonicUnitTest/packages/**/x86/
-!/TonicUnitTest/packages/**/build/

@@ -19,37 +19,69 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Externals\src\glad\glad.cpp" />
-    <ClCompile Include="Externals\src\ImGui\imgui_tables.cpp" />
-    <ClCompile Include="Sources\Core\EngineOverride\GL_Model.cpp" />
-    <ClCompile Include="Sources\Core\Applications\AppEditor.cpp" />
-    <ClCompile Include="Externals\src\ImGui\imgui.cpp" />
-    <ClCompile Include="Externals\src\ImGui\imgui_draw.cpp" />
-    <ClCompile Include="Externals\src\ImGui\imgui_impl_glfw.cpp" />
-    <ClCompile Include="Externals\src\ImGui\imgui_impl_opengl3.cpp" />
-    <ClCompile Include="Externals\src\ImGui\imgui_widgets.cpp" />
-    <ClCompile Include="Sources\Core\EngineOverride\GL_RHI.cpp" />
-    <ClCompile Include="Sources\Core\EngineOverride\WindowOverride.cpp" />
-    <ClCompile Include="Sources\EditorWindow.cpp" />
-    <ClCompile Include="Sources\main.cpp" />
+    <ClCompile Include="..\TonicEngine\Externals\src\glad\glad.cpp" />
+    <ClCompile Include="Externals\src\ImGui\imgui.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\src\ImGui\imgui_demo.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\src\ImGui\imgui_draw.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\src\ImGui\imgui_impl_glfw.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\src\ImGui\imgui_impl_opengl3.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\src\ImGui\imgui_widgets.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Sources\Core\AppEditor.cpp" />
+    <ClCompile Include="Sources\Core\EditorWindow.cpp" />
+    <ClCompile Include="Sources\Core\main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Headers\Core\EngineOverride\GL_Model.hpp" />
-    <ClInclude Include="Headers\Core\Applications\AppEditor.hpp" />
-    <ClInclude Include="Headers\Core\Applications\Input.hpp" />
-    <ClInclude Include="Headers\Core\EngineOverride\GL_RHI.hpp" />
-    <ClInclude Include="Headers\Core\EngineOverride\WindowOverride.hpp" />
-    <ClInclude Include="Headers\EditorWindow.hpp" />
+    <ClInclude Include="Externals\include\GLFW\glfw3.hpp" />
+    <ClInclude Include="Externals\include\GLFW\glfw3native.hpp" />
+    <ClInclude Include="Externals\include\ImGui\imconfig.h" />
+    <ClInclude Include="Externals\include\ImGui\imgui.h" />
+    <ClInclude Include="Externals\include\ImGui\imgui_impl_glfw.h" />
+    <ClInclude Include="Externals\include\ImGui\imgui_impl_opengl3.h" />
+    <ClInclude Include="Externals\include\ImGui\imgui_internal.h" />
+    <ClInclude Include="Externals\include\ImGui\imstb_rectpack.h" />
+    <ClInclude Include="Externals\include\ImGui\imstb_textedit.h" />
+    <ClInclude Include="Externals\include\ImGui\imstb_truetype.h" />
+    <ClInclude Include="Externals\include\KHR\khrplatform.hpp" />
+    <ClInclude Include="Headers\Core\AppEditor.hpp" />
+    <ClInclude Include="Headers\Core\EditorWindow.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Shaders\BASIC\basicFragment.shader" />
-    <None Include="Assets\Shaders\BASIC\basicVertex.shader" />
-    <None Include="Assets\Shaders\PBR\pbrFragment.shader" />
-    <None Include="Assets\Shaders\PBR\pbrVertex.shader" />
+    <ProjectReference Include="..\TonicEngine\TonicEngine.vcxproj">
+      <Project>{1b531902-a45d-4f97-842e-d18c220a3920}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Assets\Textures\awesomeface.jpg" />
-    <Image Include="Assets\Textures\container.jpg" />
+    <Library Include="Externals\libs\glfw3.lib" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -157,14 +189,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)TonicEditor\Externals\include;$(SolutionDir)TonicEditor\Headers;$(SolutionDir)TonicEngine\Headers;./Externals/include/GLM;./Externals/include/GLFW/include;./Externals/include/stb-master/;./Externals/include/tinyobjloader;./Externals/include;$(SolutionDir)TonicEngine\Assets\Shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)TonicEditor\Externals\include;$(SolutionDir)TonicEditor\Headers;$(SolutionDir)TonicEngine\Headers;./Externals/include/GLM;./Externals/include/GLFW/include;./Externals/include/stb-master/;./Externals/include/tinyobjloader;./Externals/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;TonicEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)$(IntDir);./Externals/libs;./Externals/include/GLFW/lib-vc2015</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;TonicEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(IntDir);$(ProjectDir)Externals\libs;./Externals/include/GLFW/lib-vc2015;</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -175,7 +207,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)TonicEditor\Externals\include;$(SolutionDir)TonicEditor\Headers;$(SolutionDir)TonicEngine\Headers;./Externals/include/GLM;./Externals/include/GLFW/include;./Externals/include/stb-master/;./Externals/include/tinyobjloader;./Externals/include;$(SolutionDir)TonicEngine\Assets\Shaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)TonicEditor\Externals\include;$(SolutionDir)TonicEditor\Headers;$(SolutionDir)TonicEngine\Headers;./Externals/include/GLM;./Externals/include/GLFW/include;./Externals/include/stb-master/;./Externals/include/tinyobjloader;./Externals/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -183,8 +215,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;TonicEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)$(IntDir);./Externals/libs;./Externals/include/GLFW/lib-vc2015</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;TonicEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(IntDir);$(ProjectDir)Externals\libs;./Externals/include/GLFW/lib-vc2015;</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,36 +1,35 @@
 #include "pch.hpp"
-#include "TonicEngine/LowRenderer/Camera.hpp"
+
+#include "LowRenderer/Camera.hpp"
+#include "ECS/Components/Transform.hpp"
 
 #include <cmath>
 #include <iostream>
 
 using namespace Maths;
-Camera::Camera(unsigned int _width, unsigned int _height)
+
+LowRenderer::Cameras::Camera::Camera(unsigned int _width, unsigned int _height)
 {
 	zNear = 0.1f;
 	zFar = 100.f;
 	fovY = Constants::PI_2;
-	//Transform part
-	eye = Vec3{ 0.f,0.f,-3.f };
-	center = Vec3{ 0.f,0.f,0.f };
-	up = Vec3{ 0.f,1.f,0.f };
-	// forward normalized inside SetView()
 
 	// width and height are useful to compute projection matrix with the right aspect ratio
 	width = _width;
 	height = _height;
 	aspect = (float)_width / _height;
-	SetView();
+	SetView(Vec3(0.f, 0.f, 0.f), Vec3::FORWARD, Vec3::UP);
 	SetProjection();
 	ComputeViewProjection();
 }
-void Camera::Update()
+
+void LowRenderer::Cameras::Camera::Update(Vec3 _position, Quat _rotation)
 {
 	//Only active cameras should be updated
 	if (!bUsed)
 		return;
 	if (bViewChanged)
-		SetView();
+		SetView(_position, _rotation);
 	if (bProjChanged)
 		SetProjection();
 	if (bViewChanged || bProjChanged)
@@ -40,51 +39,41 @@ void Camera::Update()
 	bProjChanged = false;
 }
 
-void Camera::Move(const Vec3& _velocity)
+// Remember to compute ViewProjection after this (or after view)
+void LowRenderer::Cameras::Camera::SetView(Vec3 _position, Quat _rotation)
 {
-	eye = eye + _velocity;
-	center = center + _velocity;
-}
-
-void Camera::Turn(float _angle, Vec3 _axis)
-{
-	Quat rotator = Quaternions::FromAngleAxis(_angle, _axis);
-	forward = rotator.RotateVector(forward);
-	up = rotator.RotateVector(up);
-	//Insure the normalization
-	forward=(forward).GetNormalized();
-	up = (up).GetNormalized();
-
-	if (bPerspectiveMode)
-	{
-		center = eye + forward;
-		return;
-	}
-	else
-		eye = center - forward * orthoScale;
-}
-
-
-// Remember to compute ViewProjection after this (or after projection)
-void Camera::SetView()
-{
-	view = Matrices::LookAt(forward, up);
-	forward = (center - eye).GetNormalized();
 	using namespace Vectors;
-	Vec3 zC = -forward;
-	Vec3 xC = CrossProduct(up, zC).GetNormalized();
+	_rotation.ToEulerAngles();
+	Vec3 zC = _rotation.RotateVector(Vec3{ 0.f,0.f,-1.f });
+	Vec3 xC = _rotation.RotateVector(Vec3{ 0.f,1.f,1.f });
 	Vec3 yC = CrossProduct(zC, xC);
 
 	view = {
 	xC.x, yC.x, zC.x, 0.f,
 	xC.y, yC.y, zC.y, 0.f,
 	xC.z, yC.z, zC.z, 0.f,
-	-DotProduct(xC, eye), -DotProduct(yC, eye), -DotProduct(zC, eye), 1.f
-		};
+	-DotProduct(xC, _position), -DotProduct(yC, _position), -DotProduct(zC, _position), 1.f
+	};
+}
+
+// Remember to compute ViewProjection after this (or after projection)
+void LowRenderer::Cameras::Camera::SetView(Vec3 _position, Vec3 _forward, Vec3 _up)
+{
+	using namespace Vectors;
+	Vec3 zC = -_forward;
+	Vec3 xC = CrossProduct(_up, zC).GetNormalized();
+	Vec3 yC = CrossProduct(zC, xC);
+
+	view = {
+	xC.x, yC.x, zC.x, 0.f,
+	xC.y, yC.y, zC.y, 0.f,
+	xC.z, yC.z, zC.z, 0.f,
+	-DotProduct(xC, _position), -DotProduct(yC, _position), -DotProduct(zC, _position), 1.f
+	};
 }
 
 // Remember to compute ViewProjection after this (or after view)
-void Camera::SetProjection()
+void LowRenderer::Cameras::Camera::SetProjection()
 {
 	if (bPerspectiveMode)
 		projection = Perspective(fovY, aspect, zNear, zFar);
@@ -92,22 +81,10 @@ void Camera::SetProjection()
 		projection = Orthographic(-orthoScale, orthoScale, -orthoScale, orthoScale);
 }
 
-void Camera::ComputeViewProjection() {
-	viewProjection = projection * view;
-}
+void LowRenderer::Cameras::Camera::ComputeViewProjection() { viewProjection = projection * view; }
 
-void Camera::LookAt(float _x, float _y, float _z) {
-	LookAt({ _x,_y,_z });
-}
-
-void Camera::LookAt(const Vec3& _target)
-{
-	center = _target;
-	forward = (center - eye).GetNormalized();
-	bViewChanged = true;
-}
 /*
-void Camera::ShowImGuiControls()
+void LowRenderer::Cameras::Camera::ShowImGuiControls()
 {
 	// View
 	if (ImGui::CollapsingHeader("Controls", ImGuiTreeNodeFlags_DefaultOpen))
@@ -165,30 +142,78 @@ void Camera::ShowImGuiControls()
 }
 */
 
-Mat4 Camera::Frustum(float _left, float _right, float _bottom, float _top, float _near, float _far)
+Mat4 LowRenderer::Cameras::Camera::Frustum(float _left, float _right, float _bottom, float _top, float _near, float _far)
 {
 	return Matrices::Frustum(_left, _right, _bottom, _top, _near, _far);
 }
 
-Mat4 Camera::Perspective(float _fovY, float _aspect, float _near, float _far)
+Mat4 LowRenderer::Cameras::Camera::Perspective(float _fovY, float _aspect, float _near, float _far)
 {
 	return Matrices::Perspective(_fovY, _aspect, _near, _far);
 }
 
-Mat4 Camera::Orthographic(float _left, float _right, float _bottom, float _top)
+Mat4 LowRenderer::Cameras::Camera::Orthographic(float _left, float _right, float _bottom, float _top)
 {
 	return Matrices::Ortho(_left, _right, _bottom, _top, zNear, zFar);
 }
 
-
-FreeCamera::FreeCamera(unsigned int _width, unsigned int _height) :Camera(_width, _height)
+LowRenderer::Cameras::FreeCamera::FreeCamera(unsigned int _width, unsigned int _height) : Camera(_width, _height)
 {
+	bUsed = true;
+
+	//Transform part
+	eye = Vec3{ 0.f,0.f,-3.f };
+	center = Vec3(0.f);
+	up = Vec3::UP;
+	forward = Vec3::FORWARD;
+	// forward normalized inside SetView()
+
 	camSpeed = 8.f;
 	camRotationSpeed = 1.f;
 	zoomSpeed = 0.1f;
+
+	SetView();
+	SetProjection();
+	ComputeViewProjection();
 }
 
-void FreeCamera::ProcessInput(float _deltaTime, const CameraInput& _input)
+// Remember to compute ViewProjection after this (or after projection)
+void LowRenderer::Cameras::FreeCamera::SetView() { Camera::SetView(eye, forward, up); }
+
+void LowRenderer::Cameras::FreeCamera::Move(const Vec3& _velocity)
+{
+	eye = eye + _velocity;
+	center = center + _velocity;
+}
+
+void LowRenderer::Cameras::FreeCamera::Turn(float _angle, Vec3 _axis)
+{
+	Quat rotator = Quaternions::FromAngleAxis(_angle, _axis);
+	forward = rotator.RotateVector(forward);
+	up = rotator.RotateVector(up);
+	//Insure the normalization
+	forward = (forward).GetNormalized();
+	up = (up).GetNormalized();
+
+	if (bPerspectiveMode)
+	{
+		center = eye + forward;
+		return;
+	}
+	else
+		eye = center - forward * orthoScale;
+}
+
+void LowRenderer::Cameras::FreeCamera::LookAt(float _x, float _y, float _z) { LookAt({ _x,_y,_z }); }
+
+void LowRenderer::Cameras::FreeCamera::LookAt(const Vec3& _target)
+{
+	center = _target;
+	forward = (center - eye).GetNormalized();
+	bViewChanged = true;
+}
+
+void LowRenderer::Cameras::FreeCamera::ProcessInput(float _deltaTime, const CameraInput& _input)
 {
 	float velocity = _deltaTime * camSpeed;
 
@@ -199,12 +224,13 @@ void FreeCamera::ProcessInput(float _deltaTime, const CameraInput& _input)
 	}
 	if (_input.NoInputs())
 		return;
+
 	bViewChanged = true;
-	
-	if (_input.deltaY)
-		Turn(_input.deltaY * _deltaTime * camRotationSpeed, Vectors::CrossProduct(up, forward).GetNormalized());
 	if (_input.deltaX)
 		Turn(_input.deltaX * _deltaTime * camRotationSpeed, Vec3::UP);
+	if (_input.deltaY)
+		Turn(_input.deltaY * _deltaTime * camRotationSpeed, Vectors::CrossProduct(up, forward).GetNormalized());
+
 	// MOVEMENTS
 	// ---------
 	if (_input.bMoveForward)
@@ -215,7 +241,7 @@ void FreeCamera::ProcessInput(float _deltaTime, const CameraInput& _input)
 	if (_input.bMoveUp)
 		Move(up * velocity);
 	if (_input.bMoveDown)
-		Move(-up* velocity);
+		Move(-up * velocity);
 
 	if (_input.bMoveLeft)
 	{
@@ -224,13 +250,12 @@ void FreeCamera::ProcessInput(float _deltaTime, const CameraInput& _input)
 	}
 	if (_input.bMoveRight)
 	{
-		Vec3 right = Vectors::CrossProduct(forward, up).GetNormalized(); 
+		Vec3 right = Vectors::CrossProduct(forward, up).GetNormalized();
 		Move(right * velocity);
 	}
 }
 
-
-void FreeCamera::Zoom(float _yoffset)
+void LowRenderer::Cameras::FreeCamera::Zoom(float _yoffset)
 {
 	if (bPerspectiveMode)
 	{
@@ -247,24 +272,37 @@ void FreeCamera::Zoom(float _yoffset)
 	}
 	bProjChanged = true;
 }
-void FreeCamera::Teleport(Vec3 _position)
+
+void LowRenderer::Cameras::FreeCamera::Teleport(Vec3 _position)
 {
 	eye = _position;
 	center = eye + forward;
 	SetView();
 }
-void FreeCamera::Teleport(Vec3 _position, Vec3 _target)
+
+void LowRenderer::Cameras::FreeCamera::Teleport(Vec3 _position, Vec3 _target)
 {
 	eye = _position;
 	center = _target;
 	SetView();
 }
 
-bool CameraInput::NoInputs() const
+void LowRenderer::Cameras::FreeCamera::Update()
 {
-	{
-		if (deltaX != 0.f || deltaY != 0.f || bMoveForward || bMoveBackward || bMoveUp || bMoveDown || bMoveLeft || bMoveRight)
-			return false;
-		return true;
-	}
+	if (bViewChanged)
+		SetView();
+
+	if (bProjChanged)
+		SetProjection();
+
+	if (bViewChanged || bProjChanged)
+		ComputeViewProjection();
+
+	bViewChanged = false;
+	bProjChanged = false;
+}
+
+bool LowRenderer::Cameras::CameraInput::NoInputs() const
+{
+	return !(deltaX != 0.f || deltaY != 0.f || bMoveForward || bMoveBackward || bMoveUp || bMoveDown || bMoveLeft || bMoveRight);
 }

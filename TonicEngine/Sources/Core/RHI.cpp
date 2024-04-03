@@ -1,73 +1,90 @@
-#include "pch.hpp"
-#include "TonicEngine/Core/RHI.hpp"
-#include "TonicEngine\Resources\IResource.hpp"
+#include <pch.hpp>
 
-void Core::RHI::Init(u32 width, u32 height)
+#include "Core/RHI.hpp"
+
+const bool Core::Renderer::RHI::Init(Core::Applications::Window* _p_window)
 {
-
+	p_window_ = _p_window;
+	// Here in child add any additional function to link the window to specific RHI
+	return true;
 }
 
-void Core::RHI::StartFrame(FreeCamera* _camera, float _deltaTime)
-{
+const unsigned Core::Renderer::RHI::GetFrameBufferID() const { return frameBufferID; }
 
+void Core::Renderer::RHI::SetCamera(LowRenderer::Cameras::FreeCamera* _p_newCamera) { p_currentCamera_ = _p_newCamera; }
+
+void Core::Renderer::RHI::LoadResource(Resources::IResource* _p_resource)
+{
+	if (!_p_resource)
+		throw ("Nullptr sent to Core::Renderer::RHI::LoadResource.");
+	//TODO: Uncomment as soon as ResourceManager is created and Type enum is set
+	/*
+	switch (_p_resource.Type()) // returns enum type, if none -> throw, else call right class function
+	{
+	case(ResourceType::Material):
+		LoadMaterial(dynamic_cast<Material*>(_p_resource));
+		break;
+	case(ResourceType::Mesh):
+		LoadMesh(dynamic_cast<Mesh*>(_p_resource));
+		break;
+	case(ResourceType::Texture):
+		LoadTexture(dynamic_cast<Texture*>(_p_resource));
+		break;
+	case(ResourceType::Shader):
+		LoadShader(dynamic_cast<Shader*>(_p_resource));
+		break;
+	default:
+		throw ("Unknown Resource Type sent to Core::Renderer::RHI::LoadResource.");
+	}
+	*/
 }
-
-void Core::RHI::EndFrame()
+void Core::Renderer::RHI::UseResource(const Resources::IResource* _p_resource)
 {
-
+	if (!_p_resource)
+		throw ("Nullptr sent to Core::Renderer::RHI::UseResource.");
+	//TODO: Uncomment as soon as ResourceManager is created and Type enum is set
+/*
+	switch (_p_resource.Type()) // returns enum type, if none -> throw, else call right class function
+	{
+	case(ResourceType::Material):
+		UseMaterial(dynamic_cast<Material*>(_p_resource));
+		break;
+	case(ResourceType::Mesh):
+		UseMesh(dynamic_cast<Mesh*>(_p_resource));
+		break;
+	case(ResourceType::Texture):
+		UseTexture(dynamic_cast<Texture*>(_p_resource));
+		break;
+	case(ResourceType::Shader):
+		UseShader(dynamic_cast<Shader*>(_p_resource));
+		break;
+	default:
+		throw ("Unknown Resource Type sent to Core::Renderer::RHI::UseResource.");
+	}
+	*/
 }
-
-void Core::RHI::InitShader()
+void Core::Renderer::RHI::UnloadResource(const Resources::IResource* _p_resource)
 {
-
-}
-
-void Core::RHI::CheckShaderCompileErrors(unsigned int shader, std::string type)
-{
-
-}
-
-
-void Core::RHI::Draw()
-{
-
-}
-
-void Core::RHI::InitFrameBuffer()
-{
-
-}
-
-void Core::RHI::Transform(FreeCamera* _camera)
-{
-
-}
-
-void Core::RHI::BindFrameBuffer()
-{
-
-}
-
-void Core::RHI::UnbindFrameBuffer()
-{
-
-}
-
-void Core::RHI::SetInt(const std::string& _shaderName, const std::string& _name, int _value)
-{
-
-}
-
-void Core::RHI::RescaleFrameBuffer(s32 width, s32 height)
-{
-
-}
-
-u32 Core::RHI::GetTextureID()
-{
-	return 0;
-}
-void Core::RHI::CleanUp()
-{
-
+	if (!_p_resource)
+		throw ("Nullptr sent to Core::Renderer::RHI::UnloadResource.");
+	//TODO: Uncomment as soon as ResourceManager is created and Type enum is set
+/*
+	switch (_p_resource.Type()) // returns enum type, if none -> throw, else call right class function
+	{
+	case(ResourceType::Material):
+		UnloadMaterial(dynamic_cast<Material*>(_p_resource));
+		break;
+	case(ResourceType::Mesh):
+		UnloadMesh(dynamic_cast<Mesh*>(_p_resource));
+		break;
+	case(ResourceType::Texture):
+		UnloadTexture(dynamic_cast<Texture*>(_p_resource));
+		break;
+	case(ResourceType::Shader):
+		UnloadShader(dynamic_cast<Shader*>(_p_resource));
+		break;
+	default:
+		throw ("Unknown Resource Type sent to Core::Renderer::RHI::UnloadResource.");
+	}
+	*/
 }
