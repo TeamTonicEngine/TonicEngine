@@ -69,7 +69,7 @@ void Core::Applications::EditorWindow::InitUIWindow()
 
 				f32_4 cColor = Engine::GetRenderer()->GetClearColor().ToFloat();
 				//static float cColor[3];
-				
+
 				if (ImGui::ColorEdit3("Clear color", &cColor.x, ImGuiColorEditFlags_NoInputs))
 				{
 					Engine::GetRenderer()->ChangeClearColor(Color::CreateRGBAFloat(cColor.x, cColor.y, cColor.z, 1.f));
@@ -151,8 +151,11 @@ void Core::Applications::EditorWindow::InitUIWindow()
 				{
 					for (int i = 0; i < static_cast<Resources::Archi*>(p_projectArchi_)->subFolder.size(); [&] {
 						i++;
-							if (i % temp != 0)
-								x += 84;
+							if (temp != 0)
+							{
+								if (i % temp != 0)
+									x += 84;
+							}
 							else
 							{
 								x = 0;
