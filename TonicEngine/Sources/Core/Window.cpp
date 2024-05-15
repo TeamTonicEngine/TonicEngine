@@ -37,7 +37,8 @@ const bool Core::Applications::Window::Init()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	
+	//Anti-aliasing
+	glfwWindowHint(GLFW_SAMPLES, 4);
 	// Create the window
 	p_s_handle_ = (void*)glfwCreateWindow(width_, height_, nameWindow_, nullptr, nullptr);
 	if (p_s_handle_ == nullptr)
@@ -63,8 +64,19 @@ void* Core::Applications::Window::GetProcAddress()
 
 unsigned* Core::Applications::Window::GetScreenSize()
 {
-	static unsigned size[2] = { width_, height_ };
+	static unsigned size[2] = {width_, height_};
+	//glfwGetWindowMonitor(static_cast<GLFWwindow*>(p_s_handle_));
+	const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+
+	size[0] = mode->width;
+	size[1] = mode->height;
+
 	return &size[0];
+}
+
+u32_2 Core::Applications::Window::GetWindowSize()
+{
+	return { width_, height_ };
 }
 
 void Core::Applications::Window::Resized()

@@ -27,7 +27,7 @@ namespace ECS
 		**********************************************/
 	private:
 		//this could be an array as well, more powerful, but less practical
-		std::vector<T> data;
+		std::vector<T> data_;
 
 		/*********************************************
 				FUNCTIONS BLOC
@@ -38,24 +38,29 @@ namespace ECS
 
 		inline void Insert(const T& _component)
 		{
-			auto comp = std::find_if(data.begin(), data.end(), [&](const T& _c) { return _c.GetID() == _component.GetID(); });
-			if (comp == data.end())
-				data.push_back(_component);
+			auto comp = std::find_if(data_.begin(), data_.end(), [&](const T& _c) { return _c.GetID() == _component.GetID(); });
+			if (comp == data_.end())
+				data_.push_back(_component);
 		}
 
 		inline T& Get(const EntityID _entity)
 		{
-			auto comp = std::find_if(data.begin(), data.end(), [&](const T& _c) { return _c.GetID() == _entity; });
-			if (comp == data.end())
+			auto comp = std::find_if(data_.begin(), data_.end(), [&](const T& _c) { return _c.GetID() == _entity; });
+			if (comp == data_.end())
 				DEBUG_WARNING("Trying to get non-existing component!");
 			return *comp;
 		}
 
 		inline void Erase(const EntityID _entity) override final
 		{
-			auto comp = std::find_if(data.begin(), data.end(), [&](const T& _c) { return _c.GetID() == _entity; });
-			if (comp != data.end())
-				data.erase(comp);
+			auto comp = std::find_if(data_.begin(), data_.end(), [&](const T& _c) { return _c.GetID() == _entity; });
+			if (comp != data_.end())
+				data_.erase(comp);
+		}
+
+		inline std::vector<T> GetData()
+		{
+			return data_;
 		}
 	};
 }

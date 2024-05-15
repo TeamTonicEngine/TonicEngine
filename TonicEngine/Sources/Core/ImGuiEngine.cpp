@@ -45,10 +45,10 @@ void Core::Applications::ImGuiEngine::EndFrame()
 {
 	ImGui::Render();
 	
-	int display_w, display_h;
-	glfwGetFramebufferSize((GLFWwindow*)(p_window_), &display_w, &display_h);
-	Engine::GetRenderer()->ResizeViewPort(display_w, display_h);
-	Engine::GetRenderer()->ClearColor();
+	u32* display = ENGINE.WDW->GetScreenSize();
+
+	Engine::GetRenderer()->ResizeViewPort(display[0], display[1]);
+	//Engine::GetRenderer()->ClearColor();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)

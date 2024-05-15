@@ -66,7 +66,7 @@ namespace Core::Debug
 		std::ofstream output_;
 		HANDLE handle_ = GetStdHandle(STD_OUTPUT_HANDLE);
 		// Singleton /!\ BE CAREFUL: IT IS NOT THREAD SAFE
-		static Log* s_instance_;
+		static Log* p_s_instance_;
 
 		/*********************************************
 				FUNCTIONS BLOC

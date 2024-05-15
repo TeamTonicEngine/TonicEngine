@@ -12,7 +12,7 @@ void Core::Debug::FormatString(char* _buffer, size_t _bufferSize, const char* _f
 	va_end(args);
 }
 
-Core::Debug::Log* Core::Debug::Log::s_instance_ = nullptr;
+Core::Debug::Log* Core::Debug::Log::p_s_instance_ = nullptr;
 
 Core::Debug::Log::~Log()
 {
@@ -26,15 +26,15 @@ Core::Debug::Log::~Log()
 
 Core::Debug::Log* Core::Debug::Log::GetInstance()
 {
-	if (s_instance_ == nullptr)
-		s_instance_ = new Core::Debug::Log();
-	return s_instance_;
+	if (p_s_instance_ == nullptr)
+		p_s_instance_ = new Core::Debug::Log();
+	return p_s_instance_;
 }
 
 void Core::Debug::Log::DeleteInstance()
 {
 	// Useless to check: delete nullptr is safe
-	delete s_instance_;
+	delete p_s_instance_;
 }
 
 void Core::Debug::Log::OpenFile(std::filesystem::path const& _fileName, bool _erase)

@@ -35,10 +35,10 @@ namespace Resources
 	{
 		vector<Vertex> vertices_;
 		vector<unsigned int> indices_;
-		unsigned VAO_ = -1, VBO_ = -1, EBO_ = -1;
+		unsigned VAO_ = (unsigned)-1, VBO_ = (unsigned)-1, EBO_ = (unsigned)-1;
 	};
 
-	class Mesh : public IResource
+	class Mesh : public IResource, public std::enable_shared_from_this<Mesh>
 	{
 		/**********************************************
 				VARIABLES BLOC
@@ -56,20 +56,23 @@ namespace Resources
 		*********************************************/
 	public:
 		TONIC_ENGINE_API Mesh();
-		TONIC_ENGINE_API ~Mesh();
 
-		void TONIC_ENGINE_API ReadFile(const string _name) override;
+		void TONIC_ENGINE_API Destroy() override;
+
 		void TONIC_ENGINE_API ReadFile(const fs::path _path) override;
+		void TONIC_ENGINE_API LoadFile() override;
 
 		void TONIC_ENGINE_API MetaWriteFile(const string _name) override {};
 		void TONIC_ENGINE_API MetaReadFile(const string _name) override {};
 
 		void TONIC_ENGINE_API ResourceUnload() override {};
 
-		void TONIC_ENGINE_API Use() const override;
+		void TONIC_ENGINE_API Use() override;
+		void TONIC_ENGINE_API Use(std::vector <Resources::MaterialPtr> _p_materials);
 
 	private:
 		void TONIC_ENGINE_API ProcessNode(void* _node);
 		Resources::BasicMesh TONIC_ENGINE_API ProcessSubMesh(void* _mesh);
 	};
+	using MeshPtr = std::shared_ptr<Mesh>;
 }

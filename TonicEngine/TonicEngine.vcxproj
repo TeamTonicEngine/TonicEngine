@@ -143,7 +143,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>glfw3.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;assimp-vc143-mt.lib;vorbis.lib;vorbisenc.lib;vorbisfile.lib;ogg.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)TonicEngine\Externals\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
@@ -169,7 +169,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>glfw3.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;assimp-vc143-mt.lib;vorbis.lib;vorbisenc.lib;vorbisfile.lib;ogg.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)TonicEngine\Externals\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
@@ -177,14 +177,258 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Headers\ECS\Components\Camera.hpp" />
+    <ClInclude Include="Externals\include\Jolt\Geometry\AABox.h" />
+    <ClInclude Include="Externals\include\Jolt\Geometry\AABox4.h" />
+    <ClInclude Include="Externals\include\Jolt\Geometry\ClipPoly.h" />
+    <ClInclude Include="Externals\include\Jolt\Geometry\ClosestPoint.h" />
+    <ClInclude Include="Externals\include\Jolt\Geometry\ConvexHullBuilder.h" />
+    <ClInclude Include="Externals\include\Jolt\Geometry\ConvexHullBuilder2D.h" />
+    <ClInclude Include="Externals\include\Jolt\Geometry\ConvexSupport.h" />
+    <ClInclude Include="Externals\include\Jolt\Geometry\Ellipse.h" />
+    <ClInclude Include="Externals\include\Jolt\Geometry\EPAConvexHullBuilder.h" />
+    <ClInclude Include="Externals\include\Jolt\Geometry\EPAPenetrationDepth.h" />
+    <ClInclude Include="Externals\include\Jolt\Geometry\GJKClosestPoint.h" />
+    <ClInclude Include="Externals\include\Jolt\Geometry\IndexedTriangle.h" />
+    <ClInclude Include="Externals\include\Jolt\Geometry\Indexify.h" />
+    <ClInclude Include="Externals\include\Jolt\Geometry\MortonCode.h" />
+    <ClInclude Include="Externals\include\Jolt\Geometry\OrientedBox.h" />
+    <ClInclude Include="Externals\include\Jolt\Geometry\Plane.h" />
+    <ClInclude Include="Externals\include\Jolt\Geometry\RayAABox.h" />
+    <ClInclude Include="Externals\include\Jolt\Geometry\RayAABox8.h" />
+    <ClInclude Include="Externals\include\Jolt\Geometry\RayCapsule.h" />
+    <ClInclude Include="Externals\include\Jolt\Geometry\RayCylinder.h" />
+    <ClInclude Include="Externals\include\Jolt\Geometry\RaySphere.h" />
+    <ClInclude Include="Externals\include\Jolt\Geometry\RayTriangle.h" />
+    <ClInclude Include="Externals\include\Jolt\Geometry\RayTriangle8.h" />
+    <ClInclude Include="Externals\include\Jolt\Geometry\Sphere.h" />
+    <ClInclude Include="Externals\include\Jolt\Geometry\Triangle.h" />
+    <ClInclude Include="Externals\include\Jolt\Math\DMat44.h" />
+    <ClInclude Include="Externals\include\Jolt\Math\Double3.h" />
+    <ClInclude Include="Externals\include\Jolt\Math\DVec3.h" />
+    <ClInclude Include="Externals\include\Jolt\Math\DynMatrix.h" />
+    <ClInclude Include="Externals\include\Jolt\Math\EigenValueSymmetric.h" />
+    <ClInclude Include="Externals\include\Jolt\Math\FindRoot.h" />
+    <ClInclude Include="Externals\include\Jolt\Math\Float2.h" />
+    <ClInclude Include="Externals\include\Jolt\Math\Float3.h" />
+    <ClInclude Include="Externals\include\Jolt\Math\Float4.h" />
+    <ClInclude Include="Externals\include\Jolt\Math\GaussianElimination.h" />
+    <ClInclude Include="Externals\include\Jolt\Math\HalfFloat.h" />
+    <ClInclude Include="Externals\include\Jolt\Math\Mat44.h" />
+    <ClInclude Include="Externals\include\Jolt\Math\Math.h" />
+    <ClInclude Include="Externals\include\Jolt\Math\MathTypes.h" />
+    <ClInclude Include="Externals\include\Jolt\Math\Matrix.h" />
+    <ClInclude Include="Externals\include\Jolt\Math\Quat.h" />
+    <ClInclude Include="Externals\include\Jolt\Math\Real.h" />
+    <ClInclude Include="Externals\include\Jolt\Math\Swizzle.h" />
+    <ClInclude Include="Externals\include\Jolt\Math\Trigonometry.h" />
+    <ClInclude Include="Externals\include\Jolt\Math\UVec4.h" />
+    <ClInclude Include="Externals\include\Jolt\Math\UVec8.h" />
+    <ClInclude Include="Externals\include\Jolt\Math\Vec3.h" />
+    <ClInclude Include="Externals\include\Jolt\Math\Vec4.h" />
+    <ClInclude Include="Externals\include\Jolt\Math\Vec8.h" />
+    <ClInclude Include="Externals\include\Jolt\Math\Vector.h" />
+    <ClInclude Include="Externals\include\Jolt\ObjectStream\GetPrimitiveTypeOfType.h" />
+    <ClInclude Include="Externals\include\Jolt\ObjectStream\ObjectStream.h" />
+    <ClInclude Include="Externals\include\Jolt\ObjectStream\ObjectStreamBinaryIn.h" />
+    <ClInclude Include="Externals\include\Jolt\ObjectStream\ObjectStreamBinaryOut.h" />
+    <ClInclude Include="Externals\include\Jolt\ObjectStream\ObjectStreamIn.h" />
+    <ClInclude Include="Externals\include\Jolt\ObjectStream\ObjectStreamOut.h" />
+    <ClInclude Include="Externals\include\Jolt\ObjectStream\ObjectStreamTextIn.h" />
+    <ClInclude Include="Externals\include\Jolt\ObjectStream\ObjectStreamTextOut.h" />
+    <ClInclude Include="Externals\include\Jolt\ObjectStream\ObjectStreamTypes.h" />
+    <ClInclude Include="Externals\include\Jolt\ObjectStream\SerializableAttribute.h" />
+    <ClInclude Include="Externals\include\Jolt\ObjectStream\SerializableAttributeEnum.h" />
+    <ClInclude Include="Externals\include\Jolt\ObjectStream\SerializableAttributeTyped.h" />
+    <ClInclude Include="Externals\include\Jolt\ObjectStream\SerializableObject.h" />
+    <ClInclude Include="Externals\include\Jolt\ObjectStream\TypeDeclarations.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Body\AllowedDOFs.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Body\Body.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Body\BodyAccess.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Body\BodyActivationListener.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Body\BodyCreationSettings.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Body\BodyFilter.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Body\BodyID.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Body\BodyInterface.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Body\BodyLock.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Body\BodyLockInterface.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Body\BodyLockMulti.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Body\BodyManager.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Body\BodyPair.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Body\BodyType.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Body\MassProperties.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Body\MotionProperties.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Body\MotionQuality.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Body\MotionType.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Character\Character.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Character\CharacterBase.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Character\CharacterVirtual.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\AABoxCast.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\ActiveEdgeMode.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\ActiveEdges.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\BackFaceMode.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\BroadPhase\BroadPhase.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\BroadPhase\BroadPhaseBruteForce.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\BroadPhase\BroadPhaseLayer.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\BroadPhase\BroadPhaseLayerInterfaceMask.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\BroadPhase\BroadPhaseLayerInterfaceTable.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\BroadPhase\BroadPhaseQuadTree.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\BroadPhase\BroadPhaseQuery.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\BroadPhase\ObjectVsBroadPhaseLayerFilterMask.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\BroadPhase\ObjectVsBroadPhaseLayerFilterTable.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\BroadPhase\QuadTree.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\CastConvexVsTriangles.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\CastResult.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\CastSphereVsTriangles.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\CollectFacesMode.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\CollideConvexVsTriangles.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\CollidePointResult.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\CollideShape.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\CollideSoftBodyVerticesVsTriangles.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\CollideSphereVsTriangles.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\CollisionCollector.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\CollisionCollectorImpl.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\CollisionDispatch.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\CollisionGroup.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\ContactListener.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\EstimateCollisionResponse.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\GroupFilter.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\GroupFilterTable.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\InternalEdgeRemovingCollector.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\ManifoldBetweenTwoFaces.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\NarrowPhaseQuery.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\NarrowPhaseStats.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\ObjectLayer.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\ObjectLayerPairFilterMask.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\ObjectLayerPairFilterTable.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\PhysicsMaterial.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\PhysicsMaterialSimple.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\RayCast.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\ShapeCast.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\ShapeFilter.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\Shape\BoxShape.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\Shape\CapsuleShape.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\Shape\CompoundShape.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\Shape\CompoundShapeVisitors.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\Shape\ConvexHullShape.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\Shape\ConvexShape.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\Shape\CylinderShape.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\Shape\DecoratedShape.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\Shape\GetTrianglesContext.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\Shape\HeightFieldShape.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\Shape\MeshShape.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\Shape\MutableCompoundShape.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\Shape\OffsetCenterOfMassShape.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\Shape\PolyhedronSubmergedVolumeCalculator.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\Shape\RotatedTranslatedShape.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\Shape\ScaledShape.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\Shape\ScaleHelpers.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\Shape\Shape.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\Shape\SphereShape.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\Shape\StaticCompoundShape.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\Shape\SubShapeID.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\Shape\SubShapeIDPair.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\Shape\TaperedCapsuleShape.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\Shape\TriangleShape.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\SortReverseAndStore.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Collision\TransformedShape.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Constraints\CalculateSolverSteps.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Constraints\ConeConstraint.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Constraints\Constraint.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Constraints\ConstraintManager.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Constraints\ConstraintPart\AngleConstraintPart.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Constraints\ConstraintPart\AxisConstraintPart.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Constraints\ConstraintPart\DualAxisConstraintPart.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Constraints\ConstraintPart\GearConstraintPart.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Constraints\ConstraintPart\HingeRotationConstraintPart.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Constraints\ConstraintPart\IndependentAxisConstraintPart.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Constraints\ConstraintPart\PointConstraintPart.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Constraints\ConstraintPart\RackAndPinionConstraintPart.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Constraints\ConstraintPart\RotationEulerConstraintPart.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Constraints\ConstraintPart\RotationQuatConstraintPart.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Constraints\ConstraintPart\SpringPart.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Constraints\ConstraintPart\SwingTwistConstraintPart.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Constraints\ContactConstraintManager.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Constraints\DistanceConstraint.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Constraints\FixedConstraint.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Constraints\GearConstraint.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Constraints\HingeConstraint.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Constraints\MotorSettings.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Constraints\PathConstraint.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Constraints\PathConstraintPath.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Constraints\PathConstraintPathHermite.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Constraints\PointConstraint.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Constraints\PulleyConstraint.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Constraints\RackAndPinionConstraint.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Constraints\SixDOFConstraint.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Constraints\SliderConstraint.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Constraints\SpringSettings.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Constraints\SwingTwistConstraint.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Constraints\TwoBodyConstraint.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\DeterminismLog.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\EActivation.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\EPhysicsUpdateError.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\IslandBuilder.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\LargeIslandSplitter.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\PhysicsLock.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\PhysicsScene.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\PhysicsSettings.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\PhysicsStepListener.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\PhysicsSystem.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\PhysicsUpdateContext.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Ragdoll\Ragdoll.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\SoftBody\SoftBodyContactListener.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\SoftBody\SoftBodyCreationSettings.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\SoftBody\SoftBodyManifold.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\SoftBody\SoftBodyMotionProperties.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\SoftBody\SoftBodyShape.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\SoftBody\SoftBodySharedSettings.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\SoftBody\SoftBodyUpdateContext.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\SoftBody\SoftBodyVertex.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\StateRecorder.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\StateRecorderImpl.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Vehicle\MotorcycleController.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Vehicle\TrackedVehicleController.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Vehicle\VehicleAntiRollBar.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Vehicle\VehicleCollisionTester.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Vehicle\VehicleConstraint.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Vehicle\VehicleController.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Vehicle\VehicleDifferential.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Vehicle\VehicleEngine.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Vehicle\VehicleTrack.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Vehicle\VehicleTransmission.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Vehicle\Wheel.h" />
+    <ClInclude Include="Externals\include\Jolt\Physics\Vehicle\WheeledVehicleController.h" />
+    <ClInclude Include="Externals\include\Jolt\Renderer\DebugRenderer.h" />
+    <ClInclude Include="Externals\include\Jolt\Renderer\DebugRendererPlayback.h" />
+    <ClInclude Include="Externals\include\Jolt\Renderer\DebugRendererRecorder.h" />
+    <ClInclude Include="Externals\include\Jolt\Renderer\DebugRendererSimple.h" />
+    <ClInclude Include="Externals\include\Jolt\Skeleton\SkeletalAnimation.h" />
+    <ClInclude Include="Externals\include\Jolt\Skeleton\Skeleton.h" />
+    <ClInclude Include="Externals\include\Jolt\Skeleton\SkeletonMapper.h" />
+    <ClInclude Include="Externals\include\Jolt\Skeleton\SkeletonPose.h" />
+    <ClInclude Include="Externals\include\Jolt\TriangleGrouper\TriangleGrouper.h" />
+    <ClInclude Include="Externals\include\Jolt\TriangleGrouper\TriangleGrouperClosestCentroid.h" />
+    <ClInclude Include="Externals\include\Jolt\TriangleGrouper\TriangleGrouperMorton.h" />
+    <ClInclude Include="Externals\include\Jolt\TriangleSplitter\TriangleSplitter.h" />
+    <ClInclude Include="Externals\include\Jolt\TriangleSplitter\TriangleSplitterBinning.h" />
+    <ClInclude Include="Externals\include\Jolt\TriangleSplitter\TriangleSplitterFixedLeafSize.h" />
+    <ClInclude Include="Externals\include\Jolt\TriangleSplitter\TriangleSplitterLongestAxis.h" />
+    <ClInclude Include="Externals\include\Jolt\TriangleSplitter\TriangleSplitterMean.h" />
+    <ClInclude Include="Externals\include\Jolt\TriangleSplitter\TriangleSplitterMorton.h" />
     <ClInclude Include="Headers\Core\Engine.hpp" />
+    <ClInclude Include="Headers\Core\InputManager.hpp" />
+    <ClInclude Include="Headers\Core\Utils\f32_2.hpp" />
+    <ClInclude Include="Headers\Core\Utils\u32_2.hpp" />
+    <ClInclude Include="Headers\ECS\Base\BaseSystem.hpp" />
+    <ClInclude Include="Headers\ECS\Systems\CollisionDetectionSystem.hpp" />
+    <ClInclude Include="Headers\ECS\Systems\AudioSourceSystem.hpp" />
+    <ClInclude Include="Headers\ECS\Components\CameraComponent.hpp" />
     <ClInclude Include="Headers\Core\ImGuiEngine.hpp" />
     <ClInclude Include="Headers\Core\Log.hpp" />
     <ClInclude Include="Headers\Core\OpenGLWrapper.hpp" />
     <ClInclude Include="Headers\Core\RHI.hpp" />
     <ClInclude Include="Headers\Core\ThreadPool.hpp" />
-    <ClInclude Include="Headers\Core\Utils\Color.hpp" />
+    <ClInclude Include="Headers\Core\Utils\TNCColor.hpp" />
     <ClInclude Include="Headers\Core\Utils\f32_4.hpp" />
     <ClInclude Include="Headers\Core\Utils\s32_2.hpp" />
     <ClInclude Include="Headers\Core\Utils\s32_3.hpp" />
@@ -193,49 +437,467 @@
     <ClInclude Include="Headers\Core\Window.hpp" />
     <ClInclude Include="Headers\DLL_API.hpp" />
     <ClInclude Include="Headers\ECS\Base\BaseComponent.hpp" />
-    <ClInclude Include="Headers\ECS\Base\BaseSystem.hpp" />
     <ClInclude Include="Headers\ECS\Base\CompList.hpp" />
-    <ClInclude Include="Headers\ECS\Base\Entity.hpp" />
+    <ClInclude Include="Headers\ECS\Base\EntityData.hpp" />
     <ClInclude Include="Headers\ECS\Base\EntityManager.hpp" />
     <ClInclude Include="Headers\ECS\Base\Types.hpp" />
     <ClInclude Include="Headers\ECS\Components.hpp" />
+    <ClInclude Include="Headers\ECS\Components\AudioSourceComponent.hpp" />
+    <ClInclude Include="Headers\ECS\Components\AudioListenerComponent.hpp" />
+    <ClInclude Include="Headers\ECS\Systems\AudioListenerSystem.hpp" />
     <ClInclude Include="Headers\ECS\Systems\TransformSystem.hpp" />
     <ClInclude Include="Headers\ECS\Systems.hpp" />
-    <ClInclude Include="Headers\ECS\Systems\ModelRendererSystem.hpp" />
     <ClInclude Include="Headers\ECS\Components\SpotLightComponent.hpp" />
     <ClInclude Include="Headers\ECS\Components\DirectionalLightComponent.hpp" />
     <ClInclude Include="Headers\ECS\Systems\PointLightSystem.hpp" />
     <ClInclude Include="Headers\ECS\Systems\SpotLightSystem.hpp" />
-    <ClInclude Include="Headers\LowRenderer\SpotLight.hpp" />
-    <ClInclude Include="Headers\LowRenderer\DirectionalLight.hpp" />
+    <ClInclude Include="Headers\LowRenderer\Cameras\FreeCamera.hpp" />
+    <ClInclude Include="Headers\LowRenderer\Lights\Lights.hpp" />
+    <ClInclude Include="Headers\LowRenderer\Lights\SpotLight.hpp" />
+    <ClInclude Include="Headers\LowRenderer\Lights\DirectionalLight.hpp" />
     <ClInclude Include="Headers\ECS\Systems\DirectionalLightSystem.hpp" />
     <ClInclude Include="Headers\Resources\Material.hpp" />
-    <ClInclude Include="Headers\ECS\Components\MeshRenderer.hpp" />
-    <ClInclude Include="Headers\ECS\Components\Transform.hpp" />
+    <ClInclude Include="Headers\ECS\Components\MeshRendererComponent.hpp" />
+    <ClInclude Include="Headers\ECS\Components\TransformComponent.hpp" />
     <ClInclude Include="Headers\ECS\ECS.hpp" />
     <ClInclude Include="Headers\ECS\Systems\CameraSystem.hpp" />
     <ClInclude Include="Headers\ECS\Systems\MeshRendererSystem.hpp" />
     <ClInclude Include="Headers\framework.hpp" />
-    <ClInclude Include="Headers\LowRenderer\Camera.hpp" />
+    <ClInclude Include="Headers\LowRenderer\Cameras\Camera.hpp" />
     <ClInclude Include="Headers\Maths\Maths.hpp" />
     <ClInclude Include="Headers\Maths\MathsStream.hpp" />
     <ClInclude Include="Headers\pch.hpp" />
     <ClInclude Include="Headers\Resources\IResource.hpp" />
     <ClInclude Include="Headers\Resources\Mesh.hpp" />
+    <ClInclude Include="Headers\Resources\Physics.hpp" />
     <ClInclude Include="Headers\Resources\ResourceManager.hpp" />
     <ClInclude Include="Headers\Resources\Resources.hpp" />
+    <ClInclude Include="Headers\Resources\Scene.hpp" />
     <ClInclude Include="Headers\Resources\Shader.hpp" />
-    <ClInclude Include="Headers\LowRenderer\ILight.hpp" />
-    <ClInclude Include="Headers\LowRenderer\PointLight.hpp" />
+    <ClInclude Include="Headers\LowRenderer\Lights\ILight.hpp" />
+    <ClInclude Include="Headers\LowRenderer\Lights\PointLight.hpp" />
     <ClInclude Include="Headers\ECS\Components\PointLightComponent.hpp" />
     <ClInclude Include="Headers\Resources\Sound.hpp" />
     <ClInclude Include="Headers\Resources\Texture.hpp" />
-    <ClInclude Include="Sources\ECS\Components\Camera.cpp" />
-    <ClInclude Include="Sources\ECS\Systems\CameraSystem.cpp" />
-    <ClInclude Include="Sources\ECS\Systems\PointLightSystem.cpp" />
-    <ClInclude Include="Sources\ECS\Systems\TransformSystem.cpp" />
+    <ClInclude Include="Headers\ECS\Components\IColliderComponent.hpp" />
+    <ClInclude Include="Sources\ECS\Systems\CameraSystem.hpp" />
+    <ClInclude Include="Sources\ECS\Systems\PointLightSystem.hpp" />
+    <ClInclude Include="Headers\LowRenderer\Meshes\MeshRenderer.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Externals\include\Jolt\AABBTree\AABBTreeBuilder.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Core\Color.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Core\Factory.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Core\IssueReporting.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Core\JobSystemSingleThreaded.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Core\JobSystemThreadPool.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Core\JobSystemWithBarrier.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Core\LinearCurve.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Core\Memory.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Core\Profiler.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Core\RTTI.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Core\Semaphore.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Core\StringTools.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Core\TickCounter.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Geometry\ConvexHullBuilder.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Geometry\ConvexHullBuilder2D.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Geometry\Indexify.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Geometry\OrientedBox.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Math\Vec3.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\ObjectStream\ObjectStream.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\ObjectStream\ObjectStreamBinaryIn.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\ObjectStream\ObjectStreamBinaryOut.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\ObjectStream\ObjectStreamIn.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\ObjectStream\ObjectStreamOut.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\ObjectStream\ObjectStreamTextIn.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\ObjectStream\ObjectStreamTextOut.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\ObjectStream\SerializableObject.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\ObjectStream\TypeDeclarations.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Body\Body.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Body\BodyAccess.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Body\BodyCreationSettings.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Body\BodyInterface.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Body\BodyManager.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Body\MassProperties.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Body\MotionProperties.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Character\Character.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Character\CharacterBase.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Character\CharacterVirtual.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\BroadPhase\BroadPhase.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\BroadPhase\BroadPhaseBruteForce.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\BroadPhase\BroadPhaseQuadTree.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\BroadPhase\QuadTree.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\CastConvexVsTriangles.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\CastSphereVsTriangles.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\CollideConvexVsTriangles.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\CollideSphereVsTriangles.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\CollisionDispatch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\CollisionGroup.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\EstimateCollisionResponse.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\GroupFilter.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\GroupFilterTable.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\ManifoldBetweenTwoFaces.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\NarrowPhaseQuery.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\NarrowPhaseStats.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\PhysicsMaterial.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\PhysicsMaterialSimple.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\Shape\BoxShape.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\Shape\CapsuleShape.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\Shape\CompoundShape.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\Shape\ConvexHullShape.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\Shape\ConvexShape.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\Shape\CylinderShape.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\Shape\DecoratedShape.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\Shape\HeightFieldShape.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\Shape\MeshShape.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\Shape\MutableCompoundShape.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\Shape\OffsetCenterOfMassShape.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\Shape\RotatedTranslatedShape.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\Shape\ScaledShape.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\Shape\Shape.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\Shape\SphereShape.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\Shape\StaticCompoundShape.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\Shape\TaperedCapsuleShape.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\Shape\TriangleShape.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Collision\TransformedShape.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Constraints\ConeConstraint.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Constraints\Constraint.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Constraints\ConstraintManager.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Constraints\ContactConstraintManager.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Constraints\DistanceConstraint.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Constraints\FixedConstraint.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Constraints\GearConstraint.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Constraints\HingeConstraint.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Constraints\MotorSettings.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Constraints\PathConstraint.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Constraints\PathConstraintPath.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Constraints\PathConstraintPathHermite.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Constraints\PointConstraint.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Constraints\PulleyConstraint.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Constraints\RackAndPinionConstraint.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Constraints\SixDOFConstraint.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Constraints\SliderConstraint.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Constraints\SpringSettings.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Constraints\SwingTwistConstraint.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Constraints\TwoBodyConstraint.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\DeterminismLog.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\IslandBuilder.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\LargeIslandSplitter.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\PhysicsLock.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\PhysicsScene.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\PhysicsSystem.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\PhysicsUpdateContext.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Ragdoll\Ragdoll.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\SoftBody\SoftBodyCreationSettings.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\SoftBody\SoftBodyMotionProperties.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\SoftBody\SoftBodyShape.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\SoftBody\SoftBodySharedSettings.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\StateRecorderImpl.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Vehicle\MotorcycleController.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Vehicle\TrackedVehicleController.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Vehicle\VehicleAntiRollBar.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Vehicle\VehicleCollisionTester.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Vehicle\VehicleConstraint.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Vehicle\VehicleController.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Vehicle\VehicleDifferential.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Vehicle\VehicleEngine.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Vehicle\VehicleTrack.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Vehicle\VehicleTransmission.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Vehicle\Wheel.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Physics\Vehicle\WheeledVehicleController.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\RegisterTypes.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Renderer\DebugRenderer.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Renderer\DebugRendererPlayback.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Renderer\DebugRendererRecorder.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Renderer\DebugRendererSimple.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Skeleton\SkeletalAnimation.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Skeleton\Skeleton.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Skeleton\SkeletonMapper.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\Skeleton\SkeletonPose.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\TriangleGrouper\TriangleGrouperClosestCentroid.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\TriangleGrouper\TriangleGrouperMorton.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\TriangleSplitter\TriangleSplitter.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\TriangleSplitter\TriangleSplitterBinning.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\TriangleSplitter\TriangleSplitterFixedLeafSize.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\TriangleSplitter\TriangleSplitterLongestAxis.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\TriangleSplitter\TriangleSplitterMean.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Externals\include\Jolt\TriangleSplitter\TriangleSplitterMorton.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Sources\Core\InputManager.cpp" />
+    <ClCompile Include="Sources\ECS\Systems\CollisionDetectionSystem.cpp" />
     <ClCompile Include="Externals\src\glad\glad.cpp" />
     <ClCompile Include="Externals\src\ImGui\imgui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -273,32 +935,34 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Sources\ECS\Components\IColliderComponent.cpp" />
+    <ClCompile Include="Sources\ECS\Base\EntityManager.cpp" />
+    <ClCompile Include="Sources\ECS\Components\AudioListenerComponent.cpp" />
+    <ClCompile Include="Sources\ECS\Components\AudioSourceComponent.cpp" />
+    <ClCompile Include="Sources\ECS\Systems\AudioSourceSystem.cpp" />
+    <ClCompile Include="Sources\ECS\Systems\CameraSystem.cpp" />
+    <ClCompile Include="Sources\ECS\Systems\PointLightSystem.cpp" />
+    <ClCompile Include="Sources\ECS\Systems\TransformSystem.cpp" />
+    <ClCompile Include="Sources\ECS\Systems\AudioListenerSystem.cpp" />
+    <ClCompile Include="Sources\LowRenderer\Cameras\FreeCamera.cpp" />
     <ClCompile Include="Sources\Resources\Mesh.cpp" />
-    <ClCompile Include="Sources\ECS\Components\PointLightComponent.cpp" />
-    <ClCompile Include="Sources\ECS\Components\SpotLightComponent.cpp" />
     <ClCompile Include="Sources\ECS\Components\DirectionalLightComponent.cpp" />
-    <ClCompile Include="Sources\LowRenderer\PointLight.cpp" />
-    <ClCompile Include="Sources\LowRenderer\ILight.cpp" />
-    <ClCompile Include="Sources\ECS\Components\Transform.cpp" />
-    <ClCompile Include="Sources\ECS\Systems\ModelRendererSystem.cpp" />
+    <ClCompile Include="Sources\ECS\Components\TransformComponent.cpp" />
     <ClCompile Include="Sources\ECS\Systems\SpotLightSystem.cpp" />
-    <ClCompile Include="Sources\LowRenderer\SpotLight.cpp" />
-    <ClCompile Include="Sources\LowRenderer\DirectionalLight.cpp" />
     <ClCompile Include="Sources\ECS\Systems\DirectionalLightSystem.cpp" />
     <ClCompile Include="Sources\Resources\Material.cpp" />
-    <ClCompile Include="Sources\ECS\Components\MeshRenderer.cpp" />
+    <ClCompile Include="Sources\ECS\Components\MeshRendererComponent.cpp" />
     <ClCompile Include="Sources\Core\Engine.cpp" />
     <ClCompile Include="Sources\Core\ImGuiEngine.cpp" />
     <ClCompile Include="Sources\Core\Log.cpp" />
     <ClCompile Include="Sources\Core\OpenGLWrapper.cpp" />
     <ClCompile Include="Sources\Core\RHI.cpp" />
-    <ClCompile Include="Sources\Core\Utils\Color.cpp" />
+    <ClCompile Include="Sources\Core\Utils\TNCColor.cpp" />
     <ClCompile Include="Sources\Core\Window.cpp" />
     <ClCompile Include="Sources\dllmain.cpp" />
     <ClCompile Include="Sources\ECS\Base\BaseSystem.cpp" />
-    <ClCompile Include="Sources\ECS\Base\EntityManager.cpp" />
     <ClCompile Include="Sources\ECS\Systems\MeshRendererSystem.cpp" />
-    <ClCompile Include="Sources\LowRenderer\Camera.cpp" />
+    <ClCompile Include="Sources\LowRenderer\Cameras\Camera.cpp" />
     <ClCompile Include="Sources\Maths\Maths.cpp" />
     <ClCompile Include="Sources\Maths\MathsStream.cpp" />
     <ClCompile Include="Sources\pch.cpp">
@@ -308,14 +972,27 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Sources\Resources\IResource.cpp" />
+    <ClCompile Include="Sources\Resources\Physics.cpp" />
     <ClCompile Include="Sources\Resources\ResourceManager.cpp" />
+    <ClCompile Include="Sources\Resources\Scene.cpp" />
     <ClCompile Include="Sources\Resources\Shader.cpp" />
     <ClCompile Include="Sources\Resources\Sound.cpp" />
     <ClCompile Include="Sources\Resources\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
-    <None Include="Headers\ECS\Base\Entity.inl" />
+    <None Include="Externals\include\Jolt\Math\DMat44.inl" />
+    <None Include="Externals\include\Jolt\Math\DVec3.inl" />
+    <None Include="Externals\include\Jolt\Math\Mat44.inl" />
+    <None Include="Externals\include\Jolt\Math\Quat.inl" />
+    <None Include="Externals\include\Jolt\Math\UVec4.inl" />
+    <None Include="Externals\include\Jolt\Math\UVec8.inl" />
+    <None Include="Externals\include\Jolt\Math\Vec3.inl" />
+    <None Include="Externals\include\Jolt\Math\Vec4.inl" />
+    <None Include="Externals\include\Jolt\Math\Vec8.inl" />
+    <None Include="Externals\include\Jolt\Physics\Body\Body.inl" />
+    <None Include="Externals\include\Jolt\Physics\Body\MotionProperties.inl" />
+    <None Include="Headers\ECS\Base\EntityData.inl" />
     <None Include="Headers\ECS\Base\EntityManager.inl" />
     <None Include="Headers\ECS\Base\Types.inl" />
     <None Include="Headers\Resources\ResourceManager.inl" />

@@ -1,33 +1,34 @@
 #pragma once
-#include "pch.hpp"
 
 #include <set>
 
 namespace ECS
 {
 	// constants
-	constexpr size_t MAX_ENTITY_COUNT = 5000;
-	constexpr size_t MAX_COMP_COUNT = 32;
+	constexpr u64 MAX_ENTITY_COUNT = 4096;
+	constexpr u64 MAX_COMP_COUNT = 32;
 
 	// custom types
-	using EntityID = size_t;
-	using SystemTypeID = size_t;
-	using ComponentTypeID = size_t;
+	using EntityID = u64;
+	using SystemTypeID = u64;
+	using ComponentTypeID = u64;
 	using EntitySignature = std::set<ComponentTypeID>;
 
 	constexpr EntityID INVALID_ENTITY_ID = -1;
+	constexpr EntityID ROOT_ENTITY_ID = 0;
 
 	/* - Output : Component runtime type id */
-	static const ComponentTypeID GetRuntimeComponentTypeID();
+	const ComponentTypeID TONIC_ENGINE_API GetRuntimeComponentTypeID();
 	/* - Output : System runtime type id */
-	static const SystemTypeID GetRuntimeSystemTypeID();
+	const SystemTypeID TONIC_ENGINE_API GetRuntimeSystemTypeID();
 
 	/* Attach a type id to a Component class and returns it */
 	template<typename T>
-	static const ComponentTypeID CompType() noexcept;
+	const  ComponentTypeID TONIC_ENGINE_API CompType() noexcept;
 	/* Attach a type id to a System class and returns it */
 	template<typename T>
-	static const  SystemTypeID SystemType() noexcept;
+	const  SystemTypeID TONIC_ENGINE_API SystemType() noexcept;
+
 
 }
 

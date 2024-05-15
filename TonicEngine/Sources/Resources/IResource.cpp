@@ -2,30 +2,39 @@
 
 #include "Resources/IResource.hpp"
 
-void Resources::IResource::ReadFileTimed(const string _name)
+void Resources::IResource::ReadFileTimed(const fs::path _path)
 {
 	using namespace std::chrono;
 	system_clock::time_point start = system_clock::now();
-	ReadFile(_name);
-	DEBUG_LOG("%s resource loadtime : %f", _name.c_str(),
+	ReadFile(_path);
+	DEBUG_LOG("%s resource loadtime : %f s", name.c_str(),
 		(duration<float>(system_clock::now() - start).count()));
 }
 
-bool Resources::IResource::IsReadFinished() { return (bRead_ && !bLoaded_); }
+bool Resources::IResource::IsReadNotLoaded() { return (bRead_ && !bLoaded_); }
 bool Resources::IResource::IsLoaded() { return bLoaded_; }
 
 void Resources::IResource::BypassLoad()
 {
 	bLoaded_ = true;
-	DEBUG_WARNING("Resource loading bypassed for %s ID: %i", resourcePath_.string().c_str(), resourceId_)
+	DEBUG_WARNING("Resource loading bypassed for %s ID: %i", name.c_str(), resourceId_)
 }
 
-void Resources::IResource::SetResourceId(const unsigned& _newId) { resourceId_ = _newId; }
+void Resources::IResource::SetResourceId(const u64& _newId) { resourceId_ = _newId; }
 
-unsigned Resources::IResource::GetResourceId() const
+const u64 Resources::IResource::GetResourceId()
 {
-	if (resourceId_ == static_cast<unsigned>(-1))
+	if (!bLoaded_)
+	{
+		//Try Again
+		LoadFile();
+		if (!bLoaded_)
+			DEBUG_WARNING("Trying to access %s ID, but resource is not loaded", name.c_str());
+	}
+	else if (resourceId_ == static_cast<unsigned>(-1))
+	{
 		DEBUG_WARNING("IResource ID is %i, this may or may not be important", resourceId_);
+	}
 	return resourceId_;
 }
 

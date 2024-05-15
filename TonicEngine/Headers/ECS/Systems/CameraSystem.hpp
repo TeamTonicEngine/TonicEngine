@@ -3,8 +3,8 @@
 #include "ECS/Base/BaseSystem.hpp"
 #include "ECS/Base/EntityManager.hpp"
 
-#include "ECS/Components/Camera.hpp"
-#include "ECS/Components/Transform.hpp"
+#include "ECS/Components/CameraComponent.hpp"
+#include "ECS/Components/TransformComponent.hpp"
 
 namespace Resources
 {
@@ -13,22 +13,24 @@ namespace Resources
 
 namespace ECS::Systems
 {
-	struct CameraSystem : public ECS::BaseSystem
+	class CameraSystem : public ECS::BaseSystem
 	{
-
 	public:
-		float alpha = 0.f;
+		float alpha = 0.f; // TODO Delete or Use ...
 		TONIC_ENGINE_API CameraSystem();
 		TONIC_ENGINE_API ~CameraSystem() = default;
-		//void TONIC_ENGINE_API Render() override;
+		const bool TONIC_ENGINE_API Init() override;
+
+		void Destroy();
+
+		void TONIC_ENGINE_API Render() override;
+		void TONIC_ENGINE_API RenderEditorScene() override;
 		void TONIC_ENGINE_API Update() override;
 
-
 	private:
-		std::vector<Resources::Shader*> p_shaders_;
-		Resources::Shader* p_skyboxShader_;
-		//TODO: Uncomment on Material Component creation
+		std::vector<Resources::ShaderPtr> p_shaders_;
+		Resources::ShaderPtr p_skyboxShader_;
 
-		//Resources::Material defaultMaterial_;
+		void SetSkybox(LowRenderer::Cameras::Camera* _camera, Core::Renderer::RHI* _p_rhi);
 	};
 }

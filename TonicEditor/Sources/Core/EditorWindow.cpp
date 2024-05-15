@@ -1,6 +1,5 @@
 #include "Core/EditorWindow.hpp"
-
-#include "Core/Engine.hpp"
+#include "Core/Utils.hpp"
 
 #include <stdio.h>
 #include <iostream>
@@ -19,17 +18,18 @@ void Core::Applications::EditorWindow::SetUpWindows()
 
 void Core::Applications::EditorWindow::InitUIWindow()
 {
+	//ImGui::ShowDemoWindow();
+
 	ImGuiWindowClass windowClass;
 	windowClass.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar;
 	ImGui::SetNextWindowClass(&windowClass);
 
 	// FLAGS
 	static ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None | ImGuiDockNodeFlags_NoCloseButton | ImGuiDockNodeFlags_PassthruCentralNode;
-	ImGuiWindowFlags mainWindowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+	ImGuiWindowFlags mainWindowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus;
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse;
 	static bool dockspaceOpen = true;
 
-	static bool gameWindow = true;
 	static bool propertyWindow = true;
 	static bool sceneTreeWindow = true;
 	static bool projectWindow = true;
@@ -50,6 +50,8 @@ void Core::Applications::EditorWindow::InitUIWindow()
 		// MENU BAR
 		if (ImGui::BeginMenuBar())
 		{
+			float barWidth = ImGui::GetCurrentWindow()->MenuBarRect().GetWidth();
+
 			if (ImGui::BeginMenu("File"))
 			{
 				ImGui::MenuItem("Dummy");
@@ -72,11 +74,11 @@ void Core::Applications::EditorWindow::InitUIWindow()
 
 				if (ImGui::ColorEdit3("Clear color", &cColor.x, ImGuiColorEditFlags_NoInputs))
 				{
-					Engine::GetRenderer()->ChangeClearColor(Color::CreateRGBAFloat(cColor.x, cColor.y, cColor.z, 1.f));
+					Engine::GetRenderer()->ChangeClearColor(TNCColor::CreateRGBAFloat(cColor.x, cColor.y, cColor.z, 1.f));
 				}
 				ImGui::EndMenu();
 			}
-			if (ImGui::BeginMenu("Tools"))
+			if (ImGui::BeginMenu("Windows"))
 			{
 				ImGui::Checkbox("Game##opt", &gameWindow);
 				ImGui::Checkbox("Property##opt", &propertyWindow);
@@ -85,6 +87,45 @@ void Core::Applications::EditorWindow::InitUIWindow()
 				ImGui::Checkbox("Debug##opt", &debugWindow);
 				ImGui::EndMenu();
 			}
+			// CENTER BUTTONS
+
+			//ImGui::GetCurrentWindow()->MenuBarRect().GetWidth()
+
+			ImGui::PushStyleColor(ImGuiCol_Button, { 0, 0, 0, 0 });
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 0.5, 0.5, 0.5, 0.5 });
+
+			ImGui::SetCursorPosX((barWidth * 0.5f) - 45.f);
+			if (ImGui::ImageButton(
+				(ImTextureID)(u64)ENGINE.RES_MNGR->Get<Resources::Texture>("StaticAssets\\Images\\play.png")->ID,
+				{ 19,19 }, { 0,1 }, { 1,0 }, 0)
+				)
+			{
+				gameWindow = true;
+				bIsPlaying_ = true;
+			}
+
+			ImGui::SetCursorPosX(barWidth * 0.5f);
+			if (ImGui::ImageButton(
+				(ImTextureID)(u64)ENGINE.RES_MNGR->Get<Resources::Texture>("StaticAssets\\Images\\pause.png")->ID,
+				{ 19,19 }, { 0,1 }, { 1,0 }, 0)
+				)
+			{
+				// PAUSE
+				bIsPlaying_ = false;
+			}
+
+			ImGui::SetCursorPosX((barWidth * 0.5f) + 45.f);
+			if (ImGui::ImageButton(
+				(ImTextureID)(u64)ENGINE.RES_MNGR->Get<Resources::Texture>("StaticAssets\\Images\\stop.png")->ID,
+				{ 19,19 }, { 0,1 }, { 1,0 }, 0)
+				)
+			{
+				//STOP
+				bIsReset = true;
+			}
+
+			ImGui::PopStyleColor(2);
+
 			ImGui::EndMenuBar();
 		}
 
@@ -95,18 +136,11 @@ void Core::Applications::EditorWindow::InitUIWindow()
 
 		// INITIAL WINDOWS
 
-		if (gameWindow)
-		{
-			ImGui::Begin("Game", &gameWindow, windowFlags);
-			{
-			}
-			ImGui::End();
-		}
-
 		if (propertyWindow)
 		{
 			ImGui::Begin("Property", &propertyWindow, windowFlags);
 			{
+				DrawProperty(selectedId);
 			}
 			ImGui::End();
 		}
@@ -115,6 +149,18 @@ void Core::Applications::EditorWindow::InitUIWindow()
 		{
 			ImGui::Begin("Scene Tree", &sceneTreeWindow, windowFlags);
 			{
+				DrawTree(ECS::ROOT_ENTITY_ID);
+
+				ImGui::PushStyleColor(ImGuiCol_Button, { 0, 0, 0, 0 });
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 0.5, 0.5, 0.5, 0.5 });
+				
+				if (ImGui::ImageButton((ImTextureID)(u64)ENGINE.RES_MNGR->Get<Resources::Texture>("StaticAssets\\Images\\plus.png")->ID,
+					{ 19,19 }, { 0,1 }, { 1,0 }, 0))
+				{
+					ENGINE.ENT_MNGR->AddNewEntity();
+				}
+
+				ImGui::PopStyleColor(2);
 			}
 			ImGui::End();
 		}
@@ -123,77 +169,7 @@ void Core::Applications::EditorWindow::InitUIWindow()
 		{
 			ImGui::Begin("Project", &projectWindow, windowFlags);
 			{
-				ImVec2 windowSize = ImGui::GetWindowSize();
-				float scroll = ImGui::GetScrollY();
-
-				int temp = std::floor(windowSize.x / 85);
-
-				int x = 0;
-				int y = 0;
-
-				if (static_cast<Resources::Archi*>(p_projectArchi_)->parent)
-				{
-					if (ImGui::Button("..."))
-						p_projectArchi_ = static_cast<Resources::Archi*>(p_projectArchi_)->parent;
-
-					x = 34;
-				}
-
-				ImGui::SetCursorPos({ 8.f + x ,30.f });
-
-				std::string t = "File : ";
-				t += std::to_string(static_cast<Resources::Archi*>(p_projectArchi_)->file.size());
-				ImGui::Text(t.c_str());
-
-				x = 0;
-
-				if (static_cast<Resources::Archi*>(p_projectArchi_)->subFolder.size() > 0)
-				{
-					for (int i = 0; i < static_cast<Resources::Archi*>(p_projectArchi_)->subFolder.size(); [&] {
-						i++;
-							if (temp != 0)
-							{
-								if (i % temp != 0)
-									x += 84;
-							}
-							else
-							{
-								x = 0;
-									y += 92;
-							}
-						}())
-					{
-						std::string dirName = "##" + static_cast<Resources::Archi*>(p_projectArchi_)->subFolder[i]->name;
-
-						ImGui::SetCursorPos({ 8.f + x ,130.f + y });
-						ImGui::Text(static_cast<Resources::Archi*>(p_projectArchi_)->subFolder[i]->name.c_str());
-
-						ImGui::SetCursorPos({ 8.f + x ,52.f + y });
-						if (ImGui::Button(dirName.c_str(), { 76,76 }))
-						{
-							p_projectArchi_ = static_cast<Resources::Archi*>(p_projectArchi_)->subFolder[i];
-						}
-						//ImGui::Image(0, { 76,76 });
-					}
-				}
-
-				for (int i = 0; i < static_cast<Resources::Archi*>(p_projectArchi_)->file.size(); [&] {
-					i++;
-						if (i % temp != 0)
-							x += 84;
-						else
-						{
-							x = 0;
-								y += 92;
-						}
-					}())
-				{
-					ImGui::SetCursorPos({ 8.f + x ,130.f + y });
-					ImGui::Text(static_cast<Resources::Archi*>(p_projectArchi_)->file[i].c_str());
-
-					ImGui::SetCursorPos({ 8.f + x ,52.f + y });
-					ImGui::Image(0, { 76,76 });
-				}
+				DrawContentBrowser();
 			}
 			ImGui::End();
 		}
@@ -203,6 +179,8 @@ void Core::Applications::EditorWindow::InitUIWindow()
 			ImGui::Begin("Debug", &debugWindow, windowFlags);
 			{
 				float fps = 1 / Engine::GetWindow()->GetDeltaTime();//We may want that in the Engine directly
+				static float moySta = 0;
+				float moy = 0;
 
 				for (size_t i = 1; i <= 99; i++)
 				{
@@ -210,11 +188,20 @@ void Core::Applications::EditorWindow::InitUIWindow()
 				}
 				fpsHistory_[99] = fps;
 
+				//TODO We want this to run for like the 1000 first frame or so.
+				for (const float& value : fpsHistory_)
+				{
+					moy += value;
+				}
+				moy /= 100;
+				if (moy + 20 < moySta || moy > moySta + 20)
+					moySta = moy;
+
 				std::string fpsText = "FPS: ";
 				fpsText += std::to_string(fps);
 
 				ImGui::Text(fpsText.c_str());
-				ImGui::PlotHistogram("##Framerate", fpsHistory_, 99, 0, NULL, 0.f, 100.f, ImVec2(200, 100));
+				ImGui::PlotHistogram("##Framerate", fpsHistory_, 99, 0, NULL, 0.f, moySta * 2, ImVec2(200, 100));
 			}
 			ImGui::End();
 		}
@@ -248,29 +235,46 @@ void Core::Applications::EditorWindow::FirstFrame(ImGuiID& _mainDockSpaceId, con
 	ImGui::DockBuilderDockWindow("Scene Tree", dockIdLeft);
 	ImGui::DockBuilderDockWindow("Project", dockIdBottom);
 	ImGui::DockBuilderDockWindow("Debug", dockIdBottomRight);
+
+	//
 	ImGui::DockBuilderDockWindow("Scene", _mainDockSpaceId);
 	ImGui::DockBuilderDockWindow("Game", _mainDockSpaceId);
 
 	ImGui::DockBuilderFinish(_mainDockSpaceId);
 }
 
-void Core::Applications::EditorWindow::StartWindow()
+void Core::Applications::EditorWindow::StartWindow(std::string _name, bool* isOpen)
 {
-	static bool dockspaceOpen = true;
-	ImGui::Begin("Scene", &dockspaceOpen, ImGuiWindowFlags_NoCollapse);
+	ImGui::Begin(_name.c_str(), isOpen, ImGuiWindowFlags_NoCollapse);
 	width_ = ImGui::GetContentRegionAvail().x;
 	height_ = ImGui::GetContentRegionAvail().y;
 	pos_ = ImGui::GetCursorScreenPos();
+	ImGui::GetForegroundDrawList();
+
+	if (ImGui::IsWindowFocused())
+	{
+		if (_name == "Scene")
+		{
+			bIsSceneOpen_ = true;
+		}
+		else if (_name == "Game")
+		{
+			bIsGameOpen_ = true;
+		}
+	}
 }
 
-void Core::Applications::EditorWindow::DrawWindow(unsigned texture_id)
+void Core::Applications::EditorWindow::DrawWindow(u64 texture_id)
 {
 	ImGui::Image(
-		(void*)texture_id,
+		reinterpret_cast<ImTextureID>(texture_id),
 		ImGui::GetContentRegionAvail(),
 		ImVec2(0, 1),
 		ImVec2(1, 0)
 	);
 
+	// END
+	bIsSceneOpen_ = false;
+	bIsGameOpen_ = false;
 	ImGui::End();
 }

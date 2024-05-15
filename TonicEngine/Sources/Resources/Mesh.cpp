@@ -8,13 +8,7 @@
 
 Resources::Mesh::Mesh() { type_ = ResourceType::Mesh; }
 
-Resources::Mesh::~Mesh() {}
-
-void Resources::Mesh::ReadFile(const string _name)
-{
-	fs::path pathToFile = FindFile(_name, type_);
-	ReadFile(pathToFile);
-}
+void Resources::Mesh::Destroy() { ENGINE.RDR->UnloadResource(shared_from_this()); }
 
 void Resources::Mesh::ReadFile(const fs::path _path)
 {
@@ -28,16 +22,49 @@ void Resources::Mesh::ReadFile(const fs::path _path)
 		DEBUG_ERROR("Resources::Mesh::ReadFile assimp failed to load %s: %s", name.c_str(), importer.GetErrorString());
 		return;
 	}
-	//retrieve the directory path of the filepath
-	//directory = _path.substr(0, _path.find_last_of('\\'));
 
-	 //process ASSIMP's root node recursively
+	//process ASSIMP's root node recursively
 	ProcessNode(((aiScene*)scene_)->mRootNode);
-
-	DEBUG_SUCCESS("Mesh %s loaded", name.c_str());
+	bRead_ = true;
 }
 
-void Resources::Mesh::Use() const { GetRDR()->UseMesh(this); }
+void Resources::Mesh::LoadFile()
+{
+	if (bRead_)
+	{
+		ENGINE.RDR->LoadResource(shared_from_this());
+		if (bLoaded_)
+			DEBUG_SUCCESS("Mesh %s loaded", name.c_str())
+		else
+			DEBUG_WARNING("Mesh failed loading: %s", name.c_str());
+	}
+	else
+		DEBUG_WARNING("File not Read, cannot be loaded: %s", name.c_str());
+}
+
+void Resources::Mesh::Use()
+{
+	if (bLoaded_)
+		ENGINE.RDR->UseResource(shared_from_this());
+	else
+	{
+		LoadFile();
+		if (bLoaded_)
+			ENGINE.RDR->UseResource(shared_from_this());
+	}
+}
+
+void Resources::Mesh::Use(std::vector<Resources::MaterialPtr> _p_materials)
+{
+	if (bLoaded_)
+		ENGINE.RDR->UseResource(shared_from_this(), _p_materials);
+	else
+	{
+		LoadFile();
+		if (bLoaded_)
+			ENGINE.RDR->UseResource(shared_from_this(), _p_materials);
+	}
+}
 
 void Resources::Mesh::ProcessNode(void* _node) //aiNode* _node
 {
@@ -65,16 +92,15 @@ Resources::BasicMesh Resources::Mesh::ProcessSubMesh(void* _mesh) //aiMesh* _mes
 	// data to fill
 	std::vector<Resources::Vertex> vertices;
 	std::vector<unsigned int> indices;
-	//std::vector<Texture> textures;
 	aiMesh* currentMesh = ((aiMesh*)_mesh);
 
 	// walk through each of the mesh's vertices
 	for (unsigned int i = 0; i < currentMesh->mNumVertices; i++)
 	{
 		Vertex vertex;
-		
+
 		vertex.position = Vec3FromAssimp(currentMesh->mVertices[i]);;
-		
+
 		// normals
 		if (currentMesh->HasNormals())
 		{
@@ -104,6 +130,7 @@ Resources::BasicMesh Resources::Mesh::ProcessSubMesh(void* _mesh) //aiMesh* _mes
 	}
 	// process materials
 	aiMaterial* material = ((aiScene*)scene_)->mMaterials[currentMesh->mMaterialIndex];
+
 	/*
 	// 1. diffuse maps
 	std::vector<Texture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
@@ -121,6 +148,5 @@ Resources::BasicMesh Resources::Mesh::ProcessSubMesh(void* _mesh) //aiMesh* _mes
 	// return a mesh object created from the extracted mesh data
 
 	Resources::BasicMesh newMesh = { vertices, indices };
-	HEART::GetRenderer()->LoadMesh(&newMesh);
 	return newMesh;
 }

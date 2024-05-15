@@ -5,7 +5,7 @@
 
 namespace ECS
 {
-	struct BaseComponent
+	struct TONIC_ENGINE_API BaseComponent
 	{
 		/**********************************************
 				VARIABLES BLOC
@@ -17,11 +17,11 @@ namespace ECS
 				FUNCTIONS BLOC
 		*********************************************/
 	public:
-		TONIC_ENGINE_API BaseComponent()
+		BaseComponent()
 			: entityID_() {};
-		virtual TONIC_ENGINE_API ~BaseComponent() = default;
+		virtual ~BaseComponent() = default;
 
-		inline const TONIC_ENGINE_API EntityID GetID() const { return entityID_; };
+		inline const EntityID GetID() const { return entityID_; };
 
 		friend class EntityManager;
 	};

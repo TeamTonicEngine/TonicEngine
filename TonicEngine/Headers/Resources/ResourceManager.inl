@@ -1,43 +1,71 @@
+#pragma once
 #include "ResourceManager.hpp"
 
+
 template<class IRes>
-IRes* Resources::ResourceManager::Create(string _name, bool _forceReload)
+std::shared_ptr<IRes> Resources::ResourceManager::Create(fs::path _path, bool _forceReload,bool _bMultithreadIt)
 {
 	if (!std::is_base_of<IResource, IRes>())
 	{
-		DEBUG_ERROR("%s is not a IResource, ResourceManager cannot handle it /!\\", _name.c_str());
+		DEBUG_ERROR("%s is not a IResource, ResourceManager cannot handle it /!\\", _path.filename().string().c_str());
 		return nullptr;
 	}
 
-	fs::path path2File = FindFile(_name);
+	u64 id = GenerateId(_path.string());
 
-	if (path2File.empty())
-	{
-		DEBUG_ERROR("%s: file not found", _name.c_str());
-		return nullptr;
-	}
-
-	if (resources_[_name])
+	if (resources_[id])
 		if (!_forceReload)
-			return (IRes*)resources_[_name].get();
+			return std::dynamic_pointer_cast<IRes>(resources_[id]);
 		else
-			Delete(_name);
+			Delete(id);
 
-	resources_[_name] = std::make_shared<IRes>();
+	resources_[id] = std::make_shared<IRes>();
 
-	resources_[_name]->name = _name;
-	resources_[_name]->path = path2File;
-	resources_[_name]->ReadFile(path2File);
+	resources_[id]->name = _path.filename().replace_extension("").string().c_str();
+	resources_[id]->path = _path;
+	resources_[id]->RMID = id;
 
-	return (IRes*)resources_[_name].get();
+
+	//if (strcmp(typeid(IRes).name(), typeid(Resources::Texture).name()) == 0)
+
+	if (typeid(IRes) == typeid(Resources::Texture))
+		textureList.push_back(resources_[id]);
+	if (typeid(IRes) == typeid(Resources::Mesh))
+		meshList.push_back(resources_[id]);
+	if (typeid(IRes) == typeid(Resources::Sound))
+		audioList.push_back(resources_[id]);
+
+	if (_bMultithreadIt)
+	{
+		std::shared_ptr<IRes> newResource = std::dynamic_pointer_cast<IRes>(resources_[id]);
+		resourcePool_.AddToQueue(
+			[newResource, _path]()
+			{ newResource->ReadFileTimed(_path); },
+			resources_[id]->name + " threaded loading"
+		);
+		return newResource;
+	}
+	else
+	{
+		resources_[id]->ReadFile(_path);
+		resources_[id]->LoadFile();
+	}
+
+	return std::dynamic_pointer_cast<IRes>(resources_[id]);
 }
 
 template<class IRes>
-IRes* Resources::ResourceManager::Get(string _name)
+std::shared_ptr<IRes> Resources::ResourceManager::Get(u64 _id)
 {
-	if (resources_[_name])
-		return (IRes*)resources_[_name].get();
-
-	DEBUG_WARNING("%s was NOT found in resourceManager", _name.c_str());
+	if (resources_.find(_id) != resources_.end())
+		return std::dynamic_pointer_cast<IRes>(resources_[_id]);
+	
+	DEBUG_WARNING("%d was NOT found in resourceManager", _id);
 	return nullptr;
+}
+
+template<class IRes>
+std::shared_ptr<IRes> Resources::ResourceManager::Get(fs::path _path)
+{
+	return Get<IRes>(GenerateId(_path.string()));
 }

@@ -1,12 +1,13 @@
 #pragma once
 
 #include "DLL_API.hpp"
-#include "LowRenderer/Camera.hpp"
+#include "LowRenderer/Cameras/FreeCamera.hpp"
+#include "Utils/u32_2.hpp"
 #include <string>
 
 namespace Core::Applications
 {
-	class TONIC_ENGINE_API Window
+	class Window
 	{
 		/**********************************************
 				VARIABLES BLOC
@@ -30,40 +31,41 @@ namespace Core::Applications
 		*********************************************/
 	public:
 		/* Input : Name of window, width of window, height of window */
-		Window(const char* _nameWindow, unsigned _width, unsigned _height);
+		TONIC_ENGINE_API Window(const char* _nameWindow, unsigned _width, unsigned _height);
 
-		const bool Init();
+		const bool TONIC_ENGINE_API Init();
 
 		/* Output : Returns pointer to window (current window type is GLFWwindow) */
 		void* GetWindow();
 		/* Output : Returns something needed for GLAD */
 		void* GetProcAddress();
 		/* Output : Returns unsigned array size 2, width & height */
-		unsigned* GetScreenSize();
+		TONIC_ENGINE_API unsigned* GetScreenSize();
+		u32_2 TONIC_ENGINE_API GetWindowSize();
 
 		/* Called when window gets resized */
-		void Resized();
+		void TONIC_ENGINE_API Resized();
 		/* Called when window resizing has been handled by all that need the info (Renderer, ...) */
-		void ResizedHandled();
+		void TONIC_ENGINE_API ResizedHandled();
 
 		/* Output : Returns true if closing function has been called */
-		bool IsClosing(char _state = -1);
+		bool TONIC_ENGINE_API IsClosing(char _state = -1);
 		/* Output : Returns true if window has been resized & not handled */
-		bool IsFramebufferResized();
+		bool TONIC_ENGINE_API IsFramebufferResized();
 
 		/* Start of frame */
-		void StartFrame();
+		void TONIC_ENGINE_API StartFrame();
 		/* End of frame */
-		void EndFrame();
+		void TONIC_ENGINE_API EndFrame();
 		/* Called when window needs to be closed */
-		void Destroy();
+		void TONIC_ENGINE_API Destroy();
 
-		const float GetDeltaTime() const;
+		const float TONIC_ENGINE_API GetDeltaTime() const;
 		const LowRenderer::Cameras::Input* GetFrameInput() const;
 
-		void ProcessInput();
+		void TONIC_ENGINE_API ProcessInput();
 	private:
-		void ProcessCameraInput();
-		void ProcessMouseInput();
+		void TONIC_ENGINE_API ProcessCameraInput();
+		void TONIC_ENGINE_API ProcessMouseInput();
 	};
 }

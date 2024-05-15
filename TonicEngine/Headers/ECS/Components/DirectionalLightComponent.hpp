@@ -1,27 +1,34 @@
 #pragma once
-#include "LowRenderer/DirectionalLight.hpp"
+#include "LowRenderer/Lights/DirectionalLight.hpp"
 #include "ECS/Base/BaseComponent.hpp"
 
 namespace ECS::Systems
 {
-	struct DirectionalLightSystem;
+	class DirectionalLightSystem;
 }
 
-namespace Components
+namespace ECS::Components
 {
-struct DirectionalLightComponent :
-    public ECS::BaseComponent
-{
-public:
-	TONIC_ENGINE_API DirectionalLightComponent() = default;
-	TONIC_ENGINE_API ~DirectionalLightComponent() = default;
-	TONIC_ENGINE_API DirectionalLightComponent(const DirectionalLightComponent&) = default;
-	TONIC_ENGINE_API DirectionalLightComponent(LowRenderer::DirectionalLight& _light) : p_light_(&_light) {};
+	struct DirectionalLightComponent :
+		public ECS::BaseComponent
+	{
+	public:
 
-	friend struct ECS::Systems::DirectionalLightSystem;
+		TONIC_ENGINE_API DirectionalLightComponent() = default;
+		TONIC_ENGINE_API ~DirectionalLightComponent() = default;
+		TONIC_ENGINE_API DirectionalLightComponent(const DirectionalLightComponent&) = default;
+		TONIC_ENGINE_API DirectionalLightComponent(LowRenderer::Lights::DirectionalLight& _light) : light_(_light) { };
 
-protected:
-	LowRenderer::DirectionalLight* p_light_;
-};
+		friend class ECS::Systems::DirectionalLightSystem;
+
+		__declspec(property(get = GetLight, put = SetLight))
+			LowRenderer::Lights::DirectionalLight light;
+
+		inline LowRenderer::Lights::DirectionalLight TONIC_ENGINE_API GetLight() const { return light_; };
+		inline void TONIC_ENGINE_API SetLight(LowRenderer::Lights::DirectionalLight _light) { light_ = _light; };
+
+	protected:
+		LowRenderer::Lights::DirectionalLight light_;
+	};
 }
 

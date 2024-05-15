@@ -57,8 +57,12 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Sources\Core\AppEditor.cpp" />
+    <ClCompile Include="Sources\Core\ContentBrowser.cpp" />
     <ClCompile Include="Sources\Core\EditorWindow.cpp" />
     <ClCompile Include="Sources\Core\main.cpp" />
+    <ClCompile Include="Sources\Core\Property.cpp" />
+    <ClCompile Include="Sources\Core\SceneTree.cpp" />
+    <ClCompile Include="Sources\Core\Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Externals\include\GLFW\glfw3.hpp" />
@@ -74,6 +78,7 @@
     <ClInclude Include="Externals\include\KHR\khrplatform.hpp" />
     <ClInclude Include="Headers\Core\AppEditor.hpp" />
     <ClInclude Include="Headers\Core\EditorWindow.hpp" />
+    <ClInclude Include="Headers\Core\Utils.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TonicEngine\TonicEngine.vcxproj">

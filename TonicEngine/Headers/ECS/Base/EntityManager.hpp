@@ -10,6 +10,7 @@
 #include "BaseSystem.hpp"
 #include "CompList.hpp"
 #include "Types.hpp"
+#include "EntityData.hpp"
 
 namespace ECS
 {
@@ -21,8 +22,8 @@ namespace ECS
 	private:
 		EntityID entityCount_;
 		std::queue<EntityID> availableEntities_;
-		std::map<EntityID, std::shared_ptr<EntitySignature>> entitiesSignatures_;
-		std::map<SystemTypeID, std::shared_ptr<BaseSystem>> registeredSystems_;
+		std::map<EntityID, std::shared_ptr<EntityData>> entities_;
+		std::map<SystemTypeID, std::unique_ptr<BaseSystem>> registeredSystems_;
 		std::map<ComponentTypeID, std::shared_ptr<ICompList>> componentsArrays_;
 
 		/*********************************************
@@ -30,22 +31,35 @@ namespace ECS
 		*********************************************/
 	public:
 		TONIC_ENGINE_API EntityManager();
-		TONIC_ENGINE_API ~EntityManager() = default;
+		bool TONIC_ENGINE_API Init();
+		TONIC_ENGINE_API ~EntityManager();
 
-		TONIC_ENGINE_API void Update();
+		void TONIC_ENGINE_API Update();
+ 
+		void TONIC_ENGINE_API LateUpdate();
 
-		TONIC_ENGINE_API void Render();
+		void TONIC_ENGINE_API Render();
 
-		TONIC_ENGINE_API const EntityID AddNewEntity();
+		void TONIC_ENGINE_API RenderEditorScene();
 
-		TONIC_ENGINE_API void DestroyEntity(const EntityID _entity);
+		void TONIC_ENGINE_API Destroy();
+
+		const TONIC_ENGINE_API EntityID AddNewEntity();
+		const void TONIC_ENGINE_API AddEntityWithId(const EntityID _id);
+
+		void TONIC_ENGINE_API DestroyEntity(const EntityID _entity);
+		void TONIC_ENGINE_API DestroyAllEntitiesFromEntity(const EntityID _entity = 0);
+
+		void TONIC_ENGINE_API ResetAvailableEntities();
+
+		inline std::map<EntityID, std::shared_ptr<EntityData>> TONIC_ENGINE_API GetEntities() { return entities_; }
 
 		template<typename T, typename... Args>
-		void AddComponent(const EntityID _entity, Args&&... _args)
+		T& AddComponent(const EntityID _entity, Args&&... _args)
 			/* Function body is in this hpp file because of template */;
 
 		template<typename T>
-		void AddComponent(const EntityID _entity, T& _component)
+		T& AddComponent(const EntityID _entity, T& _component)
 			/* Function body is in this hpp file because of template */;
 
 		template<typename T>
@@ -57,15 +71,42 @@ namespace ECS
 			/* Function body is in this hpp file because of template */;
 
 		template<typename T>
-		const bool HasComponent(const EntityID _entity)
+		const bool HasComponent(const EntityID _entity) const
 			/* Function body is in this hpp file because of template */;
 
 		template<typename T>
-		void RegisterSystem()
+		//ALWAYS Register the TransformSystem 1st
+		const bool RegisterSystem()
 			/* Function body is in this hpp file because of template */;
 
 		template<typename T>
 		void UnRegisterSystem()
+			/* Function body is in this hpp file because of template */;
+
+#pragma region Hierarchy
+
+		void TONIC_ENGINE_API AddChild(EntityID _parent, EntityID _child);
+		void TONIC_ENGINE_API RemoveChild(EntityID _parent, EntityID _child);
+		const bool TONIC_ENGINE_API HasChildren(EntityID _entity) const { return !entities_.at(_entity)->children_.empty(); };
+
+		std::vector<EntityID> TONIC_ENGINE_API GetChildren(EntityID _entity) const { return entities_.at(_entity)->GetChildren(); };
+		EntityID TONIC_ENGINE_API GetChild(EntityID _entity, int _index) const { return entities_.at(_entity)->GetChild(_index); };
+		EntityID TONIC_ENGINE_API GetParent(EntityID _entity) const { return entities_.at(_entity)->GetParent(); };
+
+		void TONIC_ENGINE_API ParentEntity(const EntityID _child, const EntityID _parent);
+
+		void TONIC_ENGINE_API ParentEntityToRoot(const EntityID _entity);
+
+		EntityID TONIC_ENGINE_API GetEntityParent(const EntityID& _entity) const;
+		std::vector<EntityID> TONIC_ENGINE_API GetEntityChildren(const EntityID& _entity) const;
+		EntityID TONIC_ENGINE_API GetEntityChild(const EntityID& _entity, size_t _childIdx = 0) const;
+
+#pragma endregion //Hierarchy
+
+		std::shared_ptr<EntityData> TONIC_ENGINE_API GetEntityData(const EntityID& _entity);
+
+		template<typename T>
+		std::shared_ptr<CompList<T>> GetCompList()
 			/* Function body is in this hpp file because of template */;
 
 	private:
@@ -73,144 +114,16 @@ namespace ECS
 		void AddCompList()
 			/* Function body is in this hpp file because of template */;
 
-		template<typename T>
-		std::shared_ptr<CompList<T>> GetCompList()
-			/* Function body is in this hpp file because of template */;
+		
 
-		TONIC_ENGINE_API void AddEntitySignature(const EntityID _entity);
+		void TONIC_ENGINE_API AddEntityData(const EntityID _entity);
 
-		TONIC_ENGINE_API std::shared_ptr<EntitySignature> GetEntitySignature(const EntityID _entity);
+		TONIC_ENGINE_API EntitySignature* GetEntitySignature(const EntityID& _entity) const;
 
-		TONIC_ENGINE_API void UpdateEntityTargetSystems(const EntityID _entity);
+		void TONIC_ENGINE_API UpdateEntityTargetSystems(const EntityID _entity);
 
-		TONIC_ENGINE_API void AddEntityToSystem(const EntityID _entity, BaseSystem* _p_system);
+		void TONIC_ENGINE_API AddEntityToSystem(const EntityID _entity, BaseSystem* _p_system);
 
-		TONIC_ENGINE_API bool BelongToSystem(const EntityID _entity, const EntitySignature& _systemSignature);
+		const bool TONIC_ENGINE_API BelongToSystem(const EntityID& _entity, const EntitySignature& _systemSignature) const;
 	};
-
-#pragma region EntityManagerTemplateFunctionsDefinition
-	/*
-	template<typename T, typename ... Args>
-	void EntityManager::AddComponent(const EntityID _entity, Args&&... _args)
-	{
-		if (_entity + 1 > MAX_ENTITY_COUNT)
-		{
-			DEBUG_WARNING("EntityID out of range !  Component can't be created as entity nb%u doesn't exist.", (size_t)_entity);
-			return;
-		}
-		if (entitiesSignatures_.size() + 1 > MAX_COMP_COUNT)
-		{
-			DEBUG_WARNING("Component count limit (%u) reached!", MAX_COMP_COUNT);
-			return;
-		}
-		T component(std::forward<Args>(_args)...);
-		component.entityID_ = _entity;
-		GetEntitySignature(_entity)->insert(CompType<T>());
-		GetCompList<T>()->Insert(component);
-
-		UpdateEntityTargetSystems(_entity);
-	}
-
-	template<typename T>
-	void EntityManager::AddComponent(const EntityID _entity, T& _component)
-	{
-		if (_entity + 1 > MAX_ENTITY_COUNT)
-		{
-			DEBUG_WARNING("EntityID out of range !  Component can't be created as entity nb%u doesn't exist.", (size_t)_entity);
-			return;
-		}
-		if (entitiesSignatures_.size() + 1 > MAX_COMP_COUNT)
-		{
-			DEBUG_WARNING("Component count limit (%u) reached!", MAX_COMP_COUNT);
-			return;
-		}
-		_component.entityID_ = _entity;
-		GetEntitySignature(_entity)->insert(_component);
-		GetCompList<T>()->Insert(_component);
-
-		UpdateEntityTargetSystems(_entity);
-	}
-
-	template<typename T>
-	void EntityManager::RemoveComponent(const EntityID _entity)
-	{
-		if (_entity + 1 > MAX_ENTITY_COUNT)
-		{
-			DEBUG_WARNING("EntityID out of range ! Component can't be destroyed as entity nb%u doesn't exist.", (size_t)_entity);
-			return;
-		}
-		GetEntitySignature(_entity)->erase(CompType<T>());
-		GetCompList<T>()->Erase(_entity);
-
-		UpdateEntityTargetSystems(_entity);
-	}
-
-	template<typename T>
-	T& EntityManager::GetComponent(const EntityID _entity)
-	{
-		if (_entity + 1 > MAX_ENTITY_COUNT)
-			DEBUG_WARNING("EntityID out of range ! Component can't be accessed as entity nb%u doesn't exist.", (size_t)_entity);
-		return GetCompList<T>()->Get(_entity);
-	}
-
-	template<typename T>
-	const bool EntityManager::HasComponent(const EntityID _entity)
-	{
-		//Kinda breaking the norm here but Is has no sense here
-		if (_entity + 1 > MAX_ENTITY_COUNT)
-		{
-			DEBUG_WARNING("EntityID out of range ! Entity nb%u can't be destroyed as it doesn't exist.", (size_t)_entity);
-			return false;
-		}
-		return(GetEntitySignature(_entity)->count(CompType<T>()) > 0);
-	}
-
-	template<typename T>
-	void EntityManager::RegisterSystem()
-	{
-		const SystemTypeID systemType = SystemType<T>();
-		if (registeredSystems_.count(systemType) != 0)
-			DEBUG_WARNING("System already registered!");
-		auto system = std::make_shared<T>();
-
-		//Add entities to new system
-		for (EntityID entity = 0; entity < entityCount_; entity++)
-			AddEntityToSystem(entity, system.get());
-
-		system->Start();
-		registeredSystems_[systemType] = std::move(system);
-	}
-
-	template<typename T>
-	void EntityManager::UnRegisterSystem()
-	{
-		const SystemTypeID systemType = SystemType<T>();
-		if (registeredSystems_.count(systemType) == 0)
-			DEBUG_WARNING("No system registered!");
-		registeredSystems_.erase(systemType);
-	}
-
-	template<typename T>
-	void EntityManager::AddCompList()
-	{
-		const ComponentTypeID compType = CompType<T>();
-		if (componentsArrays_.find(compType) != componentsArrays_.end())
-		{
-			DEBUG_WARNING("Component list already registered!");
-			return;
-		}
-		componentsArrays_[compType] = std::move(std::make_shared<CompList<T>>());
-	}
-
-	template<typename T>
-	std::shared_ptr<CompList<T>> EntityManager::GetCompList()
-	{
-		const ComponentTypeID compType = CompType<T>();
-		if (componentsArrays_.count(compType) == 0)
-			AddCompList<T>();
-		return std::static_pointer_cast<CompList<T>>(componentsArrays_.at(compType));
-	}*/
-#pragma endregion
 }
-
-#include "EntityManager.inl"

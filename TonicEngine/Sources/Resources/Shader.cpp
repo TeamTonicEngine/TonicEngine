@@ -6,23 +6,30 @@
 
 Resources::Shader::Shader() { type_ = ResourceType::Shader; }
 
-Resources::Shader::~Shader() { GetRDR()->UnloadShader(this); }
-
-void Resources::Shader::ReadFile(const string _name)
-{
-	SetFragment(_name, false);
-	SetVertex(_name);
-}
+void Resources::Shader::Destroy() { ENGINE.RDR->UnloadResource(shared_from_this()); }
 
 void Resources::Shader::ReadFile(const fs::path _path)
 {
 	string name = _path.filename().replace_extension("").string();
-
-	SetFragment(name, false);
+	SetFragment(name);
 	SetVertex(name);
 }
 
-void Resources::Shader::SetVertex(const string _name, bool _autoLinkRHI)
+void Resources::Shader::LoadFile()
+{
+	if (bRead_)
+	{
+		ENGINE.RDR->LoadResource(shared_from_this());
+		if (bLoaded_)
+			DEBUG_SUCCESS("Shader program %s created #%i", name.c_str(), ID)
+		else
+			DEBUG_WARNING("Loading failed for Shader %s", name.c_str());
+	}
+	else
+		DEBUG_WARNING("File not Read, cannot be loaded: %s", name.c_str());
+}
+
+void Resources::Shader::SetVertex(const string _name)
 {
 	fs::path filePathVert = FindFile(_name + ".vert", type_);
 	if (filePathVert.empty()) // If no vertex shader found
@@ -32,13 +39,16 @@ void Resources::Shader::SetVertex(const string _name, bool _autoLinkRHI)
 		return;
 	}
 	else // Found
+	{
 		vertexShaderPath_ = filePathVert;
+		vertexCode_ = Resources::ReadFileContent(vertexShaderPath_);
 
-	if (_autoLinkRHI && !fragmentShaderPath_.empty())
-		GetRDR()->LoadShader(this);
+		if (fragmentCode_ != "")
+			bRead_ = true;
+	}
 }
 
-void Resources::Shader::SetFragment(const string _name, bool _autoLinkRHI)
+void Resources::Shader::SetFragment(const string _name)
 {
 	fs::path filePathFrag = FindFile(_name + ".frag", type_);
 	if (filePathFrag.empty()) // If no fragment shader found
@@ -48,15 +58,28 @@ void Resources::Shader::SetFragment(const string _name, bool _autoLinkRHI)
 		return;
 	}
 	else // Found
+	{
 		fragmentShaderPath_ = filePathFrag;
+		fragmentCode_ = Resources::ReadFileContent(fragmentShaderPath_);
 
-	if (_autoLinkRHI && !vertexShaderPath_.empty())
-		GetRDR()->LoadShader(this);
+		if (vertexCode_ != "")
+			bRead_ = true;
+	}
 }
 
-void Resources::Shader::Use() const { GetRDR()->UseShader(this); }
+void Resources::Shader::Use()
+{
+	if (bLoaded_)
+		ENGINE.RDR->UseResource(shared_from_this());
+	else
+	{
+		LoadFile();
+		if (bLoaded_)
+			ENGINE.RDR->UseResource(shared_from_this());
+	}
+}
 
-void Resources::Shader::StopUse() const { GetRDR()->StopUseShader(); }
+void Resources::Shader::StopUse() const { ENGINE.RDR->StopUseShader(); }
 
 fs::path Resources::Shader::GetResourcePath() const
 {

@@ -5,6 +5,9 @@ using namespace Core::Applications;
 
 int main(int argc, char** argv)
 {
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	//_CrtSetBreakAlloc(93076); // Debugger should stop alloc nb
+
 	std::system("chcp 65001");
 	std::system("cls");
 

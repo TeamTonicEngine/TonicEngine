@@ -3,44 +3,37 @@
 namespace ECS
 {
 	template<typename T, typename ... Args>
-	void EntityManager::AddComponent(const EntityID _entity, Args&&... _args)
+	T& EntityManager::AddComponent(const EntityID _entity, Args&&... _args)
 	{
 		if (_entity + 1 > MAX_ENTITY_COUNT)
-		{
 			DEBUG_WARNING("EntityID out of range !  Component can't be created as entity nb%u doesn't exist.", (size_t)_entity);
-			return;
-		}
-		if (entitiesSignatures_.size() + 1 > MAX_COMP_COUNT)
-		{
+		if (entities_.at(_entity)->components_.size() + 1 > MAX_COMP_COUNT)
 			DEBUG_WARNING("Component count limit (%u) reached!", MAX_COMP_COUNT);
-			return;
-		}
 		T component(std::forward<Args>(_args)...);
 		component.entityID_ = _entity;
-		GetEntitySignature(_entity)->insert(CompType<T>());
 		GetCompList<T>()->Insert(component);
-
+		const ComponentTypeID compType = CompType<T>();
+		GetEntitySignature(_entity)->insert(compType);
 		UpdateEntityTargetSystems(_entity);
+
+		return GetCompList<T>()->Get(_entity);
 	}
 
 	template<typename T>
-	void EntityManager::AddComponent(const EntityID _entity, T& _component)
+	T& EntityManager::AddComponent(const EntityID _entity, T& _component)
 	{
 		if (_entity + 1 > MAX_ENTITY_COUNT)
-		{
 			DEBUG_WARNING("EntityID out of range !  Component can't be created as entity nb%u doesn't exist.", (size_t)_entity);
-			return;
-		}
-		if (entitiesSignatures_.size() + 1 > MAX_COMP_COUNT)
-		{
+		if (entities_.at(_entity)->components_.size() + 1 > MAX_COMP_COUNT)
 			DEBUG_WARNING("Component count limit (%u) reached!", MAX_COMP_COUNT);
-			return;
-		}
 		_component.entityID_ = _entity;
-		GetEntitySignature(_entity)->insert(_component);
 		GetCompList<T>()->Insert(_component);
+		const ComponentTypeID compType = CompType<T>();
+		GetEntitySignature(_entity)->insert(compType);
 
 		UpdateEntityTargetSystems(_entity);
+
+		return GetCompList<T>()->Get(_entity);
 	}
 
 	template<typename T>
@@ -66,7 +59,7 @@ namespace ECS
 	}
 
 	template<typename T>
-	const bool EntityManager::HasComponent(const EntityID _entity)
+	const bool EntityManager::HasComponent(const EntityID _entity) const
 	{
 		//Kinda breaking the norm here but Is has no sense here
 		if (_entity + 1 > MAX_ENTITY_COUNT)
@@ -74,23 +67,29 @@ namespace ECS
 			DEBUG_WARNING("EntityID out of range ! Entity nb%u can't be destroyed as it doesn't exist.", (size_t)_entity);
 			return false;
 		}
-		return(GetEntitySignature(_entity)->count(CompType<T>()) > 0);
+		const EntitySignature* p_es = GetEntitySignature(_entity);
+		const ComponentTypeID compType = CompType<T>();
+		auto it = std::find(p_es->begin(),p_es->end(), compType);
+
+		return (it != p_es->end());
 	}
 
 	template<typename T>
-	void EntityManager::RegisterSystem()
+	//ALWAYS Register the TransformSystem 1st
+	const bool EntityManager::RegisterSystem()
 	{
 		const SystemTypeID systemType = SystemType<T>();
 		if (registeredSystems_.count(systemType) != 0)
 			DEBUG_WARNING("System already registered!");
-		auto system = std::make_shared<T>();
+		std::unique_ptr<BaseSystem> system = std::make_unique<T>();
 
 		//Add entities to new system
 		for (EntityID entity = 0; entity < entityCount_; entity++)
 			AddEntityToSystem(entity, system.get());
 
-		system->Start();
+		bool success = system->Init();
 		registeredSystems_[systemType] = std::move(system);
+		return success;
 	}
 
 	template<typename T>
@@ -99,6 +98,7 @@ namespace ECS
 		const SystemTypeID systemType = SystemType<T>();
 		if (registeredSystems_.count(systemType) == 0)
 			DEBUG_WARNING("No system registered!");
+		registeredSystems_.find(systemType)->Destroy();
 		registeredSystems_.erase(systemType);
 	}
 

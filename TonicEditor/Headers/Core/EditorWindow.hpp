@@ -5,7 +5,7 @@
 #include "Core/ImGuiEngine.hpp"
 
 #include <Maths/Maths.hpp>
-
+#include "Core/Utils/Type.hpp"
 namespace Core::Applications
 {
 	enum class EditorWindowPos
@@ -23,6 +23,9 @@ namespace Core::Applications
 		/**********************************************
 				VARIABLES BLOC
 		**********************************************/
+
+	protected:
+
 	private:
 		EditorWindowPos windowPos_ = EditorWindowPos::Unset;
 
@@ -41,6 +44,15 @@ namespace Core::Applications
 				FUNCTIONS BLOC
 		*********************************************/
 	public:
+		bool gameWindow = true;
+		bool bIsPlaying_ = false;
+		bool bIsReset = false;
+
+		bool bIsSceneOpen_ = false;
+		bool bIsGameOpen_ = false;
+
+		u64 selectedId = 0;
+
 		/* Input : ImGuiEngine, should be init by Engine class with Engine::Init() */
 		EditorWindow(ImGuiEngine* _p_imguiEngine);
 		~EditorWindow();
@@ -54,10 +66,14 @@ namespace Core::Applications
 		/* Called at start of first frame to set up the windows placements */
 		void FirstFrame(ImGuiID& _mainDockSpaceId, const ImVec2& _dockspaceSize);
 
+		Maths::Vec4 DrawTree(u64 _id);
+		void DrawProperty(u64 _id);
+		void DrawContentBrowser();
+
 	public:
 		/*  */
-		void StartWindow();
+		void StartWindow(std::string _name, bool* isOpen = nullptr);
 		/* Draws window each frame */
-		void DrawWindow(unsigned _textureId);
+		void DrawWindow(u64 _textureId);
 	};
 }

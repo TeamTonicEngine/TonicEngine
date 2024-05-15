@@ -3,33 +3,88 @@
 #include "pch.hpp"
 
 #include "ECS/Systems/TransformSystem.hpp"
-#include "ECS/Components/Transform.hpp"
+#include "ECS/Components/TransformComponent.hpp"
 
 ECS::Systems::TransformSystem::TransformSystem()
 {
-	AddComponentSignature<Components::Transform>();
+	AddComponentSignature<ECS::Components::TransformComponent>();
+}
+
+const bool ECS::Systems::TransformSystem::Init()
+{
+	bool success = true;
+	if (success)
+		DEBUG_SUCCESS("INITIALIZED Transform System")
+	else
+		throw ("Transform System failed to initialised");
+
+	return success;
 }
 
 void ECS::Systems::TransformSystem::Update()
 {
-	//TODO: Create an entity Registry instead
-	ECS::EntityManager* p_em = HEART::GetEntityManager();
-	for (auto& entity : entities_)
+	ECS::EntityManager* p_em = ENGINE.ENT_MNGR;
+	for (EntityID entity : p_em->GetEntityChildren(ROOT_ENTITY_ID))
 	{
-		if (p_em->HasChildren(entity))
+		ECS::Components::TransformComponent* parentTr = nullptr;
+		if (p_em->HasComponent<ECS::Components::TransformComponent>(entity))
+			parentTr = &p_em->GetComponent<ECS::Components::TransformComponent>(entity);
+
+		RecursiveUpdate(entity, parentTr);
+	}
+}
+
+void ECS::Systems::TransformSystem::RecursiveUpdate(EntityID _entity, Components::TransformComponent* _p_transform)
+{
+	ECS::EntityManager* p_em = ENGINE.ENT_MNGR;
+	bool bChanged = _p_transform && _p_transform->HasChanged();
+	if (bChanged)
+	{
+		changedEntities_.insert(_entity);
+	}
+	for (auto& child : p_em->GetEntityChildren(_entity))
+	{
 		{
-			Components::Transform& parentTr = p_em->GetComponent<Components::Transform>(entity);
-			if (parentTr != lastValue)
+			//No transform means keep transform & go deeper
+			if (!p_em->HasComponent<ECS::Components::TransformComponent>(child))
 			{
-				for (auto& child : p_em->GetChildren(entity))
+				RecursiveUpdate(child, _p_transform);
+				continue;
+			}
+			ECS::Components::TransformComponent& childTr = p_em->GetComponent<ECS::Components::TransformComponent>(child);
+			if (bChanged)
+			{
+				if (_p_transform->positionDiff_ != 0)
 				{
-					Components::Transform& childTr = p_em->GetComponent<Components::Transform>(child);
-					childTr.position += parentTr->position - lastValue.poition;
-					childTr.rotation += parentTr->rotation - lastValue.rotation;
-					childTr.scale += parentTr->scale - lastValue.scale;
+					childTr.SetPosition(childTr.position + _p_transform->positionDiff_);
+					_p_transform->positionDiff_ = { 0.f };
+				}
+				if (_p_transform->rotationDiff_.real != 1.f) // So it is a Quaternions identity
+				{
+					childTr.SetRotation(childTr.rotation * _p_transform->rotationDiff_);
+					_p_transform->rotationDiff_ = Maths::Quat::Identity();
+				}
+				if (_p_transform->scaleDiff_ != 1.f)
+				{
+					childTr.SetScale(Maths::Vec3(childTr.scale.x * _p_transform->scaleDiff_.x, childTr.scale.y * _p_transform->scaleDiff_.y, childTr.scale.z * _p_transform->scaleDiff_.z));
+					_p_transform->scaleDiff_ = { 1.f };
 				}
 			}
-			parentTr->lastValue = *parentTr;
+			RecursiveUpdate(child, &childTr);
 		}
+
 	}
+}
+void ECS::Systems::TransformSystem::LateUpdate()
+{
+	if (!changedEntities_.size())
+		return;
+	ECS::EntityManager* p_em = ENGINE.ENT_MNGR;
+	for (auto& entity : changedEntities_)
+	{
+		//TODO: Think about what happens if the transform is changed(like in Editor) between Update and LateUpdate
+		if (p_em->HasComponent<ECS::Components::TransformComponent>(entity))
+			p_em->GetComponent<ECS::Components::TransformComponent>(entity).ResetChanged();
+	}
+	changedEntities_.clear();
 }

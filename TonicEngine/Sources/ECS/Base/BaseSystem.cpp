@@ -8,15 +8,19 @@ void ECS::BaseSystem::RemoveEntity(const EntityID _entity) { entities_.erase(_en
 
 const ECS::EntitySignature ECS::BaseSystem::GetSignature() const { return signature_; }
 
-void ECS::BaseSystem::Start() {}
-
-void ECS::BaseSystem::Update()
+const bool ECS::BaseSystem::Init()
 {
-	for (auto i : entities_)
-		std::cout << i << " ";
-	std::cout << std::endl;
+	return true;
 }
+
+void ECS::BaseSystem::Update() {}
+
+void ECS::BaseSystem::LateUpdate() {}
 
 void ECS::BaseSystem::Render() {}
 
-void ECS::BaseSystem::Destroy() {}
+void ECS::BaseSystem::RenderEditorScene()
+{
+}
+
+void ECS::BaseSystem::Destroy() { entities_.clear(); }

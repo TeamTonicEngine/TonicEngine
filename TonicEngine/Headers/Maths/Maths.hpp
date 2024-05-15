@@ -115,7 +115,7 @@ namespace Maths
 #pragma endregion
 	};
 
-	class Vec3
+	class TONIC_ENGINE_API Vec3
 	{
 	public:
 #pragma region Members
@@ -141,58 +141,58 @@ namespace Maths
 
 #pragma region Constructors
 		//CONSTRUCTORS :
-		TONIC_ENGINE_API Vec3(void);
-		TONIC_ENGINE_API Vec3(float _xyz);
-		TONIC_ENGINE_API Vec3(float _x, float _y, float _z);
-		TONIC_ENGINE_API Vec3(const class Vec2& _vec2, float _z = 0.f);
-		TONIC_ENGINE_API Vec3(const class Vec4& _vec4);
+		Vec3(void);
+		Vec3(float _xyz);
+		Vec3(float _x, float _y, float _z);
+		Vec3(const class Vec2& _vec2, float _z = 0.f);
+		Vec3(const class Vec4& _vec4);
 
 		//DESTRUCTOR :
-		TONIC_ENGINE_API ~Vec3(void);
+		~Vec3(void);
 #pragma endregion
 
 #pragma region Utils
 		//UTILS :
-		float TONIC_ENGINE_API GetMagnitude() const;
-		float TONIC_ENGINE_API GetMagnitudeSquared() const;
-		Vec3  TONIC_ENGINE_API GetNormalized() const;
+		float GetMagnitude() const;
+		float GetMagnitudeSquared() const;
+		Vec3  GetNormalized() const;
 #pragma endregion
 
 #pragma region Operators
 		//ASSINGMENT AND EQUALITY OPERATIONS :
-		Vec3 TONIC_ENGINE_API operator = (const Vec2& _vec);
-		Vec3 TONIC_ENGINE_API operator = (const Vec4& _vec);
-		Vec3 TONIC_ENGINE_API operator = (float _sca);
+		Vec3 operator = (const Vec2& _vec);
+		Vec3 operator = (const Vec4& _vec);
+		Vec3 operator = (float _sca);
 
-		Vec3 TONIC_ENGINE_API operator - (void) const;
-		bool TONIC_ENGINE_API operator == (const Vec3& _vec) const;
-		bool TONIC_ENGINE_API operator != (const Vec3& _vec) const;
+		Vec3 operator - (void) const;
+		bool operator == (const Vec3& _vec) const;
+		bool operator != (const Vec3& _vec) const;
 
-		float TONIC_ENGINE_API operator[](int _index) const;
+		float operator[](int _index) const;
 
 		//Vec3 TO Vec3 OPERATIONS :
 
-		Vec3 TONIC_ENGINE_API operator + (const Vec3& _vec) const;
-		Vec3 TONIC_ENGINE_API operator - (const Vec3& _vec) const;
+		Vec3 operator + (const Vec3& _vec) const;
+		Vec3 operator - (const Vec3& _vec) const;
 
 		//Vec3 TO THIS OPERATIONS :
 
-		Vec3 TONIC_ENGINE_API operator += (const Vec3& _vec);
-		Vec3 TONIC_ENGINE_API operator -= (const Vec3& _vec);
+		Vec3 operator += (const Vec3& _vec);
+		Vec3 operator -= (const Vec3& _vec);
 
 		//SCALER TO Vec3 OPERATIONS :
 
-		Vec3 TONIC_ENGINE_API operator + (float _sca) const;
-		Vec3 TONIC_ENGINE_API operator - (float _sca) const;
-		Vec3 TONIC_ENGINE_API operator* (float _sca) const;
-		Vec3 TONIC_ENGINE_API operator / (float _sca) const;
+		Vec3 operator + (float _sca) const;
+		Vec3 operator - (float _sca) const;
+		Vec3 operator* (float _sca) const;
+		Vec3 operator / (float _sca) const;
 
 		//SCALER TO THIS OPERATIONS :
 
-		Vec3 TONIC_ENGINE_API operator += (float _sca);
-		Vec3 TONIC_ENGINE_API operator -= (float _sca);
-		Vec3 TONIC_ENGINE_API operator *= (float _sca);
-		Vec3 TONIC_ENGINE_API operator /= (float _sca);
+		Vec3 operator += (float _sca);
+		Vec3 operator -= (float _sca);
+		Vec3 operator *= (float _sca);
+		Vec3 operator /= (float _sca);
 #pragma endregion
 	};
 

@@ -4,27 +4,32 @@
 
 namespace Core::Renderer
 {
-	class TONIC_ENGINE_API OpenGLWrapper : public RHI
+	class OpenGLWrapper : public RHI
 	{
 		/*********************************************
 				FUNCTIONS BLOC
 		*********************************************/
 	public:
+		unsigned int skyboxVAO_ = -1;
+		unsigned int skyboxVBO_ = -1;
+
 		const bool Init(Core::Applications::Window* _p_window) override;
 
-		void InitFrameBuffer() override;
+		WindowBuffer* InitFrameBuffer() override;
 
 		void StartFrame() override;
-		void Draw() override;
 		void EndFrame() override;
 
-		void BindFrameBuffer() override;
+		void BindFrameBuffer(WindowBuffer* _bufferObject) override;
+		void ResizeFrameBufferImage(u32 _ID, u32 _width, u32 _height) override;
 		void UnbindFrameBuffer() override;
 
 		void Destroy() override;
 
-		void ChangeClearColor(Color _color) override;
+		void ChangeClearColor(TNCColor _color) override;
 		void ClearColor() override;
+
+		void DepthMaskActive(bool _newValue) override;
 
 		void ResizeViewPort(u32 width, u32 height) override;
 
@@ -38,36 +43,47 @@ namespace Core::Renderer
 		//-----------Model----------------------------------------------
 		void SetModel(Maths::Mat4 _modelMatrix) override;
 		//-----------Camera---------------------------------------------
-		//void SetCamera(Camera* _p_newCamera) override; // Implentation in RHI class
+		void SetCamera(const LowRenderer::Cameras::Camera* _p_camera, Maths::Vec3 _position) override;
+		void SetFixedCamera(const LowRenderer::Cameras::Camera* _p_camera) override;
+		void SetDefaultCamera() override;
 		void UpdateCurrentCamera(const LowRenderer::Cameras::CameraInput* _camInputs) override;
 		//-----------Light----------------------------------------------
-		void SetLight(LowRenderer::ILight* _p_newLight) override;
-		void SetLights(std::vector<LowRenderer::ILight*> _lightList) override;
+		void SetDirectionalLightNumber(u32 _number) const override;
+		void SetPointLightNumber(u32 _number) const override;
+		void SetSpotLightNumber(u32 _number) const override;
+		void SetLight(const LowRenderer::Lights::DirectionalLight* _p_light, u32 _index, Maths::Vec3 _direction) const override;
+		void SetLight(const LowRenderer::Lights::PointLight* _p_light, u32 _index, Maths::Vec3 _position) const override;
+		void SetLight(const LowRenderer::Lights::SpotLight* _p_light, u32 _index, Maths::Vec3 _position, Maths::Quat _rotation)const override;
 
 		//---Resources---------------------------------------------------
-		//void LoadResource(Resources::IResource* _p_resource) override; // Implementation in RHI class
-		//void UseResource(const Resources::IResource* _p_resource) override; // Implementation in RHI class
-		//void UnloadResource(const Resources::IResource* _p_resource) override; // Implementation in RHI class
 		//------Materials-----------------------------------------------
-		void LoadMaterial(Resources::Material* _p_material) override;
-		void UseMaterial(const Resources::Material* _p_material) override;
-		void UnloadMaterial(const Resources::Material* _p_material) override;
+		void LoadResource(Resources::MaterialPtr _p_material) override;
+		void UseResource(const Resources::MaterialPtr _p_material) override;
+		void UseResource(const Resources::MaterialPtr _p_material, const int _shaderProgramIndex) override;
+		void UnloadResource(const Resources::MaterialPtr _p_material) override;
 		//------Textures-----------------------------------------------
-		void LoadTexture(Resources::Texture* _p_texture) override;
-		void UseTexture(const Resources::Texture* _p_texture) override;
-		void StopUseTexture();
-		void UnloadTexture(const Resources::Texture* _p_texture) override;
+		void LoadResource(Resources::TexturePtr _p_texture) override;
+		unsigned int LoadCubemap(std::vector<std::string> faces) override;
+		void RenderCubeMap() override;
+		//----//Takes the type inside the texture class
+		void UseResource(const Resources::TexturePtr _p_texture) override;
+		//----//Overrides the type inside the texture class
+		void UseResource(const Resources::TexturePtr _p_texture, Resources::TextureType _type);
+		void StopUseTexture() override;
+		void UnloadResource(const Resources::TexturePtr _p_texture) override;
 		//------Shader-------------------------------------------------
-		void LoadShader(Resources::Shader* _p_shader) override;
-		void UseShader(const Resources::Shader* _p_shader) override;
+		void LoadResource(Resources::ShaderPtr _p_shader) override;
+		void UseResource(const Resources::ShaderPtr _p_shader) override;
 		void StopUseShader() override;
-		void AddPostprocessShader(const Resources::Shader* _p_shader) override;
-		void UnloadShader(const Resources::Shader* _p_shader) override;
+		void AddPostprocessShader(const Resources::ShaderPtr _p_shader) override;
+		void UnloadResource(const Resources::ShaderPtr _p_shader) override;
 		//------Mesh-----------------------------------------------
-		void LoadMesh(Resources::BasicMesh* _p_mesh) override;
-		void UseMesh(const Resources::Mesh* _p_mesh) override;
-		void UnloadMesh(const Resources::Mesh* _p_mesh) override;
+		void LoadResource(Resources::MeshPtr _p_mesh) override;
+		void UseResource(const Resources::MeshPtr _p_mesh) override;
+		void UseResource(const Resources::MeshPtr _p_mesh, std::vector<Resources::MaterialPtr> p__materials) override;
+		void UnloadResource(const Resources::MeshPtr _p_mesh) override;
 
+	protected:
 		//------Uniforms-------------------------------------------
 		void SetUniform(const int _shaderProgramIndex, const std::string& _name, bool _value) const override;
 		void SetUniform(const std::string& _name, bool _value) const;
@@ -87,14 +103,13 @@ namespace Core::Renderer
 		void SetUniform(const std::string& _name, float _valueX, float _valueY, float _valueZ) const;
 		void SetUniform(const int _shaderProgramIndex, const std::string& _name, Maths::Vec4 _value) const override;
 		void SetUniform(const std::string& _name, Maths::Vec4 _value) const;
-		void SetUniform(const int _shaderProgramIndex, const std::string& _name, Color _value) const;
-		void SetUniform(const std::string& _name, Color _value) const;
+		void SetUniform(const int _shaderProgramIndex, const std::string& _name, TNCColor _value) const;
+		void SetUniform(const std::string& _name, TNCColor _value) const;
 		void SetUniform(const int _shaderProgramIndex, const std::string& _name, float _valueX, float _valueY, float _valueZ, float _valueW) const override;
 		void SetUniform(const std::string& _name, float _valueX, float _valueY, float _valueZ, float _valueW) const;
 		void SetUniform(const int _shaderProgramIndex, const std::string& _name, Maths::Mat3 _value) const override;
 		void SetUniform(const std::string& _name, Maths::Mat3 _value) const;
 		void SetUniform(const int _shaderProgramIndex, const std::string& _name, Maths::Mat4 _value) const override;
-
 		void SetUniform(const std::string& _name, Maths::Mat4 _value) const;
 
 	private:

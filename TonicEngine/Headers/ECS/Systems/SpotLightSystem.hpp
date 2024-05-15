@@ -8,15 +8,16 @@ namespace Resources {
 
 namespace ECS::Systems
 {
-	struct SpotLightSystem : public ECS::BaseSystem
+	class SpotLightSystem : public ECS::BaseSystem
 	{
 	private:
-		Resources::Shader* p_shader_;
+		std::vector<Resources::ShaderPtr> p_shaders_;
 
 	public:
 		TONIC_ENGINE_API SpotLightSystem();
 		TONIC_ENGINE_API ~SpotLightSystem() = default;
-		void TONIC_ENGINE_API Init();
-		void TONIC_ENGINE_API Update() override;
+		const bool TONIC_ENGINE_API Init() override;
+		void TONIC_ENGINE_API Render() override;
+		void TONIC_ENGINE_API RenderEditorScene() override;
 	};
 }

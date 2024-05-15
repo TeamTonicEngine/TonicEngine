@@ -8,10 +8,12 @@
 #include "Maths/MathsStream.hpp"
 
 #include "Core/Utils/Type.hpp"
+#include "Core/Utils/f32_2.hpp"
 #include "Core/Utils/f32_4.hpp"
 #include "Core/Utils/s32_2.hpp"
 #include "Core/Utils/s32_3.hpp"
 #include "Core/Utils/s32_4.hpp"
+#include "Core/Utils/u32_2.hpp"
 
 #include "Core/Engine.hpp"
 #include "Core/ImGuiEngine.hpp"

@@ -10,36 +10,40 @@ namespace Resources
 {
 	enum class TONIC_ENGINE_API TextureType
 	{
-		Unset,
-		Diffuse,
-		Specular,
+		Unset = -1, //Don't change this or Modify the UseTexture for "glActiveTexture(GL_TEXTURE0 + (int)_p_texture->textureType -1); "
+		Diffuse, // == Albedo
+		Specular, // == metallic
 		Normal,
 		AO,
 		Roughness,
+		CubeMap = 0x8513/*GL_TEXTURE_CUBE_MAP*/ - 0x84C0/*GL_TEXTURE_0*/
 	};
 
-	static const string TextureTypeToString(const TextureType& type)
+	static const string TextureTypeToString(const TextureType& _type)
 	{
-		switch (type)
+		switch (_type)
 		{
 		case TextureType::Diffuse:
-			return "texture_diffuse";
+			return "material.diffuse";
 		case TextureType::Specular:
-			return "texture_specular";
+			return "material.specular";
 		case TextureType::Normal:
-			return "texture_normal";
+			return "material.normal";
 		case TextureType::AO:
-			return "texture_ao";
+			return "material.ao";
 		case TextureType::Roughness:
-			return "texture_roughness";
+			return "material.roughness";
 
 		case TextureType::Unset:
 		default:
 			return "";
 		}
 	}
+	class Texture;
 
-	class Texture : public IResource
+	using TexturePtr = std::shared_ptr<Texture>;
+
+	class Texture : public IResource, public std::enable_shared_from_this<Texture>
 	{
 		/**********************************************
 				VARIABLES BLOC
@@ -47,28 +51,34 @@ namespace Resources
 	private:
 		int width_ = -1, height_ = -1, nrComponents_ = -1;
 		unsigned char* data_ = nullptr;
-		TextureType texType_ = TextureType::Unset;
+
+	public:
+		TextureType textureType = TextureType::Unset;
+
+		static TexturePtr _s_p_defaultTexture;
 
 		friend class Core::Renderer::OpenGLWrapper;
-
 		/*********************************************
 				FUNCTIONS BLOC
 		*********************************************/
 	public:
 		TONIC_ENGINE_API Texture();
-		TONIC_ENGINE_API ~Texture();
+		TONIC_ENGINE_API ~Texture() = default;
 
-		void TONIC_ENGINE_API ReadFile(const string _name) override;
-		void TONIC_ENGINE_API ReadFile(const fs::path _path) override;
+		void TONIC_ENGINE_API Destroy() override;
 
-		void SetTextureType(const TextureType _newType);
-		const string GetTextureType();
+		void ReadFile(const fs::path _path) override;
+		void LoadFile() override;
+		void TONIC_ENGINE_API LoadFileForced() override;
 
 		void TONIC_ENGINE_API MetaWriteFile(const string _name) override {};
 		void TONIC_ENGINE_API MetaReadFile(const string _name) override {};
 
 		void TONIC_ENGINE_API ResourceUnload() override {};
 
-		void TONIC_ENGINE_API Use() const override;
+		void TONIC_ENGINE_API Use() override;
+		//Overrides the TextureType
+		void TONIC_ENGINE_API Use(Resources::TextureType _type);
+		bool IsTransparent() { return nrComponents_ == 4; }
 	};
 }

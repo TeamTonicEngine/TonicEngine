@@ -1,24 +1,36 @@
 #pragma once
-#include "LowRenderer/PointLight.hpp"
+#include "LowRenderer/Lights/PointLight.hpp"
 #include "ECS/Base/BaseComponent.hpp"
 
 namespace ECS::Systems
 {
-	struct PointLightSystem;
+	class PointLightSystem;
 }
-namespace Components
+namespace ECS::Components
 {
-struct PointLightComponent : public ECS::BaseComponent
-{
-public:
-	TONIC_ENGINE_API PointLightComponent() = default;
-	TONIC_ENGINE_API ~PointLightComponent() = default;
-	TONIC_ENGINE_API PointLightComponent(const PointLightComponent&) = default;
-	TONIC_ENGINE_API PointLightComponent(LowRenderer::PointLight& _light) : p_light_(&_light) {};
+	struct PointLightComponent : public ECS::BaseComponent
+	{
+	public:
+		TONIC_ENGINE_API PointLightComponent() = default;
+		TONIC_ENGINE_API ~PointLightComponent() = default;
+		TONIC_ENGINE_API PointLightComponent(const PointLightComponent&) = default;
+		TONIC_ENGINE_API PointLightComponent(LowRenderer::Lights::PointLight& _light) : light_(_light) {};
 
-	friend struct ECS::Systems::PointLightSystem;
-protected:
-	LowRenderer::PointLight* p_light_;
-};
+		friend class ECS::Systems::PointLightSystem;
+
+		//__declspec(property(get = GetLight, put = SetLight))
+			//LowRenderer::PointLight light;
+
+		//inline LowRenderer::PointLight TONIC_ENGINE_API GetLight() { return light_; };
+		//inline void TONIC_ENGINE_API SetLight(LowRenderer::PointLight _light) { light_ = _light; };
+
+		_declspec(property(get = GetLight, put = SetLight))
+			LowRenderer::Lights::PointLight light;
+		inline TONIC_ENGINE_API LowRenderer::Lights::PointLight GetLight() const { return light_; };
+		inline TONIC_ENGINE_API void SetLight(LowRenderer::Lights::PointLight _light) { light_ = _light; };
+
+	protected:
+		LowRenderer::Lights::PointLight light_; // problem if not in public
+	};
 }
 

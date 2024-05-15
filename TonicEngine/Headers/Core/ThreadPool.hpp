@@ -10,6 +10,9 @@ namespace Core::Threads
 {
 	class ThreadPool
 	{
+		/**********************************************
+				VARIABLES BLOC
+		**********************************************/
 	private:
 		static const unsigned int s_poolSize_ = 10;
 
@@ -21,6 +24,9 @@ namespace Core::Threads
 
 		bool bStop_ = false;
 
+		/*********************************************
+				FUNCTIONS BLOC
+		*********************************************/
 	public:
 		const bool Init()
 		{
@@ -28,15 +34,6 @@ namespace Core::Threads
 				workers_[id] = std::thread([this]() { WorkerTask(); });
 
 			return true;
-		}
-
-		void Destroy()
-		{
-			bStop_ = true; // Notify workers they have to stop
-			waitCondition_.notify_all();
-
-			for (int id = 0; id < s_poolSize_; id++) // Free the workers
-				workers_[id].join();
 		}
 
 		template <class T>
@@ -51,6 +48,18 @@ namespace Core::Threads
 
 			// Notify workers that one new task is available
 			waitCondition_.notify_one();
+		}
+
+		void Destroy()
+		{
+			while (!tasksQueue_.empty()) // Empty the tasks queue
+				tasksQueue_.pop();
+
+			bStop_ = true; // Notify workers they have to stop
+			waitCondition_.notify_all();
+
+			for (int id = 0; id < s_poolSize_; id++) // Free the workers
+				workers_[id].join();
 		}
 
 	private:

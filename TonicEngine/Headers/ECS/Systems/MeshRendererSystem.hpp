@@ -2,25 +2,25 @@
 
 #include "ECS/Base/BaseSystem.hpp"
 
-namespace Resources {
-	class Shader;
-	class Material;
-}
+#include "Resources/Material.hpp"
 
 namespace ECS::Systems
 {
-	struct MeshRendererSystem : public ECS::BaseSystem
+	class MeshRendererSystem : public ECS::BaseSystem
 	{
 	private:
-		Resources::Shader* p_shader_;
-		Resources::Shader* p_outlineShader_;
+		Resources::ShaderPtr p_outlineShader_;
 
-		//TODO: Uncomment on Material Component creation
-		Resources::Material* p_defaultMaterial;
+		Resources::MaterialPtr p_defaultMaterial_;
+
+		std::map<float/*distance2cam*/,EntityID> transparentEntities_;
 
 	public:
 		TONIC_ENGINE_API MeshRendererSystem();
-		TONIC_ENGINE_API ~MeshRendererSystem() = default;
+		TONIC_ENGINE_API ~MeshRendererSystem();
+		const bool TONIC_ENGINE_API Init() override;
+		void TONIC_ENGINE_API Update() override;
 		void TONIC_ENGINE_API Render() override;
+		void TONIC_ENGINE_API RenderEditorScene() override;
 	};
 }

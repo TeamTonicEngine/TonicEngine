@@ -27,11 +27,13 @@ namespace ECS
 		TONIC_ENGINE_API const EntitySignature GetSignature() const;
 
 		template<typename T>
-		inline void AddComponentSignature() { signature_.insert(CompType<T>()); };
+		void AddComponentSignature() { signature_.insert(CompType<T>()); };
 
-		TONIC_ENGINE_API virtual void Start();
+		TONIC_ENGINE_API virtual const bool Init();
 		TONIC_ENGINE_API virtual void Update();
+		TONIC_ENGINE_API virtual void LateUpdate();
 		TONIC_ENGINE_API virtual void Render();
+		TONIC_ENGINE_API virtual void RenderEditorScene();
 		TONIC_ENGINE_API virtual void Destroy();
 
 		friend class EntityManager;
