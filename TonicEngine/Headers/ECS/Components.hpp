@@ -9,3 +9,4 @@
 #include "ECS/Components/AudioSourceComponent.hpp"
 #include "ECS/Components/AudioListenerComponent.hpp"
 #include "ECS/Components/IColliderComponent.hpp"
+#include "ECS/Components/AudioMixerComponent.hpp"

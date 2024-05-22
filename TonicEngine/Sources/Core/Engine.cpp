@@ -106,11 +106,15 @@ const bool Core::Applications::Engine::Init(const char* _appName, u32 _width, u3
 	// Init Sound
 	auto soundClap = p_s_rManager_->Create<Sound>("Assets\\Sounds\\clap.wav"); // WAV
 	soundClap->LoadSound();
-	soundClap->Play();
+
+	auto soundShip = p_s_rManager_->Create<Sound>("Assets\\Sounds\\ship.wav"); // WAV
+	soundShip->LoadSound();
+
+	auto soundWaves = p_s_rManager_->Create<Sound>("Assets\\Sounds\\waves.wav"); // WAV
+	soundWaves->LoadSound();
 
 	auto soundBurp = p_s_rManager_->Create<Sound>("Assets\\Sounds\\burp.ogg"); // OGG
 	soundBurp->LoadSound();
-	soundBurp->Play();
 
 	//Skybox
 	vector<std::string> faces

@@ -420,6 +420,7 @@
     <ClInclude Include="Headers\Core\Utils\f32_2.hpp" />
     <ClInclude Include="Headers\Core\Utils\u32_2.hpp" />
     <ClInclude Include="Headers\ECS\Base\BaseSystem.hpp" />
+    <ClInclude Include="Headers\ECS\Components\AudioMixerComponent.hpp" />
     <ClInclude Include="Headers\ECS\Systems\CollisionDetectionSystem.hpp" />
     <ClInclude Include="Headers\ECS\Systems\AudioSourceSystem.hpp" />
     <ClInclude Include="Headers\ECS\Components\CameraComponent.hpp" />

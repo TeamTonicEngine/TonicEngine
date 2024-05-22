@@ -85,8 +85,8 @@ void Core::Applications::AppEditor::Init()
 #include <ECS/Components.hpp> //TODO Test ECS TODELETE
 void Core::Applications::AppEditor::Run()
 {
-	Physics::Physics p;
-	p.Test();
+	//Physics::Physics p;
+	//p.Test();
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////
 	//Test ECS TODELETE

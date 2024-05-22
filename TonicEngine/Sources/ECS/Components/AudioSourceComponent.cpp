@@ -2,7 +2,6 @@
 #include "ECS/Components/AudioSourceComponent.hpp"
 #include "Resources/Sound.hpp"
 
-
 ECS::Components::AudioSourceComponent::AudioSourceComponent(Resources::SoundPtr _p_sound)
 {
 	SetSound(_p_sound);
@@ -13,6 +12,8 @@ void ECS::Components::AudioSourceComponent::SetVolume(float _volume)
 	volume_ = _volume;
 	if (p_sound_)
 		p_sound_->SetVolume(_volume);
+	else
+		DEBUG_ERROR("NO SOUND");
 }
 
 void ECS::Components::AudioSourceComponent::SetPitch(float _pitch)
@@ -27,6 +28,8 @@ void ECS::Components::AudioSourceComponent::SetLoop(bool _bLoop)
 	bLoop_ = _bLoop;
 	if (p_sound_)
 		p_sound_->SetLoop(_bLoop);
+	else
+		DEBUG_ERROR("CANNOT LOOP THIS SOUND");
 }
 
 void ECS::Components::AudioSourceComponent::SetIsSpatialized(bool _bSpatialized)
@@ -46,10 +49,10 @@ void ECS::Components::AudioSourceComponent::SetSound(Resources::SoundPtr _p_soun
 	p_sound_ = _p_sound;
 	if (p_sound_)
 	{
+		SetIsSpatialized(bSpatialized_);
+		SetLoop(bLoop_);
 		SetVolume(volume_);
 		SetPitch(pitch_);
-		p_sound_->SetLoop(bLoop_);
-		p_sound_->SetIsSpatialized(bSpatialized_);
 	}
 }
 

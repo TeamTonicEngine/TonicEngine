@@ -22,7 +22,8 @@ static ma_result ma_decoding_backend_init__libvorbis(void* pUserData, ma_read_pr
 	}
 
 	result = ma_libvorbis_init(onRead, onSeek, onTell, pReadSeekTellUserData, pConfig, pAllocationCallbacks, pVorbis);
-	if (result != MA_SUCCESS) {
+	if (result != MA_SUCCESS) 
+	{
 		ma_free(pVorbis, pAllocationCallbacks);
 		return result;
 	}
@@ -40,12 +41,14 @@ static ma_result ma_decoding_backend_init_file__libvorbis(void* pUserData, const
 	(void)pUserData;
 
 	pVorbis = (ma_libvorbis*)ma_malloc(sizeof(*pVorbis), pAllocationCallbacks);
-	if (pVorbis == NULL) {
+	if (pVorbis == NULL) 
+	{
 		return MA_OUT_OF_MEMORY;
 	}
 
 	result = ma_libvorbis_init_file(pFilePath, pConfig, pAllocationCallbacks, pVorbis);
-	if (result != MA_SUCCESS) {
+	if (result != MA_SUCCESS) 
+	{
 		ma_free(pVorbis, pAllocationCallbacks);
 		return result;
 	}
@@ -85,12 +88,43 @@ static ma_decoding_backend_vtable g_ma_decoding_backend_vtable_libvorbis =
 
 void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount)
 {
+	ma_result result;
 	ma_data_source* pDataSource = (ma_data_source*)pDevice->pUserData;
-	if (pDataSource == NULL) {
+	if (pDataSource == NULL) 
+	{
+		DEBUG_ERROR("DataSource is NULL.");
+		return;
+	}
+	result = ma_data_source_read_pcm_frames(pDataSource, pOutput, frameCount, NULL);
+	if (result != MA_SUCCESS) return;
+	/*
+	ma_spatializer* pDataSpat = (ma_spatializer*)pDevice->pUserData;
+	if (pDataSpat == NULL)
+	{
+		DEBUG_ERROR("DataSpat is NULL.");
 		return;
 	}
 
-	ma_data_source_read_pcm_frames(pDataSource, pOutput, frameCount, NULL);
+	ma_spatializer_listener* pDataSpatList = (ma_spatializer_listener*)pDevice->pUserData;
+	if (pDataSpatList == NULL)
+	{
+		DEBUG_ERROR("DataSpat is NULL.");
+		return;
+	}
+
+	bool pDataIsSpat = (bool)pDevice->pUserData;
+	if (pDataIsSpat == NULL)
+	{
+		DEBUG_ERROR("DataSpat is NULL.");
+		return;
+	}
+
+	if (pDataIsSpat && pDataSpat)
+	{
+		ma_spatializer_process_pcm_frames(pDataSpat, pDataSpatList, pOutput, pInput,frameCount);
+	}
+
+	*/
 
 	(void)pInput;
 }
@@ -98,19 +132,31 @@ void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uin
 Sound::Sound()
 {
 	type_ = ResourceType::Sound;
-	//p_sound_ = new ma_sound;
 	decoder = new ma_decoder;
 	device = new ma_device;
+	spatializer = nullptr;
+	listener = new ma_spatializer_listener;
 }
 
 Sound::~Sound()
 {
 	Stop();
-	ma_device_uninit(device);
-	ma_decoder_uninit(decoder);
-	//ma_sound_uninit(p_sound_);
-	delete device;
-	delete decoder;
+	if (device)
+	{
+		ma_device_uninit(device);
+		delete device;
+	}
+	if (decoder)
+	{
+		ma_decoder_uninit(decoder);
+		delete decoder;
+	}
+	if (spatializer) 
+	{
+		ma_spatializer_uninit(spatializer, NULL);
+		ma_spatializer_listener_uninit(listener, NULL);
+		delete spatializer;
+	}
 }
 
 void Resources::Sound::Destroy() {}
@@ -119,12 +165,12 @@ void Sound::LoadSound()
 {
 	ma_result result;
 
-	ma_decoder_config decoderConfig;
-	ma_device_config deviceConfig;
-
 	ma_format format;
 	ma_uint32 channels;
 	ma_uint32 sampleRate;
+
+	ma_decoder_config decoderConfig;
+	ma_device_config deviceConfig;
 
 	ma_decoding_backend_vtable* pCustomBackendVTables[] =
 	{
@@ -171,19 +217,73 @@ void Sound::LoadSound()
 	DEBUG_SUCCESS("Succeed to open playback device.\n");
 }
 
+void Sound::Restart()
+{
+	// Cursor to 0
+	ma_data_source_seek_to_pcm_frame(decoder, 0);
+	Play();
+}
+
 void Sound::Play()
 {
+	if (IsFinished())
+	{
+		DEBUG_SUCCESS("THE SOUND IS FINISHED");
+		Restart();
+	}
 	if (ma_device_start(device) != MA_SUCCESS)
 	{
 		ma_device_uninit(device);
 		ma_decoder_uninit(decoder);
 		DEBUG_ERROR("Failed to start playback device.\n");
 	}
+	DEBUG_SUCCESS("IT PLAY");
+
 }
 
 void Sound::Pause()
 {
 	ma_device_stop(device);
+}
+
+float Sound::GetOggFileDuration()
+{
+	return -1;
+	/*
+	FILE* file = nullptr;
+	if (fopen_s(&file, path.string().c_str(), "rb") != 0) {
+		std::cerr << "Failed to open file: " << path.string().c_str() << std::endl;
+		return -1.0;
+	}
+
+	OggVorbis_File vf;
+	if (ov_open(file, &vf, NULL, 0) < 0) {
+		std::cerr << "Input does not appear to be an Ogg bitstream: " << path.string().c_str() << std::endl;
+		fclose(file);
+		return -1.0;
+	}
+
+	// Obtenez les informations sur le flux Vorbis
+	vorbis_info* vi = ov_info(&vf, -1);
+	if (!vi) {
+		std::cerr << "Failed to get vorbis info: " << path.string().c_str() << std::endl;
+		ov_clear(&vf);
+		return -1.0;
+	}
+
+	// Obtenez la durée en secondes
+	double duration = ov_time_total(&vf, -1);
+	if (duration == OV_EINVAL) {
+		std::cerr << "Unable to get total time: " << path.string().c_str() << std::endl;
+		ov_clear(&vf);
+		return -1.0;
+	}
+
+	// Nettoyez
+	ov_clear(&vf);
+	std::cout << duration << std::endl;
+	return duration;
+	*/
 }
 
 bool Sound::IsFinished() const
@@ -198,9 +298,17 @@ bool Sound::IsFinished() const
 
 	if (ma_data_source_get_length_in_pcm_frames(decoder, &length) != MA_SUCCESS)
 	{
-		//std::cout << "length : " << length << std::endl;
 		return false;
 	}
+
+	if (length == 0.0f)
+	{
+		DEBUG_ERROR("THE SOUND CAN'T HAVE A LENGTH OF 0 seconde");
+		return false;
+	}
+
+	std::cout << "cursor : " << cursor << std::endl;
+	std::cout << "length : " << length << std::endl;
 
 	return cursor >= length;
 }
@@ -208,41 +316,85 @@ bool Sound::IsFinished() const
 void Sound::Stop()
 {
 	ma_device_stop(device);
-}
-
-void Sound::SetLoop(const bool& _bLoop)
-{
-	ma_data_source_set_looping(&decoder, _bLoop);
+	ma_data_source_seek_to_pcm_frame(decoder, 0);
 }
 
 void Sound::SetVolume(const float& _volume)
 {
-	//ma_sound_set_volume(decoder, _volume);
+	ma_device_set_master_volume(device, _volume);
 }
 
-void Sound::SetEngineVolume(const float& _volume)
+void Sound::SetLoop(const bool& _bLoop)
 {
-	ma_device_set_master_volume(device, _volume);
+	ma_data_source_set_looping(decoder, _bLoop);
 }
 
 void Sound::SetPitch(const float& _pitch)
 {
-	//ma_sound_set_pitch(p_sound_, _pitch);
+	pitch_ = _pitch;
+}
+
+void Sound::InitSpatialization()
+{
+	spatializer = new ma_spatializer;
+	ma_uint32 channelsIn = 2;
+	ma_uint32 channelsOut = 2;
+
+	ma_spatializer_config spatializerConfig = ma_spatializer_config_init(channelsIn, channelsOut);
+	if (ma_spatializer_init(&spatializerConfig, NULL ,spatializer) != MA_SUCCESS) 
+	{
+		DEBUG_ERROR("Failed to initialize spatializer");
+		return;
+	}
+	DEBUG_SUCCESS("Spatializer initialized successfully");
+
+	// init listener
+	ma_spatializer_listener_config listenerConfig = ma_spatializer_listener_config_init(channelsOut);
+	if (ma_spatializer_listener_init(&listenerConfig, NULL, listener) != MA_SUCCESS) 
+	{
+		DEBUG_ERROR("Failed to initialize spatializer listener");
+		return;
+	}
+	DEBUG_SUCCESS("Spatializer listener initialized successfully");
 }
 
 void Sound::SetIsSpatialized(const bool& _enabled)
 {
-	//ma_sound_set_spatialization_enabled(p_sound_, _enabled);
+	if (_enabled) 
+	{
+		if (!isSpatialized) 
+		{
+			InitSpatialization();
+			isSpatialized = true;
+			DEBUG_SUCCESS("Spatialization enabled");
+		}
+	}
+	else 
+	{
+		if (isSpatialized) 
+		{
+			ma_spatializer_uninit(spatializer, NULL);
+			isSpatialized = false;
+			DEBUG_SUCCESS("Spatialization disabled");
+		}
+	}
+	listener->isEnabled = _enabled;
 }
 
 void Sound::SetPosition(const Maths::Vec3& _position)
 {
-	//ma_sound_set_position(p_sound_, _position.x, _position.y, _position.z);
+	if (isSpatialized && spatializer)
+	{
+		ma_spatializer_set_position(spatializer, _position.x, _position.y, _position.z);
+	}
 }
 
 void Sound::SetVelocity(const Maths::Vec3& _velocity)
 {
-	//ma_sound_set_velocity(p_sound_, _velocity.x, _velocity.y, _velocity.z);
+	if (isSpatialized) 
+	{
+		ma_spatializer_set_velocity(spatializer, _velocity.x, _velocity.y, _velocity.z);
+	}
 }
 
 void Sound::ReadFile(const fs::path _path)

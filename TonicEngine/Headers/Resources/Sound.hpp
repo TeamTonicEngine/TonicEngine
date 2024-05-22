@@ -4,9 +4,11 @@
 
 #include "IResource.hpp"
 
-class ma_sound;
 class ma_decoder;
 class ma_device;
+class ma_spatializer;
+class ma_spatializer_listener;
+
 namespace Components
 {
 	struct AudioListenerComponent;
@@ -15,10 +17,15 @@ namespace Resources
 {
 	class Sound : public IResource
 	{
-	protected:
+	public:
+		float pitch_ = 1.0f;
 		ma_decoder* decoder;
 		ma_device* device;
-	public:
+		ma_spatializer* spatializer;
+		ma_spatializer_listener* listener;
+		bool isSpatialized = false;
+
+		const char* name_ = "None";
 
 		TONIC_ENGINE_API Sound();
 		TONIC_ENGINE_API ~Sound();
@@ -26,13 +33,15 @@ namespace Resources
 		void Destroy() override;
 
 		void TONIC_ENGINE_API LoadSound();
+		void TONIC_ENGINE_API Restart();
 		void TONIC_ENGINE_API Play();
 		void TONIC_ENGINE_API Pause();
 		bool TONIC_ENGINE_API IsFinished() const;
 		void TONIC_ENGINE_API Stop();
 		void TONIC_ENGINE_API SetLoop(const bool& _bLoop);
 		void TONIC_ENGINE_API SetVolume(const float& _volume);
-		void TONIC_ENGINE_API SetEngineVolume(const float& _volume);
+		void TONIC_ENGINE_API InitSpatialization();
+		float TONIC_ENGINE_API GetOggFileDuration();
 
 		void TONIC_ENGINE_API SetPitch(const float& _pitch);
 		void TONIC_ENGINE_API SetIsSpatialized(const bool& _enabled);
