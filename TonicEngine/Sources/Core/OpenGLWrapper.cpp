@@ -6,11 +6,6 @@
 
 #include "Core/Log.hpp"
 
-#include "Resources/Resources.hpp"
-
-//LowRenderer
-#include"LowRenderer/Lights/Lights.hpp"
-
 #pragma region DISPLAY
 const bool Core::Renderer::OpenGLWrapper::Init(Core::Applications::Window* _p_window)
 {
@@ -28,6 +23,7 @@ const bool Core::Renderer::OpenGLWrapper::Init(Core::Applications::Window* _p_wi
 	glViewport(0, 0, size[0], size[1]);
 	f32_4 clear = clearColor_.ToFloat();
 	glClearColor(clear.x, clear.y, clear.z, clear.w);
+
 	//Anti-aliasing
 	glEnable(GL_MULTISAMPLE);
 	glEnable(GL_DEPTH_TEST);
@@ -124,10 +120,7 @@ void Core::Renderer::OpenGLWrapper::ChangeClearColor(TNCColor _color)
 
 void Core::Renderer::OpenGLWrapper::ClearColor() { glClear(GL_COLOR_BUFFER_BIT); }
 
-void Core::Renderer::OpenGLWrapper::DepthMaskActive(bool _newValue)
-{
-	glDepthMask(_newValue);
-}
+void Core::Renderer::OpenGLWrapper::DepthMaskActive(bool _newValue) { glDepthMask(_newValue); }
 
 void Core::Renderer::OpenGLWrapper::ResizeViewPort(u32 width, u32 height) { glViewport(0, 0, width, height); }
 
@@ -138,55 +131,36 @@ void Core::Renderer::OpenGLWrapper::FrameBufferResized()
 	unsigned* size = p_window_->GetScreenSize();
 	ResizeViewPort(size[0], size[1]);
 }
-
 #pragma endregion
 
 /*
 	LOW RENDERER FUNCTIONS
 */
 #pragma region LOW_RENDERER
-void Core::Renderer::OpenGLWrapper::SetModel(Maths::Mat4 _modelMatrix)
-{
-	SetUniform("model", _modelMatrix);
-}
+void Core::Renderer::OpenGLWrapper::SetModel(Maths::Mat4 _modelMatrix) { SetUniform("model", _modelMatrix); }
 
 void Core::Renderer::OpenGLWrapper::SetCamera(const LowRenderer::Cameras::Camera* _p_camera, Maths::Vec3 _position)
 {
 	SetUniform("viewPos", _position);
 	SetUniform("viewProjection", _p_camera->viewProjection);
 }
+
 void Core::Renderer::OpenGLWrapper::SetFixedCamera(const LowRenderer::Cameras::Camera* _p_camera)
 {
 	Maths::Mat3 fixedView = _p_camera->view;
 	Maths::Mat4 fixedView44 = fixedView;
 	Maths::Mat4 nProj;
+
 	if (_p_camera->bPerspectiveMode == false)
-	{
 		for (int i = 0; i < 4; i++)
 			nProj.data4V[i] = _p_camera->projection.data4V[i].GetNormalized();
-	}
 	else
-	{
 		nProj = _p_camera->projection;
-	}
+
 	SetUniform("viewProjection", nProj * fixedView);
 }
-void Core::Renderer::OpenGLWrapper::SetDefaultCamera()
-{
-	SetCamera(p_currentCamera_, p_currentCamera_->eye);
-}
 
-void Core::Renderer::OpenGLWrapper::UpdateCurrentCamera(const LowRenderer::Cameras::CameraInput* _camInputs)
-{
-	if (!p_currentCamera_)
-	{
-		DEBUG_ERROR("Core::Renderer::OpenGLWrapper::UpdateCurrentCamera called but no current camera is set");
-		return;
-	}
-
-	p_currentCamera_->ProcessInput(HEART::GetDeltaTime(), *_camInputs);
-	p_currentCamera_->Update();
-}
+void Core::Renderer::OpenGLWrapper::SetDefaultCamera() { SetCamera(p_currentCamera_, p_currentCamera_->eye); }
 
 void Core::Renderer::OpenGLWrapper::SetDirectionalLightNumber(u32 _number) const { SetUniform("nbDirLights", _number); }
 
@@ -197,36 +171,30 @@ void Core::Renderer::OpenGLWrapper::SetSpotLightNumber(u32 _number) const { SetU
 void Core::Renderer::OpenGLWrapper::SetLight(const LowRenderer::Lights::DirectionalLight* _p_light, u32 _index, Maths::Vec3 _direction) const
 {
 	//pbr Version
-
-	//SetUniform(std::string("dirLights[" + _index) + "]" + ".direction", _direction);
-	//SetUniform(std::string("dirLights[" + _index) + "]" + ".color", _p_newLight->color_);
 	//SetUniform(std::string("dirLights[" + _index) + "]" + ".strength", _p_newLight->strength_);
 	//SetUniform(std::string("dirLights[" + _index) + "]" + ".shadow", _p_newLight->bShadow_);
 	//if (_p_newLight->bShadow_)
 	//	SetUniform(std::string("u_dirLights[" + _index) + "]" + ".bias", _p_newLight->bias_);
 
 	//phong Version
-	SetUniform(std::string("dirLights[") + std::to_string(_index) + "]" + ".direction", _direction);
-	SetUniform(std::string("dirLights[") + std::to_string(_index) + "]" + ".ambient", (_p_light->color_.ToVector3() * 0.2f));
-	SetUniform(std::string("dirLights[") + std::to_string(_index) + "]" + ".diffuse", (_p_light->color_.ToVector3() * 0.8f));
-	SetUniform(std::string("dirLights[") + std::to_string(_index) + "]" + ".specular", (_p_light->color_.ToVector3() * 1.0f));
+	SetUniform(std::string("dirLights[") + std::to_string(_index) + "]" + ".direction", _direction.GetNormalized());
+	SetUniform(std::string("dirLights[") + std::to_string(_index) + "]" + ".ambient", (_p_light->color_.ToVector3() * 0.2f * _p_light->strength_));
+	SetUniform(std::string("dirLights[") + std::to_string(_index) + "]" + ".diffuse", (_p_light->color_.ToVector3() * 0.8f * _p_light->strength_));
+	SetUniform(std::string("dirLights[") + std::to_string(_index) + "]" + ".specular", (_p_light->color_.ToVector3() * 1.0f * _p_light->strength_));
 }
 
 void Core::Renderer::OpenGLWrapper::SetLight(const LowRenderer::Lights::PointLight* _p_light, u32 _index, Maths::Vec3 _position) const
 {
-	//pbr Version
-//p_rhi->SetUniform(std::string("pointLights[" + _index) + "]" + ".position", _position);
-//p_rhi->SetUniform(std::string("pointLights[" + _index) + "]" + ".color", _p_light->color_);
-//p_rhi->SetUniform(std::string("pointLights[" + _index) + "]" + ".strength", _p_light->strength_);
-//p_rhi->SetUniform(std::string("pointLights[" + _index) + "]" + ".shadow", _p_light->bShadow_);
-//if (_p_light->bShadow_)
-//	p_rhi->SetUniform(std::string("u_pointlights[" + _index) + "]" + ".bias", _p_light->bias_);
+	//Shadow + strength
+	//p_rhi->SetUniform(std::string("pointLights[" + _index) + "]" + ".strength", _p_light->strength_);
+	//p_rhi->SetUniform(std::string("pointLights[" + _index) + "]" + ".shadow", _p_light->bShadow_);
+	//if (_p_light->bShadow_)
+	//	p_rhi->SetUniform(std::string("u_pointlights[" + _index) + "]" + ".bias", _p_light->bias_);
 
-//phong Version
 	SetUniform(std::string("pointLights[") + std::to_string(_index) + "]" + ".position", _position);
-	SetUniform(std::string("pointLights[") + std::to_string(_index) + "]" + ".ambient", (_p_light->color_.ToVector3() * 0.2f));
-	SetUniform(std::string("pointLights[") + std::to_string(_index) + "]" + ".diffuse", (_p_light->color_.ToVector3() * 0.8f));
-	SetUniform(std::string("pointLights[") + std::to_string(_index) + "]" + ".specular", (_p_light->color_.ToVector3() * 1.0f));
+	SetUniform(std::string("pointLights[") + std::to_string(_index) + "]" + ".ambient", (_p_light->color_.ToVector3() * 0.2f * _p_light->strength_));
+	SetUniform(std::string("pointLights[") + std::to_string(_index) + "]" + ".diffuse", (_p_light->color_.ToVector3() * 0.8f * _p_light->strength_));
+	SetUniform(std::string("pointLights[") + std::to_string(_index) + "]" + ".specular", (_p_light->color_.ToVector3() * 1.0f * _p_light->strength_));
 	SetUniform(std::string("pointLights[") + std::to_string(_index) + "]" + ".constant", _p_light->constant_);
 	SetUniform(std::string("pointLights[") + std::to_string(_index) + "]" + ".linear", _p_light->linear_);
 	SetUniform(std::string("pointLights[") + std::to_string(_index) + "]" + ".quadratic", _p_light->quadratic_);
@@ -234,13 +202,9 @@ void Core::Renderer::OpenGLWrapper::SetLight(const LowRenderer::Lights::PointLig
 
 void Core::Renderer::OpenGLWrapper::SetLight(const LowRenderer::Lights::SpotLight* _p_light, u32 _index, Maths::Vec3 _position, Maths::Quat _rotation) const
 {
-	//pbr Version
-	//SetUniform(std::string("spotLights[" + _index) + "]" + ".position", _position);
-	//SetUniform(std::string("spotLights[" + _index) + "]" + ".color", _p_light->color_);
+	//Shadow + strength
 	//SetUniform(std::string("spotLights[" + _index) + "]" + ".strength", _p_light->strength_);
 	//SetUniform(std::string("spotLights[" + _index) + "]" + ".shadow", _p_light->bShadow_);
-	//SetUniform(std::string("spotLights[" + _index) + "]" + ".iCutOff", _p_light->inCutOff_);
-	//SetUniform(std::string("spotLights[" + _index) + "]" + ".oCutOff", _p_light->outCutOff_);
 	//if (_p_light->bShadow_)
 	//	SetUniform(std::string("spotLights[" + _index) + "]" + ".bias", _p_light->bias_);
 
@@ -248,9 +212,9 @@ void Core::Renderer::OpenGLWrapper::SetLight(const LowRenderer::Lights::SpotLigh
 	SetUniform(std::string("spotLights[") + std::to_string(_index) + "]" + ".position", _position);
 	Maths::Vec3 direction = _rotation.RotateVector(Maths::Vec3::FORWARD);
 	SetUniform(std::string("spotLights[") + std::to_string(_index) + "]" + ".direction", direction);
-	SetUniform(std::string("spotLights[") + std::to_string(_index) + "]" + ".ambient", (_p_light->color_.ToVector3() * 0.2f));
-	SetUniform(std::string("spotLights[") + std::to_string(_index) + "]" + ".diffuse", (_p_light->color_.ToVector3() * 0.8f));
-	SetUniform(std::string("spotLights[") + std::to_string(_index) + "]" + ".specular", (_p_light->color_.ToVector3() * 1.0f));
+	SetUniform(std::string("spotLights[") + std::to_string(_index) + "]" + ".ambient", (_p_light->color_.ToVector3() * 0.2f * _p_light->strength_));
+	SetUniform(std::string("spotLights[") + std::to_string(_index) + "]" + ".diffuse", (_p_light->color_.ToVector3() * 0.8f * _p_light->strength_));
+	SetUniform(std::string("spotLights[") + std::to_string(_index) + "]" + ".specular", (_p_light->color_.ToVector3() * 1.0f * _p_light->strength_));
 	SetUniform(std::string("spotLights[") + std::to_string(_index) + "]" + ".cutOff", cos(_p_light->inCutOff_ / 2.f * Maths::Constants::DEG2RAD));
 	SetUniform(std::string("spotLights[") + std::to_string(_index) + "]" + ".outerCutOff", cos(_p_light->outCutOff_ / 2.f * Maths::Constants::DEG2RAD));
 	SetUniform(std::string("spotLights[") + std::to_string(_index) + "]" + ".constant", _p_light->constant_);
@@ -271,7 +235,10 @@ void Core::Renderer::OpenGLWrapper::LoadResource(Resources::MaterialPtr _p_mater
 
 void Core::Renderer::OpenGLWrapper::UseResource(const Resources::MaterialPtr _p_material)
 {
-	if (_p_material->type_ == Resources::MaterialType::Unset)
+	using namespace Resources::Materials;
+	using namespace Resources::Textures;
+
+	if (_p_material->type_ == MaterialType::Unset)
 	{
 		DEBUG_ERROR("Material is not set !");
 		return; // return if material not set to prevent a crash
@@ -285,21 +252,21 @@ void Core::Renderer::OpenGLWrapper::UseResource(const Resources::MaterialPtr _p_
 	if (!_p_material->diffuse_)
 		return; // return if diffuse_ not set to prevent a crash
 
-	_p_material->diffuse_->Use(Resources::TextureType::Diffuse);
-	if (_p_material->type_ == Resources::MaterialType::Unlit)
+	_p_material->diffuse_->Use(TextureType::Diffuse);
+	if (_p_material->type_ == MaterialType::Unlit)
 		return;//Unlit Version
 
-	_p_material->specular_->Use(Resources::TextureType::Specular);
+	_p_material->specular_->Use(TextureType::Specular);
 	SetUniform("gammaCorrection", _p_material->gammaCorrection_);
 
-	if (_p_material->type_ == Resources::MaterialType::PBR)
+	if (_p_material->type_ == MaterialType::PBR)
 	{
 		//PBR Version
-		_p_material->ao_->Use(Resources::TextureType::AO);
-		_p_material->normal_->Use(Resources::TextureType::Normal);
-		_p_material->roughness_->Use(Resources::TextureType::Roughness);
+		_p_material->ao_->Use(TextureType::AO);
+		_p_material->normal_->Use(TextureType::Normal);
+		_p_material->roughness_->Use(TextureType::Roughness);
 	}
-	else if (_p_material->type_ == Resources::MaterialType::Phong)
+	else if (_p_material->type_ == MaterialType::Phong)
 	{
 		//Phong Version
 		SetUniform("material.shininess", _p_material->shininess_);
@@ -308,29 +275,32 @@ void Core::Renderer::OpenGLWrapper::UseResource(const Resources::MaterialPtr _p_
 
 void Core::Renderer::OpenGLWrapper::UseResource(const Resources::MaterialPtr _p_material, const int _shaderProgramIndex)
 {
-	if (_p_material->type_ == Resources::MaterialType::Unset)
+	using namespace Resources::Materials;
+	using namespace Resources::Textures;
+
+	if (_p_material->type_ == MaterialType::Unset)
 		DEBUG_ERROR("Material is not set !")
 		if (_shaderProgramIndex != shaderInUse_)
 		{
 			glUseProgram(_shaderProgramIndex);
 			shaderInUse_ = _shaderProgramIndex;
 		}
-	_p_material->diffuse_->Use(Resources::TextureType::Diffuse);
+	_p_material->diffuse_->Use(TextureType::Diffuse);
 
-	if (_p_material->type_ == Resources::MaterialType::Unlit)
+	if (_p_material->type_ == MaterialType::Unlit)
 		return;//Unlit Version
 
-	_p_material->specular_->Use(Resources::TextureType::Specular);
+	_p_material->specular_->Use(TextureType::Specular);
 	SetUniform(_shaderProgramIndex, "gammaCorrection", _p_material->gammaCorrection_);
 
-	if (_p_material->type_ == Resources::MaterialType::PBR)
+	if (_p_material->type_ == MaterialType::PBR)
 	{
 		//PBR Version
-		_p_material->ao_->Use(Resources::TextureType::AO);
-		_p_material->normal_->Use(Resources::TextureType::Normal);
-		_p_material->roughness_->Use(Resources::TextureType::Roughness);
+		_p_material->ao_->Use(TextureType::AO);
+		_p_material->normal_->Use(TextureType::Normal);
+		_p_material->roughness_->Use(TextureType::Roughness);
 	}
-	else if (_p_material->type_ == Resources::MaterialType::Phong)
+	else if (_p_material->type_ == MaterialType::Phong)
 	{
 		//Phong Version
 		SetUniform(_shaderProgramIndex, "material.shininess", _p_material->shininess_);
@@ -338,7 +308,6 @@ void Core::Renderer::OpenGLWrapper::UseResource(const Resources::MaterialPtr _p_
 }
 
 void Core::Renderer::OpenGLWrapper::UnloadResource(const Resources::MaterialPtr _p_material) { /*EMPTY*/ }
-
 #pragma endregion
 
 /*
@@ -371,8 +340,7 @@ void Core::Renderer::OpenGLWrapper::LoadResource(Resources::TexturePtr _p_textur
 	glBindTexture(GL_TEXTURE_2D, 0);
 	_p_texture->bLoaded_ = true;
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// TODO find a better place for this
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "STB/stb_image.hpp"
 unsigned int Core::Renderer::OpenGLWrapper::LoadCubemap(std::vector<std::string> faces)
@@ -406,7 +374,7 @@ unsigned int Core::Renderer::OpenGLWrapper::LoadCubemap(std::vector<std::string>
 	glGenVertexArrays(1, &skyboxVAO_);
 	glGenBuffers(1, &skyboxVBO_);
 	static float skyboxVertices[] = {
-		// positions          
+		// positions
 		-1.0f,  1.0f, -1.0f,
 		-1.0f, -1.0f, -1.0f,
 		 1.0f, -1.0f, -1.0f,
@@ -450,8 +418,6 @@ unsigned int Core::Renderer::OpenGLWrapper::LoadCubemap(std::vector<std::string>
 		 1.0f, -1.0f,  1.0f
 	};
 
-	//Todo make struct, maybe in Lowrenderer
-
 	glBindVertexArray(skyboxVAO_);
 	glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO_);
 	// load data into vertex buffers
@@ -465,42 +431,192 @@ unsigned int Core::Renderer::OpenGLWrapper::LoadCubemap(std::vector<std::string>
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	return cubeMap_;
 }
+
 void Core::Renderer::OpenGLWrapper::RenderCubeMap()
 {
-
 	glBindVertexArray(skyboxVAO_);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap_);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 
 	glActiveTexture(0);
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void Core::Renderer::OpenGLWrapper::UseResource(const Resources::TexturePtr _p_texture)
 {
 	glActiveTexture((GL_TEXTURE0 + (int)_p_texture->textureType)); // active proper texture unit before binding
-	if (_p_texture->textureType != Resources::TextureType::Unset)
-		SetUniform(Resources::TextureTypeToString(_p_texture->textureType), (int)_p_texture->textureType);
+	if (_p_texture->textureType != Resources::Textures::TextureType::Unset)
+		SetUniform(Resources::Textures::TextureTypeToString(_p_texture->textureType), (int)_p_texture->textureType);
 	glBindTexture(GL_TEXTURE_2D, (GLuint)_p_texture->ID);
 	glActiveTexture(0);
 }
-void Core::Renderer::OpenGLWrapper::UseResource(const Resources::TexturePtr _p_texture, Resources::TextureType _type)
+
+void Core::Renderer::OpenGLWrapper::UseResource(const Resources::TexturePtr _p_texture, Resources::Textures::TextureType _type)
 {
 	glActiveTexture((GL_TEXTURE0 + (int)_type)); // active proper texture unit before binding
-	if (_p_texture->textureType != Resources::TextureType::Unset)
-		SetUniform(Resources::TextureTypeToString(_type), (int)_type);
+	SetUniform(Resources::Textures::TextureTypeToString(_type), (int)_type);
 	glBindTexture(GL_TEXTURE_2D, (GLuint)_p_texture->ID);
 	glActiveTexture(0);
 }
+
 void Core::Renderer::OpenGLWrapper::StopUseTexture() { glBindTexture(GL_TEXTURE_2D, 0); }
 
 void Core::Renderer::OpenGLWrapper::UnloadResource(const Resources::TexturePtr _p_texture)
 {
-	GLuint deleteID =(GLuint)_p_texture->resourceId_;
+	GLuint deleteID = (GLuint)_p_texture->resourceId_;
 	glDeleteTextures(1, &deleteID);
 	_p_texture->resourceId_ = -1;
 	_p_texture->bLoaded_ = false;
 }
 
+void Core::Renderer::OpenGLWrapper::LoadResource(Resources::FontPtr _p_font)
+{
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
+	for (unsigned char c = 0; c < (unsigned char)-1; c++)
+	{
+		// load character glyph
+		if (_p_font->LoadGlyph(c))
+			continue;
+		// generate texture
+		unsigned int texture;
+		glGenTextures(1, &texture);
+		glBindTexture(GL_TEXTURE_2D, texture);
+		glTexImage2D(
+			GL_TEXTURE_2D,
+			0,
+			GL_RED,
+			_p_font->GetWidth(),
+			_p_font->GetRows(),
+			0,
+			GL_RED,
+			GL_UNSIGNED_BYTE,
+			_p_font->GetBuffer()
+		);
+		// set texture options
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		// now store character for later use
+		_p_font->StoreCharacter(c, texture);
+	}
+	glGenVertexArrays(1, &_p_font->VAO_);
+	glGenBuffers(1, &_p_font->VBO_);
+	glBindVertexArray(_p_font->VAO_);
+	glBindBuffer(GL_ARRAY_BUFFER, _p_font->VBO_);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+	_p_font->bLoaded_ = true;
+}
+
+void Core::Renderer::OpenGLWrapper::UseResource(const Resources::FontPtr _p_font)
+{
+	DrawOnTop();
+	UseResourceWithoutSafety(_p_font);
+
+	//Safety here, in case do not apply TransformText, a bit redundant, but thus we can safely render a 2D text outside of components
+	unsigned* p_size = p_window_->GetScreenSize();
+	Maths::Mat4 projection = Maths::Matrices::Ortho(-(p_size[0] / 2.f), p_size[0] / 2.f, -(p_size[1] / 2.f), p_size[1] / 2.f, -1.f, 1.f);//Take the window / Quad properties
+	SetUniform("viewProjection", projection);
+}
+
+//Avoid to send a Mat4 buffer twice and reset font Settings every call
+void Core::Renderer::OpenGLWrapper::UseResourceWithoutSafety(const Resources::FontPtr _p_font)
+{
+	_p_font->s_p_textShader->Use();
+	p_currentFont_ = _p_font;
+}
+
+void Core::Renderer::OpenGLWrapper::DrawOnTop()
+{
+	unsigned* p_size = p_window_->GetScreenSize();
+	Maths::Mat4 projection = Maths::Matrices::Ortho(-(p_size[0] / 2.f), p_size[0] / 2.f, -(p_size[1] / 2.f), p_size[1] / 2.f, -1000.f, 1000.f);//Take the window / Quad properties
+	SetUniform("viewProjection", projection);
+
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_CULL_FACE);
+}
+
+void Core::Renderer::OpenGLWrapper::StopUseFonts()
+{
+	p_currentFont_ = Resources::Font::s_p_defaultFont;
+	glBindVertexArray(0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//Don't draw on top anymore
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+}
+
+// UseFont Before, StopUse after
+void Core::Renderer::OpenGLWrapper::RenderText(std::string _text, float _x, float _y, Maths::Vec2 _scale, TNCColor _color)
+{
+	if (!p_currentFont_)
+	{
+		DEBUG_WARNING("No font selected");
+		return;
+	}
+	// activate corresponding render state
+	SetUniform("textColor", _color);
+	glActiveTexture(GL_TEXTURE0);
+	glBindVertexArray(p_currentFont_->VAO_);
+	glEnable(GL_BLEND);
+	// iterate through all characters
+	std::string::const_iterator c;
+	for (c = _text.begin(); c != _text.end(); c++)
+	{
+		Resources::Font::Character ch = p_currentFont_->characters_[*c];
+
+		float xpos = _x + ch.bearing.x * _scale.x;
+		float ypos = _y - (ch.size.y - ch.bearing.y) * _scale.y;
+
+		float w = ch.size.x * _scale.x;
+		float h = ch.size.y * _scale.y;
+		// update VBO for each character
+		float vertices[6][4] = {
+			{ xpos,     ypos + h,   0.0f, 0.0f },
+			{ xpos,     ypos,       0.0f, 1.0f },
+			{ xpos + w, ypos,       1.0f, 1.0f },
+
+			{ xpos,     ypos + h,   0.0f, 0.0f },
+			{ xpos + w, ypos,       1.0f, 1.0f },
+			{ xpos + w, ypos + h,   1.0f, 0.0f }
+		};
+		// render glyph texture over quad
+		glBindTexture(GL_TEXTURE_2D, ch.textureID);
+		// update content of VBO memory
+		glBindBuffer(GL_ARRAY_BUFFER, p_currentFont_->VBO_);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		// render quad
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		// now advance cursors for next glyph (note that advance is number of 1/64 pixels)
+		_x += (ch.advance >> 6) * _scale.x; // bitshift by 6 to get value in pixels (2^6 = 64)
+	}
+	glBindVertexArray(0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void Core::Renderer::OpenGLWrapper::TransformText(Maths::Mat4 _model)
+{
+	_model.data4V[3] = Maths::Vec4(0.f, 0.f, 0.f, 1.f); //Remove the transform part, we apply it in the render part
+	SetUniform("model", _model);
+}
+
+void Core::Renderer::OpenGLWrapper::UnloadResource(const Resources::FontPtr _p_font)
+{
+	//TODO FIX THIS MEM LEAK !!!!
+	//for (auto const& [key, character] : _p_font->characters_)
+	//{
+	//	//GLuint deleteID = (GLuint)character.textureID;
+	//	glDeleteTextures(1, &character.textureID);
+	//}
+	for (const auto& it : _p_font->characters_)
+	{
+		//GLuint deleteID = (GLuint)character.textureID;
+		glDeleteTextures(1, &it.second.textureID);
+	}
+}
 #pragma endregion
 
 /*
@@ -591,8 +707,6 @@ void Core::Renderer::OpenGLWrapper::StopUseShader()
 	shaderInUse_ = -1;
 }
 
-void Core::Renderer::OpenGLWrapper::AddPostprocessShader(const Resources::ShaderPtr _p_shader) { /*TODO*/ }
-
 void Core::Renderer::OpenGLWrapper::UnloadResource(const Resources::ShaderPtr _p_shader)
 {
 	if (shaderInUse_ != static_cast<unsigned>(-1) && _p_shader->ID == shaderInUse_)
@@ -601,7 +715,6 @@ void Core::Renderer::OpenGLWrapper::UnloadResource(const Resources::ShaderPtr _p
 	_p_shader->ID = -1;
 	_p_shader->bLoaded_ = false;
 }
-
 #pragma endregion
 
 /*
@@ -678,9 +791,7 @@ void Core::Renderer::OpenGLWrapper::UseResource(const Resources::MeshPtr _p_mesh
 }
 
 void Core::Renderer::OpenGLWrapper::UnloadResource(const Resources::MeshPtr _p_mesh) { /*TODO*/ }
-
 #pragma endregion
-
 #pragma endregion RESOURCES
 
 /*
@@ -692,6 +803,7 @@ void Core::Renderer::OpenGLWrapper::SetUniform(const int _shaderProgramIndex, co
 	int valueLocation = static_cast<bool>(glGetUniformLocation(_shaderProgramIndex, _name.c_str()));
 	glUniform1i(valueLocation, _value);
 }
+
 void Core::Renderer::OpenGLWrapper::SetUniform(const std::string& _name, bool _value) const
 {
 	int valueLocation = static_cast<bool>(glGetUniformLocation(shaderInUse_, _name.c_str()));
@@ -703,6 +815,7 @@ void Core::Renderer::OpenGLWrapper::SetUniform(const int _shaderProgramIndex, co
 	int valueLocation = glGetUniformLocation(_shaderProgramIndex, _name.c_str());
 	glUniform1i(valueLocation, _value);
 }
+
 void Core::Renderer::OpenGLWrapper::SetUniform(const std::string& _name, int _value) const
 {
 	int valueLocation = glGetUniformLocation(shaderInUse_, _name.c_str());
@@ -714,6 +827,7 @@ void Core::Renderer::OpenGLWrapper::SetUniform(const int _shaderProgramIndex, co
 	int valueLocation = glGetUniformLocation(_shaderProgramIndex, _name.c_str());
 	glUniform1ui(valueLocation, _value);
 }
+
 void Core::Renderer::OpenGLWrapper::SetUniform(const std::string& _name, unsigned _value) const
 {
 	int valueLocation = glGetUniformLocation(shaderInUse_, _name.c_str());
@@ -725,6 +839,7 @@ void Core::Renderer::OpenGLWrapper::SetUniform(const int _shaderProgramIndex, co
 	int valueLocation = glGetUniformLocation(_shaderProgramIndex, _name.c_str());
 	glUniform1f(valueLocation, _value);
 }
+
 void Core::Renderer::OpenGLWrapper::SetUniform(const std::string& _name, float _value) const
 {
 	int valueLocation = glGetUniformLocation(shaderInUse_, _name.c_str());
@@ -735,6 +850,7 @@ void Core::Renderer::OpenGLWrapper::SetUniform(const int _shaderProgramIndex, co
 {
 	SetUniform(_shaderProgramIndex, _name, _value.x, _value.y);
 }
+
 void Core::Renderer::OpenGLWrapper::SetUniform(const std::string& _name, Maths::Vec2 _value) const
 {
 	SetUniform(shaderInUse_, _name, _value.x, _value.y);
@@ -745,6 +861,7 @@ void Core::Renderer::OpenGLWrapper::SetUniform(const int _shaderProgramIndex, co
 	int valueLocation = glGetUniformLocation(_shaderProgramIndex, _name.c_str());
 	glUniform2f(valueLocation, _valueX, _valueY);
 }
+
 void Core::Renderer::OpenGLWrapper::SetUniform(const std::string& _name, float _valueX, float _valueY) const
 {
 	int valueLocation = glGetUniformLocation(shaderInUse_, _name.c_str());
@@ -755,6 +872,7 @@ void Core::Renderer::OpenGLWrapper::SetUniform(const int _shaderProgramIndex, co
 {
 	SetUniform(_shaderProgramIndex, _name, _value.x, _value.y, _value.z);
 }
+
 void Core::Renderer::OpenGLWrapper::SetUniform(const std::string& _name, Maths::Vec3 _value) const
 {
 	SetUniform(shaderInUse_, _name, _value.x, _value.y, _value.z);
@@ -765,6 +883,7 @@ void Core::Renderer::OpenGLWrapper::SetUniform(const int _shaderProgramIndex, co
 	int valueLocation = glGetUniformLocation(_shaderProgramIndex, _name.c_str());
 	glUniform3f(valueLocation, _valueX, _valueY, _valueZ);
 }
+
 void Core::Renderer::OpenGLWrapper::SetUniform(const std::string& _name, float _valueX, float _valueY, float _valueZ) const
 {
 	int valueLocation = glGetUniformLocation(shaderInUse_, _name.c_str());
@@ -775,6 +894,7 @@ void Core::Renderer::OpenGLWrapper::SetUniform(const int _shaderProgramIndex, co
 {
 	SetUniform(_shaderProgramIndex, _name, _value.x, _value.y, _value.z, _value.w);
 }
+
 void Core::Renderer::OpenGLWrapper::SetUniform(const std::string& _name, Maths::Vec4 _value) const
 {
 	SetUniform(shaderInUse_, _name, _value.x, _value.y, _value.z, _value.w);
@@ -782,22 +902,24 @@ void Core::Renderer::OpenGLWrapper::SetUniform(const std::string& _name, Maths::
 
 void Core::Renderer::OpenGLWrapper::SetUniform(const int _shaderProgramIndex, const std::string& _name, TNCColor _value) const
 {
-	SetUniform(_shaderProgramIndex, _name, _value.r, _value.g, _value.b, _value.a);
+	SetUniform(_shaderProgramIndex, _name, _value.r / 255.f, _value.g / 255.f, _value.b / 255.f, _value.a / 255.f);
 }
+
 void Core::Renderer::OpenGLWrapper::SetUniform(const std::string& _name, TNCColor _value) const
 {
-	SetUniform(shaderInUse_, _name, _value.r, _value.g, _value.b, _value.a);
+	SetUniform(shaderInUse_, _name, _value.r / 255.f, _value.g / 255.f, _value.b / 255.f, _value.a / 255.f);
 }
 
 void Core::Renderer::OpenGLWrapper::SetUniform(const int _shaderProgramIndex, const std::string& _name, float _valueX, float _valueY, float _valueZ, float _valueW) const
 {
 	int valueLocation = glGetUniformLocation(_shaderProgramIndex, _name.c_str());
-	glUniform4f(valueLocation, _valueX, _valueY, _valueZ, _valueZ);
+	glUniform4f(valueLocation, _valueX, _valueY, _valueZ, _valueW);
 }
+
 void Core::Renderer::OpenGLWrapper::SetUniform(const std::string& _name, float _valueX, float _valueY, float _valueZ, float _valueW) const
 {
 	int valueLocation = glGetUniformLocation(shaderInUse_, _name.c_str());
-	glUniform4f(valueLocation, _valueX, _valueY, _valueZ, _valueZ);
+	glUniform4f(valueLocation, _valueX, _valueY, _valueZ, _valueW);
 }
 
 void Core::Renderer::OpenGLWrapper::SetUniform(const int _shaderProgramIndex, const std::string& _name, Maths::Mat3 _value) const
@@ -805,6 +927,7 @@ void Core::Renderer::OpenGLWrapper::SetUniform(const int _shaderProgramIndex, co
 	int valueLocation = glGetUniformLocation(_shaderProgramIndex, _name.c_str());
 	glUniformMatrix3fv(valueLocation, 1, GL_FALSE, &_value.data[0]);
 }
+
 void Core::Renderer::OpenGLWrapper::SetUniform(const std::string& _name, Maths::Mat3 _value) const
 {
 	int valueLocation = glGetUniformLocation(shaderInUse_, _name.c_str());
@@ -816,6 +939,7 @@ void Core::Renderer::OpenGLWrapper::SetUniform(const int _shaderProgramIndex, co
 	int valueLocation = glGetUniformLocation(_shaderProgramIndex, _name.c_str());
 	glUniformMatrix4fv(valueLocation, 1, GL_FALSE, &_value.data[0]);
 }
+
 void Core::Renderer::OpenGLWrapper::SetUniform(const std::string& _name, Maths::Mat4 _value) const
 {
 	int valueLocation = glGetUniformLocation(shaderInUse_, _name.c_str());

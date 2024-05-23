@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Resources/IResource.hpp"
 
 #include <Core/ThreadPool.hpp>
@@ -35,13 +34,18 @@ namespace Resources
 	struct Archi
 	{
 		string name;
+		string path;
 		std::vector<std::tuple<string, FileExt, string>>file;
 
 		std::vector<Archi*> subFolder;
 		Archi* parent;
 
-		inline Archi() : name(""), file({}), subFolder({}), parent(nullptr) {};
-		inline Archi(string _name, Archi* _parent = nullptr) : name(_name), file({}), subFolder({}), parent(_parent) {};
+		inline Archi()
+			: name(""), path("./"), file({}), subFolder({}), parent(nullptr) { /*EMPTY*/
+		};
+		inline Archi(string _name, string _path, Archi* _parent = nullptr)
+			: name(_name), path(_path), file({}), subFolder({}), parent(_parent) { /*EMPTY*/
+		};
 
 		inline ~Archi()
 		{
@@ -82,9 +86,10 @@ namespace Resources
 	public:
 		std::vector<std::shared_ptr<IResource>> textureList;
 		std::vector<std::shared_ptr<IResource>> meshList;
+		std::vector<std::shared_ptr<IResource>> fontList;
 		std::vector<std::shared_ptr<IResource>> audioList;
 
-		Archi* p_files;
+		Archi* p_files = nullptr;
 
 		/*********************************************
 				FUNCTIONS BLOC

@@ -1,15 +1,9 @@
-// dllmain.cpp : Définit le point d'entrée de l'application DLL.
 #include "pch.hpp"
 
-bool APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
+bool APIENTRY DllMain(HMODULE _hModule, DWORD _ul_reason_for_call, LPVOID _lpReserved)
 {
-	switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-	case DLL_THREAD_ATTACH:
-	case DLL_THREAD_DETACH:
-	case DLL_PROCESS_DETACH:
-		break;
-	}
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	//_CrtSetBreakAlloc(20290); // Debugger should stop alloc nb
+
 	return true;
 }

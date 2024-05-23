@@ -1,31 +1,24 @@
 #pragma once
+#include "DLL_API.hpp"
 
 #include <string>
 #include <vector>
 
-//Utils
+// Utils and Math
 #include <Core/Utils/TNCColor.hpp>
 #include "Maths/Maths.hpp"
 
-//Core
+// Core
 #include "Core/Window.hpp"
 
-//LowRenderer
-namespace LowRenderer::Cameras
-{
-	class Camera;
-	class FreeCamera;
-	struct CameraInput;
-}
-namespace LowRenderer::Lights
-{
-	class ILight;
-	class DirectionalLight;
-	class PointLight;
-	class SpotLight;
-}
+// Cameras
+#include "LowRenderer/Cameras/Camera.hpp"
+#include "LowRenderer/Cameras/FreeCamera.hpp"
 
-//Resources
+// Lights
+#include "LowRenderer/Lights/Lights.hpp"
+
+// Resources
 #include "Resources/Resources.hpp"
 
 struct TONIC_ENGINE_API WindowBuffer
@@ -54,7 +47,7 @@ namespace Core::Renderer
 				FUNCTIONS BLOC
 		*********************************************/
 	public:
-		virtual const bool TONIC_ENGINE_API Init(Core::Applications::Window* _p_window);
+		virtual const bool TONIC_ENGINE_API Init(Core::Applications::Window* _p_window) { p_window_ = _p_window; return p_window_; };
 		virtual WindowBuffer* InitFrameBuffer() = 0;
 
 		virtual void StartFrame() = 0;
@@ -70,7 +63,7 @@ namespace Core::Renderer
 		virtual void ChangeClearColor(TNCColor _color) = 0;
 		TNCColor TONIC_ENGINE_API GetClearColor() { return clearColor_; }
 		virtual void TONIC_ENGINE_API ClearColor() = 0;
-		
+
 		virtual void DepthMaskActive(bool _newValue) = 0;
 
 		virtual void ResizeViewPort(u32 _width, u32 _height) = 0;
@@ -86,12 +79,10 @@ namespace Core::Renderer
 		virtual void SetModel(Maths::Mat4 _modelMatrix) = 0;
 		//-----------Camera---------------------------------------------
 		virtual void SetDefaultCamera() = 0;
-		virtual void SetCamera(LowRenderer::Cameras::FreeCamera* _p_newCamera);
+		virtual void SetCamera(LowRenderer::Cameras::FreeCamera* _p_newCamera) { p_currentCamera_ = _p_newCamera; };
 		virtual void SetFixedCamera(const LowRenderer::Cameras::Camera* _p_camera) = 0;
 		const LowRenderer::Cameras::FreeCamera* GetCamera() const { return p_currentCamera_; };
 		virtual void SetCamera(const LowRenderer::Cameras::Camera* _p_camera, Maths::Vec3 _position) = 0;
-
-		virtual void UpdateCurrentCamera(const LowRenderer::Cameras::CameraInput* _camInputs) = 0;
 		//-----------Light----------------------------------------------
 		virtual void SetDirectionalLightNumber(u32 _number) const = 0;
 		virtual void SetPointLightNumber(u32 _number) const = 0;
@@ -106,6 +97,7 @@ namespace Core::Renderer
 		virtual void UseResource(const Resources::MaterialPtr _p_material) = 0;
 		virtual void UseResource(const Resources::MaterialPtr _p_material, const int _shaderProgramIndex) = 0;
 		virtual void UnloadResource(const Resources::MaterialPtr _p_material) = 0;
+
 		//------Textures-----------------------------------------------
 		virtual void LoadResource(Resources::TexturePtr _p_texture) = 0;
 		virtual unsigned int LoadCubemap(std::vector<std::string> faces) = 0;
@@ -113,16 +105,29 @@ namespace Core::Renderer
 		//----//Takes the type inside the texture class
 		virtual void UseResource(const Resources::TexturePtr _p_texture) = 0;
 		//----//Overrides the type inside the texture class
-		virtual void UseResource(const Resources::TexturePtr _p_texture, Resources::TextureType _type) = 0;
+		virtual void UseResource(const Resources::TexturePtr _p_texture, Resources::Textures::TextureType _type) = 0;
 		virtual void StopUseTexture() = 0;
 		virtual void UnloadResource(const Resources::TexturePtr _p_texture) = 0;
+
+		//------Fonts--------------------------------------------------
+		virtual void LoadResource(Resources::FontPtr _p_font) = 0;
+		virtual void UseResource(const Resources::FontPtr _p_font) = 0;
+		// Avoid to send a Mat4 buffer twice and reset font Settings every call
+		virtual void UseResourceWithoutSafety(const Resources::FontPtr _p_font) = 0;
+		virtual void TransformText(Maths::Mat4 _model) = 0;
+		// Think about using the font before
+		virtual void RenderText(std::string _text, float _x, float _y, Maths::Vec2 _scale, TNCColor _color = { 255,255,255,255 }) = 0;
+		virtual void DrawOnTop() = 0;
+		virtual void StopUseFonts() = 0;
+		virtual void UnloadResource(const Resources::FontPtr _p_font) = 0;
+
 		//------Shader-------------------------------------------------
 		virtual void LoadResource(Resources::ShaderPtr _p_shader) = 0;
 		virtual void UseResource(const Resources::ShaderPtr _p_shader) = 0;
 		virtual void StopUseShader() = 0;
-		virtual void AddPostprocessShader(const Resources::ShaderPtr _p_shader) = 0;
 		virtual void UnloadResource(const Resources::ShaderPtr _p_shader) = 0;
 		unsigned GetShaderInUse() const { return shaderInUse_; };
+
 		//------Mesh-----------------------------------------------
 		virtual void LoadResource(Resources::MeshPtr _p_mesh) = 0;
 		virtual void UseResource(const Resources::MeshPtr _p_mesh) = 0;

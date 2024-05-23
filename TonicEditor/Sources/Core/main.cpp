@@ -1,12 +1,15 @@
 #include <iostream>
 
 #include "Core/AppEditor.hpp"
+
 using namespace Core::Applications;
 
 int main(int argc, char** argv)
 {
+#ifndef NDEBUG
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-	//_CrtSetBreakAlloc(93076); // Debugger should stop alloc nb
+	//_CrtSetBreakAlloc(20290); // Debugger should stop at alloc nb (Dont delete)
+#endif
 
 	std::system("chcp 65001");
 	std::system("cls");
@@ -14,9 +17,7 @@ int main(int argc, char** argv)
 	std::cout << "argc = " << argc << ";\n";
 
 	for (int i = 0; i < argc; i++)
-	{
 		std::cout << argv[i] << std::endl;
-	}
 
 	if (argc > 1)
 	{

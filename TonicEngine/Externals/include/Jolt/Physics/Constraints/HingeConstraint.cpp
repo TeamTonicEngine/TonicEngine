@@ -1,7 +1,6 @@
 // Jolt Physics Library (https://github.com/jrouwe/JoltPhysics)
 // SPDX-FileCopyrightText: 2021 Jorrit Rouwe
 // SPDX-License-Identifier: MIT
-
 #include <Jolt/Jolt.h>
 
 #include <Jolt/Physics/Constraints/HingeConstraint.h>
@@ -11,7 +10,7 @@
 #include <Jolt/Core/StreamIn.h>
 #include <Jolt/Core/StreamOut.h>
 #ifdef JPH_DEBUG_RENDERER
-	#include <Jolt/Renderer/DebugRenderer.h>
+#include <Jolt/Renderer/DebugRenderer.h>
 #endif // JPH_DEBUG_RENDERER
 
 JPH_NAMESPACE_BEGIN
@@ -20,21 +19,21 @@ JPH_IMPLEMENT_SERIALIZABLE_VIRTUAL(HingeConstraintSettings)
 {
 	JPH_ADD_BASE_CLASS(HingeConstraintSettings, TwoBodyConstraintSettings)
 
-	JPH_ADD_ENUM_ATTRIBUTE(HingeConstraintSettings, mSpace)
-	JPH_ADD_ATTRIBUTE(HingeConstraintSettings, mPoint1)
-	JPH_ADD_ATTRIBUTE(HingeConstraintSettings, mHingeAxis1)
-	JPH_ADD_ATTRIBUTE(HingeConstraintSettings, mNormalAxis1)
-	JPH_ADD_ATTRIBUTE(HingeConstraintSettings, mPoint2)
-	JPH_ADD_ATTRIBUTE(HingeConstraintSettings, mHingeAxis2)
-	JPH_ADD_ATTRIBUTE(HingeConstraintSettings, mNormalAxis2)
-	JPH_ADD_ATTRIBUTE(HingeConstraintSettings, mLimitsMin)
-	JPH_ADD_ATTRIBUTE(HingeConstraintSettings, mLimitsMax)
-	JPH_ADD_ATTRIBUTE(HingeConstraintSettings, mLimitsSpringSettings)
-	JPH_ADD_ATTRIBUTE(HingeConstraintSettings, mMaxFrictionTorque)
-	JPH_ADD_ATTRIBUTE(HingeConstraintSettings, mMotorSettings)
+		JPH_ADD_ENUM_ATTRIBUTE(HingeConstraintSettings, mSpace)
+		JPH_ADD_ATTRIBUTE(HingeConstraintSettings, mPoint1)
+		JPH_ADD_ATTRIBUTE(HingeConstraintSettings, mHingeAxis1)
+		JPH_ADD_ATTRIBUTE(HingeConstraintSettings, mNormalAxis1)
+		JPH_ADD_ATTRIBUTE(HingeConstraintSettings, mPoint2)
+		JPH_ADD_ATTRIBUTE(HingeConstraintSettings, mHingeAxis2)
+		JPH_ADD_ATTRIBUTE(HingeConstraintSettings, mNormalAxis2)
+		JPH_ADD_ATTRIBUTE(HingeConstraintSettings, mLimitsMin)
+		JPH_ADD_ATTRIBUTE(HingeConstraintSettings, mLimitsMax)
+		JPH_ADD_ATTRIBUTE(HingeConstraintSettings, mLimitsSpringSettings)
+		JPH_ADD_ATTRIBUTE(HingeConstraintSettings, mMaxFrictionTorque)
+		JPH_ADD_ATTRIBUTE(HingeConstraintSettings, mMotorSettings)
 }
 
-void HingeConstraintSettings::SaveBinaryState(StreamOut &inStream) const
+void HingeConstraintSettings::SaveBinaryState(StreamOut& inStream) const
 {
 	ConstraintSettings::SaveBinaryState(inStream);
 
@@ -52,7 +51,7 @@ void HingeConstraintSettings::SaveBinaryState(StreamOut &inStream) const
 	mMotorSettings.SaveBinaryState(inStream);
 }
 
-void HingeConstraintSettings::RestoreBinaryState(StreamIn &inStream)
+void HingeConstraintSettings::RestoreBinaryState(StreamIn& inStream)
 {
 	ConstraintSettings::RestoreBinaryState(inStream);
 
@@ -67,14 +66,15 @@ void HingeConstraintSettings::RestoreBinaryState(StreamIn &inStream)
 	inStream.Read(mLimitsMax);
 	inStream.Read(mMaxFrictionTorque);
 	mLimitsSpringSettings.RestoreBinaryState(inStream);
-	mMotorSettings.RestoreBinaryState(inStream);}
+	mMotorSettings.RestoreBinaryState(inStream);
+}
 
-TwoBodyConstraint *HingeConstraintSettings::Create(Body &inBody1, Body &inBody2) const
+TwoBodyConstraint* HingeConstraintSettings::Create(Body& inBody1, Body& inBody2) const
 {
 	return new HingeConstraint(inBody1, inBody2, *this);
 }
 
-HingeConstraint::HingeConstraint(Body &inBody1, Body &inBody2, const HingeConstraintSettings &inSettings) :
+HingeConstraint::HingeConstraint(Body& inBody1, Body& inBody2, const HingeConstraintSettings& inSettings) :
 	TwoBodyConstraint(inBody1, inBody2, inSettings),
 	mMaxFrictionTorque(inSettings.mMaxFrictionTorque),
 	mMotorSettings(inSettings.mMotorSettings)
@@ -118,7 +118,7 @@ HingeConstraint::HingeConstraint(Body &inBody1, Body &inBody2, const HingeConstr
 	SetLimitsSpringSettings(inSettings.mLimitsSpringSettings);
 }
 
-void HingeConstraint::NotifyShapeChanged(const BodyID &inBodyID, Vec3Arg inDeltaCOM)
+void HingeConstraint::NotifyShapeChanged(const BodyID& inBodyID, Vec3Arg inDeltaCOM)
 {
 	if (mBody1->GetID() == inBodyID)
 		mLocalSpacePosition1 -= inDeltaCOM;
@@ -240,7 +240,7 @@ float HingeConstraint::GetSmallestAngleToLimit() const
 {
 	float dist_to_min = CenterAngleAroundZero(mTheta - mLimitsMin);
 	float dist_to_max = CenterAngleAroundZero(mTheta - mLimitsMax);
-	return abs(dist_to_min) < abs(dist_to_max)? dist_to_min : dist_to_max;
+	return abs(dist_to_min) < abs(dist_to_max) ? dist_to_min : dist_to_max;
 }
 
 bool HingeConstraint::IsMinLimitClosest() const
@@ -259,11 +259,11 @@ bool HingeConstraint::SolveVelocityConstraint(float inDeltaTime)
 		switch (mMotorState)
 		{
 		case EMotorState::Off:
-			{
-				float max_lambda = mMaxFrictionTorque * inDeltaTime;
-				motor = mMotorConstraintPart.SolveVelocityConstraint(*mBody1, *mBody2, mA1, -max_lambda, max_lambda);
-				break;
-			}
+		{
+			float max_lambda = mMaxFrictionTorque * inDeltaTime;
+			motor = mMotorConstraintPart.SolveVelocityConstraint(*mBody1, *mBody2, mA1, -max_lambda, max_lambda);
+			break;
+		}
 
 		case EMotorState::Velocity:
 		case EMotorState::Position:
@@ -332,7 +332,7 @@ bool HingeConstraint::SolvePositionConstraint(float inDeltaTime, float inBaumgar
 }
 
 #ifdef JPH_DEBUG_RENDERER
-void HingeConstraint::DrawConstraint(DebugRenderer *inRenderer) const
+void HingeConstraint::DrawConstraint(DebugRenderer* inRenderer) const
 {
 	RMat44 transform1 = mBody1->GetCenterOfMassTransform();
 	RMat44 transform2 = mBody2->GetCenterOfMassTransform();
@@ -348,7 +348,7 @@ void HingeConstraint::DrawConstraint(DebugRenderer *inRenderer) const
 	inRenderer->DrawLine(constraint_pos2, transform2 * (mLocalSpacePosition2 + mDrawConstraintSize * mLocalSpaceNormalAxis2), Color::sWhite);
 }
 
-void HingeConstraint::DrawConstraintLimits(DebugRenderer *inRenderer) const
+void HingeConstraint::DrawConstraintLimits(DebugRenderer* inRenderer) const
 {
 	if (mHasLimits && mLimitsMax > mLimitsMin)
 	{
@@ -363,7 +363,7 @@ void HingeConstraint::DrawConstraintLimits(DebugRenderer *inRenderer) const
 }
 #endif // JPH_DEBUG_RENDERER
 
-void HingeConstraint::SaveState(StateRecorder &inStream) const
+void HingeConstraint::SaveState(StateRecorder& inStream) const
 {
 	TwoBodyConstraint::SaveState(inStream);
 
@@ -377,7 +377,7 @@ void HingeConstraint::SaveState(StateRecorder &inStream) const
 	inStream.Write(mTargetAngle);
 }
 
-void HingeConstraint::RestoreState(StateRecorder &inStream)
+void HingeConstraint::RestoreState(StateRecorder& inStream)
 {
 	TwoBodyConstraint::RestoreState(inStream);
 
@@ -391,10 +391,9 @@ void HingeConstraint::RestoreState(StateRecorder &inStream)
 	inStream.Read(mTargetAngle);
 }
 
-
 Ref<ConstraintSettings> HingeConstraint::GetConstraintSettings() const
 {
-	HingeConstraintSettings *settings = new HingeConstraintSettings;
+	HingeConstraintSettings* settings = new HingeConstraintSettings;
 	ToConstraintSettings(*settings);
 	settings->mSpace = EConstraintSpace::LocalToBodyCOM;
 	settings->mPoint1 = RVec3(mLocalSpacePosition1);

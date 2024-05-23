@@ -24,7 +24,7 @@ LowRenderer::Cameras::Camera::Camera(unsigned int _width, unsigned int _height)
 
 void LowRenderer::Cameras::Camera::Update(Vec3 _position, Quat _rotation)
 {
-	//Only active cameras should be updated
+	// Only active cameras should be updated
 	if (!bUsed)
 		return;
 	if (bViewChanged)
@@ -44,7 +44,7 @@ void LowRenderer::Cameras::Camera::SetView(Vec3 _position, Quat _rotation)
 	using namespace Vectors;
 	_rotation.ToEulerAngles();
 	Vec3 zC = _rotation.RotateVector(Vec3{ 0.f,0.f,-1.f });
-	Vec3 xC = _rotation.RotateVector(Vec3{ 0.f,1.f,1.f });
+	Vec3 xC = CrossProduct(Maths::Vec3::UP, zC).GetNormalized();
 	Vec3 yC = CrossProduct(zC, xC);
 
 	this->view = {
@@ -76,7 +76,7 @@ void LowRenderer::Cameras::Camera::SetProjection()
 {
 	if (bPerspectiveMode)
 	{
-		fovY = std::clamp(fovY, Maths::Constants::PI_4, Maths::Constants::PI_3 *2.f);
+		fovY = std::clamp(fovY, Maths::Constants::PI_4, Maths::Constants::PI_3 * 2.f);
 		projection = Perspective(fovY, aspect, zNear, zFar);
 	}
 	else

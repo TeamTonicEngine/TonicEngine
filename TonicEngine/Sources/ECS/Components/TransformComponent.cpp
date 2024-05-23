@@ -4,23 +4,20 @@
 
 ECS::Components::TransformComponent::TransformComponent(const Maths::Vec3& _position, Maths::Quat _rotation, Maths::Vec3 _scale)
 	: position_(_position), rotation_(_rotation), scale_(_scale), bChanged_(true)
-{};
+{}
 
 ECS::Components::TransformComponent::TransformComponent(const Maths::Vec3& _position, Maths::Vec3 _rotationEuler, Maths::Vec3  _scale)
 	: position_(_position), rotation_(Maths::Quaternions::FromEulerAngles(_rotationEuler)), scale_(_scale), bChanged_(true)
-{};
+{}
 
 ECS::Components::TransformComponent::TransformComponent(const Maths::Vec3& _position, float _rotationAngle, Maths::Vec3 _rotationAxis, Maths::Vec3  _scale)
 	: position_(_position), rotation_(Maths::Quaternions::FromAngleAxis(_rotationAngle, _rotationAxis)), scale_(_scale), bChanged_(true)
 {}
-bool ECS::Components::TransformComponent::HasChanged() const
-{
-	return bChanged_;
-}
-const Maths::Vec3 ECS::Components::TransformComponent::GetPosition() const
-{
-	return position_;
-}
+
+bool ECS::Components::TransformComponent::HasChanged() const { return bChanged_; }
+
+const Maths::Vec3 ECS::Components::TransformComponent::GetPosition() const { return position_; }
+
 const Maths::Vec3 ECS::Components::TransformComponent::GetLocalPosition() const
 {
 	auto p_em = ENGINE.ENT_MNGR;
@@ -33,18 +30,15 @@ const Maths::Vec3 ECS::Components::TransformComponent::GetLocalPosition() const
 	}
 	return position_;
 }
+
 const Maths::Vec3 ECS::Components::TransformComponent::GetRotationFromEuler() const
 {
 	return rotation_.ToEulerAngles() * Maths::Constants::RAD2DEG;
 }
-const Maths::Quat ECS::Components::TransformComponent::GetRotation() const
-{
-	return rotation_;
-}
-const Maths::Vec3 ECS::Components::TransformComponent::GetScale() const
-{
-	return scale_;
-}
+
+const Maths::Quat ECS::Components::TransformComponent::GetRotation() const { return rotation_; }
+
+const Maths::Vec3 ECS::Components::TransformComponent::GetScale() const { return scale_; }
 
 void ECS::Components::TransformComponent::SetPosition(Maths::Vec3 _newPosition)
 {
@@ -77,7 +71,7 @@ void ECS::Components::TransformComponent::SetRotationFromEuler(Maths::Vec3 _newR
 
 void ECS::Components::TransformComponent::SetRotation(Maths::Quat _newRotation)
 {
-	rotationDiff_ = _newRotation * rotation_.GetInverse();
+	rotationDiff_ = rotation_.GetInverse() * _newRotation;
 	rotation_ = _newRotation;
 	bChanged_ = true;
 }
@@ -101,7 +95,15 @@ const Maths::Mat4 ECS::Components::TransformComponent::GetModel() const
 {
 	return Maths::Mat4::Transform(position_, rotation_, scale_);
 }
+
 void ECS::Components::TransformComponent::ResetChanged()
 {
-	bChanged_ = false;
+	//Reset Flags
+	if (bChanged_)
+	{
+		positionDiff_ = { 0.f };
+		rotationDiff_ = Maths::Quat::Identity();
+		scaleDiff_ = { 1.f };
+		bChanged_ = false;
+	}
 }

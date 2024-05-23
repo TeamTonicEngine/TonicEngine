@@ -22,8 +22,8 @@ namespace ECS
 		TONIC_ENGINE_API BaseSystem() = default;
 		TONIC_ENGINE_API virtual ~BaseSystem() = default;
 
-		TONIC_ENGINE_API void AddEntity(const EntityID _entity);
-		TONIC_ENGINE_API void RemoveEntity(const EntityID _entity);
+		virtual void TONIC_ENGINE_API AddEntity(const EntityID _entity);
+		virtual void TONIC_ENGINE_API RemoveEntity(const EntityID _entity);
 		TONIC_ENGINE_API const EntitySignature GetSignature() const;
 
 		template<typename T>

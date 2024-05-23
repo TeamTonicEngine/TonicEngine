@@ -1,13 +1,16 @@
 #include "pch.hpp"
+
 #include "framework.hpp"
 #include "Core/Window.hpp"
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.hpp>
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.hpp>
 
 #include <iostream>
 
-void* Core::Applications::Window::p_s_handle_ = nullptr;
+void* Core::Applications::Window::s_p_handle_ = nullptr;
 
 static void FramebufferResizeCallback(GLFWwindow* _window, int _width, int _height)
 {
@@ -15,9 +18,9 @@ static void FramebufferResizeCallback(GLFWwindow* _window, int _width, int _heig
 	window->Resized();
 }
 
-static void GLFWErrorCallback(int error, const char* description)
+static void GLFWErrorCallback(int _error, const char* _description)
 {
-	fprintf(stderr, "GLFW Error %d: %s\n", error, description);
+	fprintf(stderr, "GLFW Error %d: %s\n", _error, _description);
 }
 
 Core::Applications::Window::Window(const char* _nameWindow, unsigned _width, unsigned _height) :
@@ -40,32 +43,32 @@ const bool Core::Applications::Window::Init()
 	//Anti-aliasing
 	glfwWindowHint(GLFW_SAMPLES, 4);
 	// Create the window
-	p_s_handle_ = (void*)glfwCreateWindow(width_, height_, nameWindow_, nullptr, nullptr);
-	if (p_s_handle_ == nullptr)
+	s_p_handle_ = (void*)glfwCreateWindow(width_, height_, nameWindow_, nullptr, nullptr);
+	if (s_p_handle_ == nullptr)
 	{
 		glfwTerminate();
 		throw ("FAILED TO CREATE GLFW WINDOW");
 	}
 
-	glfwMakeContextCurrent(static_cast<GLFWwindow*>(p_s_handle_));
-	glfwSetWindowUserPointer(static_cast<GLFWwindow*>(p_s_handle_), this);
-	glfwSetFramebufferSizeCallback(static_cast<GLFWwindow*>(p_s_handle_), FramebufferResizeCallback);
+	glfwMakeContextCurrent(static_cast<GLFWwindow*>(s_p_handle_));
+	glfwSetWindowUserPointer(static_cast<GLFWwindow*>(s_p_handle_), this);
+	glfwSetFramebufferSizeCallback(static_cast<GLFWwindow*>(s_p_handle_), FramebufferResizeCallback);
 
-	return p_s_handle_;
+	return s_p_handle_;
 }
 
-void* Core::Applications::Window::GetWindow() { return p_s_handle_; }
+void* Core::Applications::Window::GetWindow() { return s_p_handle_; }
 
 void* Core::Applications::Window::GetProcAddress()
 {
-	glfwMakeContextCurrent(static_cast<GLFWwindow*>(p_s_handle_)); // Important to initialize GLAD
+	glfwMakeContextCurrent(static_cast<GLFWwindow*>(s_p_handle_)); // Important to initialize GLAD
 	return (void*)glfwGetProcAddress;
 }
 
 unsigned* Core::Applications::Window::GetScreenSize()
 {
-	static unsigned size[2] = {width_, height_};
-	//glfwGetWindowMonitor(static_cast<GLFWwindow*>(p_s_handle_));
+	static unsigned size[2] = { width_, height_ };
+	//glfwGetWindowMonitor(static_cast<GLFWwindow*>(s_p_handle_));
 	const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
 	size[0] = mode->width;
@@ -74,9 +77,13 @@ unsigned* Core::Applications::Window::GetScreenSize()
 	return &size[0];
 }
 
-u32_2 Core::Applications::Window::GetWindowSize()
+u32_2 Core::Applications::Window::GetWindowSize() { return { width_, height_ }; }
+
+f32_2 TONIC_ENGINE_API Core::Applications::Window::GetWindowPos()
 {
-	return { width_, height_ };
+	int x, y;
+	glfwGetWindowPos(static_cast<GLFWwindow*>(s_p_handle_), &x, &y);
+	return { (float)x,(float)y };
 }
 
 void Core::Applications::Window::Resized()
@@ -84,10 +91,10 @@ void Core::Applications::Window::Resized()
 	bFramebufferResized_ = true;
 	int newWidth = 0, newHeight = 0;
 
-	glfwGetFramebufferSize(static_cast<GLFWwindow*>(p_s_handle_), &newWidth, &newHeight);
+	glfwGetFramebufferSize(static_cast<GLFWwindow*>(s_p_handle_), &newWidth, &newHeight);
 	while (newWidth == 0 || newHeight == 0)
 	{
-		glfwGetFramebufferSize(static_cast<GLFWwindow*>(p_s_handle_), &newWidth, &newHeight);
+		glfwGetFramebufferSize(static_cast<GLFWwindow*>(s_p_handle_), &newWidth, &newHeight);
 		glfwWaitEvents();
 	}
 
@@ -100,11 +107,9 @@ void Core::Applications::Window::ResizedHandled() { bFramebufferResized_ = false
 bool Core::Applications::Window::IsClosing(char _state)
 {
 	if (_state != -1)
-	{
-		glfwSetWindowShouldClose(static_cast<GLFWwindow*>(p_s_handle_), _state);
-	}
+		glfwSetWindowShouldClose(static_cast<GLFWwindow*>(s_p_handle_), _state);
 
-	return glfwWindowShouldClose(static_cast<GLFWwindow*>(p_s_handle_));
+	return glfwWindowShouldClose(static_cast<GLFWwindow*>(s_p_handle_));
 }
 
 bool Core::Applications::Window::IsFramebufferResized() { return bFramebufferResized_; }
@@ -118,85 +123,38 @@ void Core::Applications::Window::StartFrame()
 
 void Core::Applications::Window::EndFrame()
 {
-	glfwSwapBuffers(static_cast<GLFWwindow*>(p_s_handle_));
+	glfwSwapBuffers(static_cast<GLFWwindow*>(s_p_handle_));
 	glfwPollEvents();
 }
 
 void Core::Applications::Window::Destroy()
 {
-	glfwDestroyWindow(static_cast<GLFWwindow*>(p_s_handle_));
+	glfwDestroyWindow(static_cast<GLFWwindow*>(s_p_handle_));
 	glfwTerminate();
 }
 
 const float Core::Applications::Window::GetDeltaTime() const { return deltaTime_; }
 
-const LowRenderer::Cameras::Input* Core::Applications::Window::GetFrameInput() const { return &input_; }
-
-void Core::Applications::Window::ProcessInput()
+void Core::Applications::Window::RegisterInputHandler()
 {
-	if (glfwGetKey(static_cast<GLFWwindow*>(p_s_handle_), GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		glfwSetWindowShouldClose(static_cast<GLFWwindow*>(p_s_handle_), true);
-
-	ProcessMouseInput();
-	ProcessCameraInput();
-
-	//Reset Offset
-	input_.mouse.s_scrollOffset = 0.f;
+	ENGINE.INP_MNGR->OnEvent(Core::Applications::EventType::Pressed, Core::Applications::Keyboard::KeyEscape, [&]() {IsClosing(true); });
 }
 
-//static declaration
-float LowRenderer::Cameras::Input::Mouse::s_scrollOffset = 0.f;
-void ScrollCallback(GLFWwindow* _window, double _xoffset, double _yoffset)
+void Core::Applications::Window::SetFullScreen(bool _state)
 {
-	LowRenderer::Cameras::Input::Mouse::s_scrollOffset = (float)_yoffset;
-};
-
-void Core::Applications::Window::ProcessMouseInput()
-{
-	GLFWwindow* window = static_cast<GLFWwindow*>(p_s_handle_);
-
-	double newMouseX, newMouseY;
-	glfwGetCursorPos(window, &newMouseX, &newMouseY);
-	input_.mouse.deltaX = (float)(newMouseX - input_.mouse.x);
-	input_.mouse.deltaY = (float)(newMouseY - input_.mouse.y);
-	input_.mouse.x = newMouseX;
-	input_.mouse.y = newMouseY;
-
-	glfwSetScrollCallback(window, ScrollCallback);
-}
-
-void Core::Applications::Window::ProcessCameraInput()
-{
-	GLFWwindow* window = static_cast<GLFWwindow*>(p_s_handle_);
-	static double s_LastPressed = glfwGetTime();
-	double timeToApply = .5;
-	float mixValue = 0.2f;
-
-	input_.cameraInput.zoom = input_.mouse.s_scrollOffset;
-	// Update camera
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+	if (_state)
 	{
-		input_.cameraInput.bMoveForward = glfwGetKey(window, GLFW_KEY_W);
-		input_.cameraInput.bMoveBackward = glfwGetKey(window, GLFW_KEY_S);
-		input_.cameraInput.bMoveUp = glfwGetKey(window, GLFW_KEY_E);
-		input_.cameraInput.bMoveDown = glfwGetKey(window, GLFW_KEY_Q);
-		input_.cameraInput.bMoveRight = glfwGetKey(window, GLFW_KEY_D);
-		input_.cameraInput.bMoveLeft = glfwGetKey(window, GLFW_KEY_A);
-
-		input_.cameraInput.deltaX = -input_.mouse.deltaX;
-		input_.cameraInput.deltaY = input_.mouse.deltaY;
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
+		GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor();
+		const GLFWvidmode* mode = glfwGetVideoMode(primaryMonitor);
+		glfwSetWindowMonitor(static_cast<GLFWwindow*>(s_p_handle_), primaryMonitor, 0, 0, mode->width, mode->height, mode->refreshRate);
 	}
 	else
 	{
-		input_.cameraInput.bMoveForward = false;
-		input_.cameraInput.bMoveBackward = false;
-		input_.cameraInput.bMoveRight = false;
-		input_.cameraInput.bMoveLeft = false;
-		input_.cameraInput.deltaX = 0.f;
-		input_.cameraInput.deltaY = 0.f;
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		glfwSetWindowMonitor(static_cast<GLFWwindow*>(s_p_handle_), nullptr, GetScreenSize()[0] * 0.5f - DEFAULT_WIDTH * 0.5f, GetScreenSize()[1] * 0.5f - DEFAULT_HEIGHT * 0.5f, DEFAULT_WIDTH, DEFAULT_HEIGHT, 0);
 	}
-	// Cam end
+}
+
+void* Core::Applications::Window::GetWindowsHwnd()
+{
+	return glfwGetWin32Window(static_cast<GLFWwindow*>(s_p_handle_));
 }

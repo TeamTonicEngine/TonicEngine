@@ -130,7 +130,7 @@ void ECS::EntityManager::DestroyAllEntitiesFromEntity(const EntityID _entity)
 void ECS::EntityManager::ResetAvailableEntities()
 {
 	std::queue<EntityID> tempQueue;
-	for (EntityID entity = 0; entity < MAX_ENTITY_COUNT; entity++)
+	for (EntityID entity = 1; entity < MAX_ENTITY_COUNT; entity++) // important entity = 1 to not add the root
 		tempQueue.push(entity);
 	availableEntities_ = tempQueue;
 }
@@ -173,12 +173,16 @@ void ECS::EntityManager::AddChild(EntityID _parent, EntityID _child)
 		DEBUG_WARNING("Cannot reparent the root !")
 			return;
 	}
-	if (_parent == _child)
+	EntityID ancestor = _parent;
+	while (ancestor != ROOT_ENTITY_ID)
 	{
-		DEBUG_WARNING("GrandFather paradox, Fry, the entity can't be its own father/child !")
-			return;
+		if (ancestor == _child)
+		{
+			DEBUG_WARNING("GrandFather paradox, Fry, the entity can't be its own father/child !")
+				return;
+		}
+		ancestor = GetParent(ancestor);
 	}
-
 	//Add Child to new parent's list
 	std::vector<EntityID>& children = GetEntityData(_parent)->children_;
 	auto it = std::find_if(children.cbegin(), children.cend(), [&](EntityID _existingChild) {return _existingChild == _child; });
@@ -190,7 +194,7 @@ void ECS::EntityManager::AddChild(EntityID _parent, EntityID _child)
 	children.push_back(_child);
 
 	//Remove Child from old parent's list
-	std::vector<EntityID>&  oldChildren = GetEntityData(GetEntityParent(_child))->children_;
+	std::vector<EntityID>& oldChildren = GetEntityData(GetEntityParent(_child))->children_;
 	auto oldIt = std::find_if(oldChildren.cbegin(), oldChildren.cend(), [&](EntityID _existingChild) {return _existingChild == _child; });
 	oldChildren.erase(oldIt);
 
@@ -263,9 +267,9 @@ ECS::EntityID ECS::EntityManager::GetEntityChild(const EntityID& _entity, size_t
 void ECS::EntityManager::AddEntityToSystem(const EntityID _entity, BaseSystem* _p_system)
 {
 	if (BelongToSystem(_entity, _p_system->signature_))
-		_p_system->entities_.insert(_entity);
+		_p_system->AddEntity(_entity);
 	else
-		_p_system->entities_.erase(_entity);
+		_p_system->RemoveEntity(_entity);
 }
 
 const bool ECS::EntityManager::BelongToSystem(const EntityID& _entity, const EntitySignature& _systemSignature) const

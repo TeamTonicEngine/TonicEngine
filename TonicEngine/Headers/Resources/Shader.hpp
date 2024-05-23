@@ -1,7 +1,4 @@
 #pragma once
-
-#include "DLL_API.hpp"
-
 #include "IResource.hpp"
 
 namespace Core::Renderer { class OpenGLWrapper; }
@@ -16,10 +13,11 @@ namespace Resources
 	private:
 		fs::path vertexShaderPath_ = fs::path();
 		fs::path fragmentShaderPath_ = fs::path();
-		string vertexCode_ = "";
-		string fragmentCode_ = "";
+		std::string vertexCode_ = "";
+		std::string fragmentCode_ = "";
 
 		friend class Core::Renderer::OpenGLWrapper;
+
 		/*********************************************
 				FUNCTIONS BLOC
 		*********************************************/
@@ -32,15 +30,12 @@ namespace Resources
 		void TONIC_ENGINE_API ReadFile(const fs::path _path) override;
 		void TONIC_ENGINE_API LoadFile();
 
-		void TONIC_ENGINE_API MetaWriteFile(const string _name) override {};
-		void TONIC_ENGINE_API MetaReadFile(const string _name) override {};
-
 		void TONIC_ENGINE_API ResourceUnload() override {};
 
 		/* Input : Only the name of the shader is needed (not the location) */
-		void TONIC_ENGINE_API SetVertex(const string _name);
+		void TONIC_ENGINE_API SetVertex(const std::string _name);
 		/* Input : Only the name of the shader is needed (not the location) */
-		void TONIC_ENGINE_API SetFragment(const string _name);
+		void TONIC_ENGINE_API SetFragment(const std::string _name);
 
 		void TONIC_ENGINE_API Use() override;
 		void TONIC_ENGINE_API StopUse() const;

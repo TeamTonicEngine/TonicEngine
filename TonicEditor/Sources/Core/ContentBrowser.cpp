@@ -2,9 +2,56 @@
 #include "Core/Utils.hpp"
 
 #include <shellapi.h>
+#include <filesystem>
+
+std::string GetNewSceneName(std::string _path)
+{
+	std::string newName = "NewScene";
+	if (std::filesystem::exists((_path + "\\" + newName + ".ic3")))
+	{
+		int newCount = 1;
+		while (std::filesystem::exists(_path + "\\" + newName + std::to_string(newCount) + ".ic3"))
+		{
+			newCount++;
+		}
+		return newName + std::to_string(newCount);
+	}
+
+	return newName;
+}
 
 void Core::Applications::EditorWindow::DrawContentBrowser()
 {
+	static auto lastClickTime = std::chrono::high_resolution_clock::now();
+	static s32 lastClickedId = 0;
+	static bool nameEdit = false;
+
+	if (ImGui::BeginPopup("NewContent"))
+	{
+
+		if (ImGui::MenuItem("New Scene")) {
+			// Handle button 1 click
+			std::string newFileName = GetNewSceneName(static_cast<Resources::Archi*>(p_projectArchi_)->path);
+			std::string newFile = static_cast<Resources::Archi*>(p_projectArchi_)->path + '\\' + newFileName + ".ic3";
+			Resources::Scene::SaveFile(newFile.c_str());
+			ENGINE.RES_MNGR->Create<Resources::Scene>(newFile);
+
+			static_cast<Resources::Archi*>(p_projectArchi_)->file.push_back({ newFileName , Resources::FileExt::ic3,newFile });
+
+			std::cout << "Scene saved at " << static_cast<Resources::Archi*>(p_projectArchi_)->path << std::endl;
+		}
+		ImGui::EndPopup();
+	}
+	
+	
+	
+	if (bOpenProjectPopup)
+	{
+		ImGui::OpenPopup("NewContent");
+		bOpenProjectPopup = false;
+	}
+	
+
 	ImVec2 windowSize = ImGui::GetWindowSize();
 	float scroll = ImGui::GetScrollY();
 
@@ -37,11 +84,6 @@ void Core::Applications::EditorWindow::DrawContentBrowser()
 		x = 34;
 	}
 
-	/*if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(ENGINE.RES_MNGR->Get<Resources::Texture>("StaticAssets\\Images\\plus.png")->ID), { 19,19 }, { 0,1 }, { 1,0 }, 0))
-	{
-
-	}*/
-
 	ImGui::SetCursorPos({ 8.f + x ,30.f });
 
 	std::string curFolName = static_cast<Resources::Archi*>(p_projectArchi_)->name;
@@ -62,7 +104,6 @@ void Core::Applications::EditorWindow::DrawContentBrowser()
 	x = 0;
 	int prei = 0;
 
-
 	if (static_cast<Resources::Archi*>(p_projectArchi_)->subFolder.size() > 0)
 	{
 		for (int i = 0; i < static_cast<Resources::Archi*>(p_projectArchi_)->subFolder.size(); [&] {
@@ -80,6 +121,7 @@ void Core::Applications::EditorWindow::DrawContentBrowser()
 				}
 			}())
 		{
+			ImGui::PushID(i);
 			std::string dirName = "##" + static_cast<Resources::Archi*>(p_projectArchi_)->subFolder[i]->name;
 
 			ImGui::SetCursorPos({ 8.f + x ,130.f + y });
@@ -93,8 +135,11 @@ void Core::Applications::EditorWindow::DrawContentBrowser()
 				modifiedFldrName += "...";
 			}
 
+			bool nameHasChanged = false;
+
 			ImGui::Text(modifiedFldrName.c_str());
-			if (ImGui::IsItemHovered())
+			
+			if (ImGui::IsItemHovered() && !nameEdit)
 			{
 				ImGui::BeginTooltip();
 				ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
@@ -103,18 +148,22 @@ void Core::Applications::EditorWindow::DrawContentBrowser()
 				ImGui::EndTooltip();
 			}
 
+			
 			ImGui::SetCursorPos({ 8.f + x ,52.f + y });
-			//if (ImGui::Button(dirName.c_str(), { 76,76 }))
-			ImGui::PushID(i);
+			
 			ImGui::PushStyleColor(ImGuiCol_Button, { 0, 0, 0, 0 });
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 0.5, 0.5, 0.5, 0.5 });
 			if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(ENGINE.RES_MNGR->Get<Resources::Texture>("StaticAssets\\Images\\folder.png")->ID), { 76,76 }, { 0,1 }, { 1,0 }, 0))
 			{
-				p_projectArchi_ = static_cast<Resources::Archi*>(p_projectArchi_)->subFolder[i];
+				auto currentTime = std::chrono::high_resolution_clock::now();
+				std::chrono::duration<float> timeSinceLastClick = currentTime - lastClickTime;
+				if (lastClickedId == i && timeSinceLastClick.count() < 0.3)
+					p_projectArchi_ = static_cast<Resources::Archi*>(p_projectArchi_)->subFolder[i];
+				lastClickedId = i;
+				lastClickTime = currentTime;
 			}
 			ImGui::PopStyleColor(2);
 			ImGui::PopID();
-			//ImGui::Image(0, { 76,76 });
 		}
 	}
 
@@ -134,8 +183,8 @@ void Core::Applications::EditorWindow::DrawContentBrowser()
 		std::string modifiedResName, resName;
 		modifiedResName = resName = std::get<0>(static_cast<Resources::Archi*>(p_projectArchi_)->file[i]);
 
+		//Determine the icon from the extension ----------------------------------------------------------------------------------------
 		u64 fileTextId = 0;
-
 		switch (std::get<1>(static_cast<Resources::Archi*>(p_projectArchi_)->file[i]))
 		{
 		case Resources::FileExt::png:
@@ -163,14 +212,21 @@ void Core::Applications::EditorWindow::DrawContentBrowser()
 			fileTextId = ENGINE.RES_MNGR->Get<Resources::Texture>("StaticAssets\\Images\\file.png")->ID;
 			break;
 		}
+		//------------------------------------------------------------------------------------------------------------------------------
 
+
+		//Clamp the name to eleven character -------------------------------------------------------------------------------------------
 		if (modifiedResName.length() > 11)
 		{
 			modifiedResName.erase(8, modifiedResName.length() - 8);
 			modifiedResName += "...";
 		}
+		//------------------------------------------------------------------------------------------------------------------------------
 
-		ImGui::Text(modifiedResName.c_str());
+
+		ImGui::Text(modifiedResName.c_str()); //HERE
+
+
 		if (ImGui::IsItemHovered())
 		{
 			ImGui::BeginTooltip();
@@ -186,15 +242,25 @@ void Core::Applications::EditorWindow::DrawContentBrowser()
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 0.5, 0.5, 0.5, 0.5 });
 		if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(fileTextId), { 76,76 }, { 0,1 }, { 1,0 }, 0))
 		{
-			if (std::get<1>(static_cast<Resources::Archi*>(p_projectArchi_)->file[i]) == Resources::FileExt::ic3)
+			auto currentTime = std::chrono::high_resolution_clock::now();
+			std::chrono::duration<float> timeSinceLastClick = currentTime - lastClickTime;
+			if (lastClickedId == i && timeSinceLastClick.count() < 0.3)
 			{
-				ENGINE.RES_MNGR->Get<Resources::Scene>(std::get<2>(static_cast<Resources::Archi*>(p_projectArchi_)->file[i]))->Use();
+				if (std::get<1>(static_cast<Resources::Archi*>(p_projectArchi_)->file[i]) == Resources::FileExt::ic3)
+				{
+					selectedId = 0;
+					selectedHasTransform = false;
+					ENGINE.RES_MNGR->Get<Resources::Scene>(std::get<2>(static_cast<Resources::Archi*>(p_projectArchi_)->file[i]))->Use();
+					curentScenePath = std::get<2>(static_cast<Resources::Archi*>(p_projectArchi_)->file[i]);
+				}
+				else
+				{
+					auto wtext = stringToWstring(std::get<2>(static_cast<Resources::Archi*>(p_projectArchi_)->file[i]));
+					ShellExecuteW(NULL, L"open", wtext.c_str(), NULL, NULL, SW_SHOWDEFAULT);
+				}
 			}
-			else
-			{
-				auto wtext = stringToWstring(std::get<2>(static_cast<Resources::Archi*>(p_projectArchi_)->file[i]));
-				ShellExecuteW(NULL, L"open", wtext.c_str(), NULL, NULL, SW_SHOWDEFAULT);
-			}
+			lastClickedId = i;
+			lastClickTime = currentTime;
 		}
 		ImGui::PopStyleColor(2);
 		ImGui::PopID();

@@ -22,7 +22,7 @@ static ma_result ma_decoding_backend_init__libvorbis(void* pUserData, ma_read_pr
 	}
 
 	result = ma_libvorbis_init(onRead, onSeek, onTell, pReadSeekTellUserData, pConfig, pAllocationCallbacks, pVorbis);
-	if (result != MA_SUCCESS) 
+	if (result != MA_SUCCESS)
 	{
 		ma_free(pVorbis, pAllocationCallbacks);
 		return result;
@@ -41,13 +41,13 @@ static ma_result ma_decoding_backend_init_file__libvorbis(void* pUserData, const
 	(void)pUserData;
 
 	pVorbis = (ma_libvorbis*)ma_malloc(sizeof(*pVorbis), pAllocationCallbacks);
-	if (pVorbis == NULL) 
+	if (pVorbis == NULL)
 	{
 		return MA_OUT_OF_MEMORY;
 	}
 
 	result = ma_libvorbis_init_file(pFilePath, pConfig, pAllocationCallbacks, pVorbis);
-	if (result != MA_SUCCESS) 
+	if (result != MA_SUCCESS)
 	{
 		ma_free(pVorbis, pAllocationCallbacks);
 		return result;
@@ -88,78 +88,127 @@ static ma_decoding_backend_vtable g_ma_decoding_backend_vtable_libvorbis =
 
 void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount)
 {
-	ma_result result;
-	ma_data_source* pDataSource = (ma_data_source*)pDevice->pUserData;
-	if (pDataSource == NULL) 
-	{
-		DEBUG_ERROR("DataSource is NULL.");
-		return;
-	}
-	result = ma_data_source_read_pcm_frames(pDataSource, pOutput, frameCount, NULL);
-	if (result != MA_SUCCESS) return;
-	/*
-	ma_spatializer* pDataSpat = (ma_spatializer*)pDevice->pUserData;
-	if (pDataSpat == NULL)
-	{
-		DEBUG_ERROR("DataSpat is NULL.");
-		return;
-	}
+	Sound* pSound = (Sound*)pDevice->pUserData;
 
-	ma_spatializer_listener* pDataSpatList = (ma_spatializer_listener*)pDevice->pUserData;
-	if (pDataSpatList == NULL)
+	if (pSound == nullptr)
 	{
-		DEBUG_ERROR("DataSpat is NULL.");
+		DEBUG_ERROR("Sound pointer is NULL.");
+		return;
+	}
+	if (pSound->p_decoder == nullptr)
+	{
+		DEBUG_ERROR("Decoder pointer is NULL.");
+		return;
+	}
+	if (pOutput == nullptr)
+	{
+		DEBUG_ERROR("Output buffer is NULL.");
 		return;
 	}
 
-	bool pDataIsSpat = (bool)pDevice->pUserData;
-	if (pDataIsSpat == NULL)
+	// Read PCM frames from the decoder into a temporary buffer.
+	size_t frameSize = ma_get_bytes_per_frame(pDevice->playback.format, pDevice->playback.channels);
+	void* pTempBuffer = malloc(frameCount * frameSize);
+	if (pTempBuffer == nullptr)
 	{
-		DEBUG_ERROR("DataSpat is NULL.");
+		DEBUG_ERROR("Failed to allocate memory for temporary buffer.");
 		return;
 	}
 
-	if (pDataIsSpat && pDataSpat)
+	ma_result result = ma_data_source_read_pcm_frames(pSound->p_decoder, pTempBuffer, frameCount, NULL);
+	if (result != MA_SUCCESS)
 	{
-		ma_spatializer_process_pcm_frames(pDataSpat, pDataSpatList, pOutput, pInput,frameCount);
+		DEBUG_ERROR("Failed to read PCM frames.");
+		free(pTempBuffer);
+		return;
 	}
 
-	*/
+	// If spatialization is enabled, process the output buffer.
+	if (pSound->isSpatialized)
+	{
+		if (pSound->p_spatializer == nullptr)
+		{
+			DEBUG_ERROR("Spatializer pointer is NULL.");
+			free(pTempBuffer);
+			return;
+		}
+		if (pSound->p_listener == nullptr)
+		{
+			DEBUG_ERROR("Listener pointer is NULL.");
+			free(pTempBuffer);
+			return;
+		}
 
-	(void)pInput;
+		// Cast void* pointers to their appropriate types
+		//ma_spatializer_listener* pListener = (ma_spatializer_listener*)pSound->p_listener;
+		//ma_spatializer* pSpatializer = (ma_spatializer*)pSound->p_spatializer;
+
+		// Process spatialization
+		result = ma_spatializer_process_pcm_frames((ma_spatializer*)pSound->p_spatializer, (ma_spatializer_listener*)pSound->p_listener, pOutput, pTempBuffer, frameCount);
+		if (result != MA_SUCCESS)
+		{
+			DEBUG_ERROR("Failed to process spatialization.");
+			free(pTempBuffer);
+			return;
+		}
+	}
+	else
+	{
+		// If spatialization is not enabled, copy the temporary buffer to the output buffer.
+		memcpy(pOutput, pTempBuffer, frameCount * frameSize);
+	}
+
+	free(pTempBuffer);
+
+	(void)pInput; // Silence unused variable warning
 }
 
 Sound::Sound()
 {
 	type_ = ResourceType::Sound;
-	decoder = new ma_decoder;
-	device = new ma_device;
-	spatializer = nullptr;
-	listener = new ma_spatializer_listener;
+	p_decoder = new ma_decoder();
+	p_device_ = new ma_device();
+
+	p_spatializer = new ma_spatializer;
+	p_listener = new ma_spatializer_listener;
+
+	isSpatialized = false;
+	DEBUG_SUCCESS("Sound object created.");
 }
 
 Sound::~Sound()
 {
 	Stop();
-	if (device)
+	if (p_device_)
 	{
-		ma_device_uninit(device);
-		delete device;
+		ma_device_uninit(p_device_);
+		delete p_device_;
+		p_device_ = nullptr;
+		DEBUG_SUCCESS("Device uninitialized and deleted.");
 	}
-	if (decoder)
+	if (p_decoder)
 	{
-		ma_decoder_uninit(decoder);
-		delete decoder;
+		ma_decoder_uninit(p_decoder);
+		delete p_decoder;
+		p_decoder = nullptr;
+		DEBUG_SUCCESS("Decoder uninitialized and deleted.");
 	}
-	if (spatializer) 
+	if (p_spatializer != nullptr)
 	{
-		ma_spatializer_uninit(spatializer, NULL);
-		ma_spatializer_listener_uninit(listener, NULL);
-		delete spatializer;
+		delete p_spatializer;
+		delete p_listener;
+		p_spatializer = nullptr;
+		p_listener = nullptr;
+		DEBUG_SUCCESS("Spatializer and listener uninitialized and deleted.");
 	}
+	DEBUG_SUCCESS("Sound object destroyed.");
 }
 
-void Resources::Sound::Destroy() {}
+bool FileExistsAndAccessible(const std::string& filePath)
+{
+	std::ifstream file(filePath);
+	return file.good();
+}
 
 void Sound::LoadSound()
 {
@@ -177,25 +226,25 @@ void Sound::LoadSound()
 		&g_ma_decoding_backend_vtable_libvorbis
 	};
 
-	/* Initialize the decoder. */
+	// Initialize the decoder.
 	decoderConfig = ma_decoder_config_init_default();
-	decoderConfig.pCustomBackendUserData = NULL;  /* In this example our backend objects are contained within a ma_decoder_ex object to avoid a malloc. Our vtables need to know about this. */
+	decoderConfig.pCustomBackendUserData = NULL;  // In this example our backend objects are contained within a ma_decoder_ex object to avoid a malloc. Our vtables need to know about this.
 	decoderConfig.ppCustomBackendVTables = pCustomBackendVTables;
 	decoderConfig.customBackendCount = sizeof(pCustomBackendVTables) / sizeof(pCustomBackendVTables[0]);
 
-	result = ma_decoder_init_file(path.string().c_str(), &decoderConfig, decoder);
-	if (result != MA_SUCCESS || decoder == nullptr)
+	result = ma_decoder_init_file(path.string().c_str(), &decoderConfig, p_decoder);
+	if (result != MA_SUCCESS || p_decoder == nullptr)
 	{
 		DEBUG_ERROR("MINI AUDIO LOAD FAIL");
 		return;
 	}
 	DEBUG_SUCCESS("MINI AUDIO LOAD SUCCESSFULLY");
 
-	/* Initialize the device. */
-	result = ma_data_source_get_data_format(decoder, &format, &channels, &sampleRate, NULL, 0);
+	// Initialize the device.
+	result = ma_data_source_get_data_format(p_decoder, &format, &channels, &sampleRate, NULL, 0);
 	if (result != MA_SUCCESS)
 	{
-		ma_decoder_uninit(decoder);
+		ma_decoder_uninit(p_decoder);
 		DEBUG_ERROR("Failed to retrieve decoder data format.");
 		return;
 	}
@@ -206,12 +255,12 @@ void Sound::LoadSound()
 	deviceConfig.playback.channels = channels;
 	deviceConfig.sampleRate = sampleRate;
 	deviceConfig.dataCallback = data_callback;
-	deviceConfig.pUserData = decoder;
+	deviceConfig.pUserData = this;
 
-	if (ma_device_init(NULL, &deviceConfig, device) != MA_SUCCESS)
+	if (ma_device_init(NULL, &deviceConfig, p_device_) != MA_SUCCESS)
 	{
 		DEBUG_ERROR("Failed to open playback device.\n");
-		ma_decoder_uninit(decoder);
+		ma_decoder_uninit(p_decoder);
 		return;
 	}
 	DEBUG_SUCCESS("Succeed to open playback device.\n");
@@ -220,7 +269,7 @@ void Sound::LoadSound()
 void Sound::Restart()
 {
 	// Cursor to 0
-	ma_data_source_seek_to_pcm_frame(decoder, 0);
+	ma_data_source_seek_to_pcm_frame(p_decoder, 0);
 	Play();
 }
 
@@ -231,75 +280,29 @@ void Sound::Play()
 		DEBUG_SUCCESS("THE SOUND IS FINISHED");
 		Restart();
 	}
-	if (ma_device_start(device) != MA_SUCCESS)
+	if (!p_device_) DEBUG_ERROR("DEVICE IS NULL ON PLAY.\n");
+	if (ma_device_start(p_device_) != MA_SUCCESS)
 	{
-		ma_device_uninit(device);
-		ma_decoder_uninit(decoder);
+		ma_device_uninit(p_device_);
+		ma_decoder_uninit(p_decoder);
 		DEBUG_ERROR("Failed to start playback device.\n");
+		return;
 	}
-	DEBUG_SUCCESS("IT PLAY");
-
+	DEBUG_SUCCESS("Playback started.");
 }
 
-void Sound::Pause()
-{
-	ma_device_stop(device);
-}
-
-float Sound::GetOggFileDuration()
-{
-	return -1;
-	/*
-	FILE* file = nullptr;
-	if (fopen_s(&file, path.string().c_str(), "rb") != 0) {
-		std::cerr << "Failed to open file: " << path.string().c_str() << std::endl;
-		return -1.0;
-	}
-
-	OggVorbis_File vf;
-	if (ov_open(file, &vf, NULL, 0) < 0) {
-		std::cerr << "Input does not appear to be an Ogg bitstream: " << path.string().c_str() << std::endl;
-		fclose(file);
-		return -1.0;
-	}
-
-	// Obtenez les informations sur le flux Vorbis
-	vorbis_info* vi = ov_info(&vf, -1);
-	if (!vi) {
-		std::cerr << "Failed to get vorbis info: " << path.string().c_str() << std::endl;
-		ov_clear(&vf);
-		return -1.0;
-	}
-
-	// Obtenez la durée en secondes
-	double duration = ov_time_total(&vf, -1);
-	if (duration == OV_EINVAL) {
-		std::cerr << "Unable to get total time: " << path.string().c_str() << std::endl;
-		ov_clear(&vf);
-		return -1.0;
-	}
-
-	// Nettoyez
-	ov_clear(&vf);
-	std::cout << duration << std::endl;
-	return duration;
-	*/
-}
+void Sound::Pause() { ma_device_stop(p_device_); }
 
 bool Sound::IsFinished() const
 {
 	ma_uint64 cursor;
 	ma_uint64 length;
 
-	if (ma_data_source_get_cursor_in_pcm_frames(decoder, &cursor) != MA_SUCCESS)
-	{
+	if (ma_data_source_get_cursor_in_pcm_frames(p_decoder, &cursor) != MA_SUCCESS)
 		return false;
-	}
 
-	if (ma_data_source_get_length_in_pcm_frames(decoder, &length) != MA_SUCCESS)
-	{
+	if (ma_data_source_get_length_in_pcm_frames(p_decoder, &length) != MA_SUCCESS)
 		return false;
-	}
 
 	if (length == 0.0f)
 	{
@@ -315,89 +318,78 @@ bool Sound::IsFinished() const
 
 void Sound::Stop()
 {
-	ma_device_stop(device);
-	ma_data_source_seek_to_pcm_frame(decoder, 0);
+	if (p_device_)
+		ma_device_stop(p_device_);
+
+	if (p_decoder)
+		ma_data_source_seek_to_pcm_frame(p_decoder, 0);
 }
 
-void Sound::SetVolume(const float& _volume)
-{
-	ma_device_set_master_volume(device, _volume);
-}
+void Sound::SetVolume(const float& _volume) { ma_device_set_master_volume(p_device_, _volume); }
 
-void Sound::SetLoop(const bool& _bLoop)
-{
-	ma_data_source_set_looping(decoder, _bLoop);
-}
+void Sound::SetLoop(const bool& _bLoop) { ma_data_source_set_looping(p_decoder, _bLoop); }
 
-void Sound::SetPitch(const float& _pitch)
-{
-	pitch_ = _pitch;
-}
+void Sound::SetPitch(const float& _pitch) { pitch_ = _pitch; }
 
 void Sound::InitSpatialization()
 {
-	spatializer = new ma_spatializer;
+	if (p_spatializer == nullptr)
+		p_spatializer = new ma_spatializer;
+
 	ma_uint32 channelsIn = 2;
 	ma_uint32 channelsOut = 2;
 
 	ma_spatializer_config spatializerConfig = ma_spatializer_config_init(channelsIn, channelsOut);
-	if (ma_spatializer_init(&spatializerConfig, NULL ,spatializer) != MA_SUCCESS) 
+
+	if (ma_spatializer_init(&spatializerConfig, NULL, (ma_spatializer*)p_spatializer) != MA_SUCCESS)
 	{
 		DEBUG_ERROR("Failed to initialize spatializer");
 		return;
 	}
 	DEBUG_SUCCESS("Spatializer initialized successfully");
 
-	// init listener
+	if (p_listener == nullptr)
+		p_listener = new ma_spatializer_listener();
+
 	ma_spatializer_listener_config listenerConfig = ma_spatializer_listener_config_init(channelsOut);
-	if (ma_spatializer_listener_init(&listenerConfig, NULL, listener) != MA_SUCCESS) 
+	if (ma_spatializer_listener_init(&listenerConfig, NULL, (ma_spatializer_listener*)p_listener) != MA_SUCCESS)
 	{
 		DEBUG_ERROR("Failed to initialize spatializer listener");
 		return;
 	}
 	DEBUG_SUCCESS("Spatializer listener initialized successfully");
+
+	// Set default listener position (usually at the origin)
+	ma_spatializer_listener_set_position((ma_spatializer_listener*)p_listener, 0.0f, 0.0f, 0.0f);
 }
 
 void Sound::SetIsSpatialized(const bool& _enabled)
 {
-	if (_enabled) 
+	if (_enabled)
 	{
-		if (!isSpatialized) 
-		{
-			InitSpatialization();
-			isSpatialized = true;
-			DEBUG_SUCCESS("Spatialization enabled");
-		}
+		InitSpatialization();
+		isSpatialized = true;
+		DEBUG_SUCCESS("Spatialization enabled");
 	}
-	else 
+	else
 	{
-		if (isSpatialized) 
-		{
-			ma_spatializer_uninit(spatializer, NULL);
-			isSpatialized = false;
-			DEBUG_SUCCESS("Spatialization disabled");
-		}
+		ma_spatializer_uninit((ma_spatializer*)p_spatializer, NULL);
+		isSpatialized = false;
+		DEBUG_SUCCESS("Spatialization disabled");
 	}
-	listener->isEnabled = _enabled;
+	((ma_spatializer_listener*)p_listener)->isEnabled = _enabled;
 }
 
 void Sound::SetPosition(const Maths::Vec3& _position)
 {
-	if (isSpatialized && spatializer)
-	{
-		ma_spatializer_set_position(spatializer, _position.x, _position.y, _position.z);
-	}
+	if (isSpatialized && p_spatializer)
+		ma_spatializer_set_position((ma_spatializer*)p_spatializer, _position.x, _position.y, _position.z);
 }
 
 void Sound::SetVelocity(const Maths::Vec3& _velocity)
 {
-	if (isSpatialized) 
-	{
-		ma_spatializer_set_velocity(spatializer, _velocity.x, _velocity.y, _velocity.z);
-	}
+	if (isSpatialized)
+		ma_spatializer_set_velocity((ma_spatializer*)p_spatializer, _velocity.x, _velocity.y, _velocity.z);
 }
 
-void Sound::ReadFile(const fs::path _path)
-{
-	bRead_ = bLoaded_ = true;
-}
+void Sound::ReadFile(const fs::path _path) { bRead_ = bLoaded_ = true; }

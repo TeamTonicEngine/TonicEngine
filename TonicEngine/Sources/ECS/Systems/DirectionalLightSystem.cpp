@@ -46,9 +46,16 @@ void ECS::Systems::DirectionalLightSystem::Render()
 		u32 index = 0;
 		for (auto& entity : entities_)
 		{
-			if (!p_em->HasComponent<Components::TransformComponent>(entity) || !p_em->HasComponent<Components::DirectionalLightComponent>(entity))
+			auto& lightComp = p_em->GetComponent<Components::DirectionalLightComponent>(entity);
+			if (!lightComp.bEnabled)
+			{
+				auto light = lightComp.light_;
+				light.color = TNCColors::BLACK;
+				p_rhi->SetLight(&light, index, {0});
+				++index;
 				continue;
-			auto& light = p_em->GetComponent<Components::DirectionalLightComponent>(entity).light_;
+			}
+			auto& light = lightComp.light_;
 			auto& transform = p_em->GetComponent<Components::TransformComponent>(entity);
 
 			p_rhi->SetLight(&light, index, transform.position);

@@ -1,5 +1,4 @@
 #pragma once
-
 #include "DLL_API.hpp"
 
 #include <sstream>
@@ -66,7 +65,7 @@ namespace Core::Debug
 		std::ofstream output_;
 		HANDLE handle_ = GetStdHandle(STD_OUTPUT_HANDLE);
 		// Singleton /!\ BE CAREFUL: IT IS NOT THREAD SAFE
-		static Log* p_s_instance_;
+		static Log* s_p_instance_;
 
 		/*********************************************
 				FUNCTIONS BLOC
@@ -75,7 +74,7 @@ namespace Core::Debug
 		TONIC_ENGINE_API Log() {};
 
 	public:
-		TONIC_ENGINE_API Log(Log& other) = delete;
+		TONIC_ENGINE_API Log(Log&) = delete;
 		TONIC_ENGINE_API ~Log();
 
 		void TONIC_ENGINE_API operator=(const Log&) = delete;

@@ -35,7 +35,7 @@ namespace ECS
 		TONIC_ENGINE_API ~EntityManager();
 
 		void TONIC_ENGINE_API Update();
- 
+
 		void TONIC_ENGINE_API LateUpdate();
 
 		void TONIC_ENGINE_API Render();
@@ -114,7 +114,7 @@ namespace ECS
 		void AddCompList()
 			/* Function body is in this hpp file because of template */;
 
-		
+
 
 		void TONIC_ENGINE_API AddEntityData(const EntityID _entity);
 

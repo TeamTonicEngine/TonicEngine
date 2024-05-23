@@ -5126,7 +5126,7 @@ typedef struct
 MA_API ma_spatializer_listener_config ma_spatializer_listener_config_init(ma_uint32 channelsOut);
 
 
-struct ma_spatializer_listener
+typedef struct
 {
     ma_spatializer_listener_config config;
     ma_atomic_vec3f position;  /* The absolute position of the listener. */
@@ -5137,7 +5137,7 @@ struct ma_spatializer_listener
     /* Memory management. */
     ma_bool32 _ownsHeap;
     void* _pHeap;
-} ;
+} ma_spatializer_listener;
 
 MA_API ma_result ma_spatializer_listener_get_heap_size(const ma_spatializer_listener_config* pConfig, size_t* pHeapSizeInBytes);
 MA_API ma_result ma_spatializer_listener_init_preallocated(const ma_spatializer_listener_config* pConfig, void* pHeap, ma_spatializer_listener* pListener);
@@ -5185,7 +5185,7 @@ typedef struct
 MA_API ma_spatializer_config ma_spatializer_config_init(ma_uint32 channelsIn, ma_uint32 channelsOut);
 
 
-struct ma_spatializer
+typedef struct
 {
     ma_uint32 channelsIn;
     ma_uint32 channelsOut;
@@ -5215,7 +5215,7 @@ struct ma_spatializer
     /* Memory management. */
     void* _pHeap;
     ma_bool32 _ownsHeap;
-};
+} ma_spatializer;
 
 MA_API ma_result ma_spatializer_get_heap_size(const ma_spatializer_config* pConfig, size_t* pHeapSizeInBytes);
 MA_API ma_result ma_spatializer_init_preallocated(const ma_spatializer_config* pConfig, void* pHeap, ma_spatializer* pSpatializer);
@@ -5362,7 +5362,7 @@ struct ma_resampler_config
 
 MA_API ma_resampler_config ma_resampler_config_init(ma_format format, ma_uint32 channels, ma_uint32 sampleRateIn, ma_uint32 sampleRateOut, ma_resample_algorithm algorithm);
 
-struct ma_resampler
+typedef struct
 {
     ma_resampling_backend* pBackend;
     ma_resampling_backend_vtable* pBackendVTable;
@@ -5379,7 +5379,7 @@ struct ma_resampler
     /* Memory management. */
     void* _pHeap;
     ma_bool32 _ownsHeap;
-};
+} ma_resampler;
 
 MA_API ma_result ma_resampler_get_heap_size(const ma_resampler_config* pConfig, size_t* pHeapSizeInBytes);
 MA_API ma_result ma_resampler_init_preallocated(const ma_resampler_config* pConfig, void* pHeap, ma_resampler* pResampler);

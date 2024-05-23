@@ -1,7 +1,4 @@
 #pragma once
-
-#include "DLL_API.hpp"
-
 #include "IResource.hpp"
 
 #include "Maths/Maths.hpp"
@@ -45,12 +42,11 @@ namespace Resources
 		**********************************************/
 	private:
 		vector<BasicMesh> subMeshes_;
-		//vector<Resources::Texture> textures_;
 
-		const void* scene_ = nullptr; // assimp requiried
-		//std::string directory;
+		const void* p_scene_ = nullptr; // assimp requiried
 
 		friend class Core::Renderer::OpenGLWrapper;
+
 		/*********************************************
 				FUNCTIONS BLOC
 		*********************************************/
@@ -61,9 +57,6 @@ namespace Resources
 
 		void TONIC_ENGINE_API ReadFile(const fs::path _path) override;
 		void TONIC_ENGINE_API LoadFile() override;
-
-		void TONIC_ENGINE_API MetaWriteFile(const string _name) override {};
-		void TONIC_ENGINE_API MetaReadFile(const string _name) override {};
 
 		void TONIC_ENGINE_API ResourceUnload() override {};
 

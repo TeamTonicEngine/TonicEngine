@@ -31,9 +31,9 @@ const bool ECS::Systems::MeshRendererSystem::Init()
 	// success = p_shader_ && p_outlineShader_ && p_defaultMaterial_;
 	//////////////////////////////////////////////////////////////////
 	auto magentaD = p_RHI->Create<Resources::Texture>("StaticAssets\\Textures\\magenta.png");
-	magentaD->textureType = Resources::TextureType::Diffuse;
+	magentaD->textureType = Resources::Textures::TextureType::Diffuse;
 	auto magentaS = p_RHI->Create<Resources::Texture>("StaticAssets\\Textures\\magenta.png");
-	magentaS->textureType = Resources::TextureType::Specular;
+	magentaS->textureType = Resources::Textures::TextureType::Specular;
 
 	p_defaultMaterial_ = std::make_shared<Resources::Material>(magentaD);
 
@@ -61,16 +61,20 @@ void ECS::Systems::MeshRendererSystem::Update()
 		}
 	}
 }
+#include <glad/glad.hpp>
+
 void ECS::Systems::MeshRendererSystem::Render()
 {
 	//Shortcut to Renderer
 	auto p_RDR = ENGINE.RDR;
 	//Shortcut to EntityManager
 	ECS::EntityManager* p_EM = ENGINE.ENT_MNGR;
-
+	glDisable(GL_BLEND);
 	for (auto entity : entities_)
 	{
 		auto* meshComp = &p_EM->GetComponent<Components::MeshRendererComponent>(entity);
+		if (!meshComp->bEnabled)
+			continue;
 		if (meshComp->renderer.p_materials.size())
 		{
 			bool transparent = false;
@@ -98,10 +102,13 @@ void ECS::Systems::MeshRendererSystem::Render()
 			meshComp->renderer.p_mesh->Use();
 		}
 	}
+	glEnable(GL_BLEND);
 	//Alpha Rendering
 	for (auto it = transparentEntities_.rbegin(); it != transparentEntities_.rend(); ++it)
 	{
 		auto* meshComp = &p_EM->GetComponent<Components::MeshRendererComponent>(it->second);
+		if (!meshComp->bEnabled)
+			continue;
 		p_RDR->SetModel(meshComp->model_);
 		meshComp->renderer.p_mesh->Use(meshComp->renderer.p_materials);
 	}

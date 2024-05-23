@@ -18,16 +18,18 @@ void ECS::Systems::AudioListenerSystem::Update()
 
 	for (auto& entity : entities_)
 	{
-		Components::TransformComponent& transform = p_em->GetComponent<Components::TransformComponent>(entity);
 		Components::AudioListenerComponent& audioListener = p_em->GetComponent<Components::AudioListenerComponent>(entity);
+		if (!audioListener.bEnabled)
+			continue;
+		Components::TransformComponent& transform = p_em->GetComponent<Components::TransformComponent>(entity);
 
 		if (transform.HasChanged())
 		{
-		//TODO: Test here if the transform changed, or Event
-		audioListener.SetPosition(transform.position);
-		audioListener.SetDirection(transform.rotation);
+			//TODO: Test here if the transform changed, or Event
+			audioListener.SetPosition(transform.position);
+			audioListener.SetDirection(transform.rotation);
 		}
-		
+
 		//With Physics
 		//audioListener.SetVelocity(rigidBody.Velocity);
 	}

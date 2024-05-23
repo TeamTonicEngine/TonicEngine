@@ -69,7 +69,7 @@ namespace ECS
 		}
 		const EntitySignature* p_es = GetEntitySignature(_entity);
 		const ComponentTypeID compType = CompType<T>();
-		auto it = std::find(p_es->begin(),p_es->end(), compType);
+		auto it = std::find(p_es->begin(), p_es->end(), compType);
 
 		return (it != p_es->end());
 	}

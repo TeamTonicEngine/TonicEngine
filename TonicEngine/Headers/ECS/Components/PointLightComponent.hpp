@@ -18,12 +18,6 @@ namespace ECS::Components
 
 		friend class ECS::Systems::PointLightSystem;
 
-		//__declspec(property(get = GetLight, put = SetLight))
-			//LowRenderer::PointLight light;
-
-		//inline LowRenderer::PointLight TONIC_ENGINE_API GetLight() { return light_; };
-		//inline void TONIC_ENGINE_API SetLight(LowRenderer::PointLight _light) { light_ = _light; };
-
 		_declspec(property(get = GetLight, put = SetLight))
 			LowRenderer::Lights::PointLight light;
 		inline TONIC_ENGINE_API LowRenderer::Lights::PointLight GetLight() const { return light_; };

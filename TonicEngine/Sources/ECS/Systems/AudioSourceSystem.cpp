@@ -19,7 +19,7 @@ void ECS::Systems::AudioSourceSystem::Update()
 	for (auto& entity : entities_)
 	{
 		Components::AudioSourceComponent& audioSource = p_em->GetComponent<Components::AudioSourceComponent>(entity);
-		if (!audioSource.bSpatialized_)
+		if (!audioSource.bSpatialized_ || !audioSource.bEnabled)
 			continue;
 		Components::TransformComponent& transform = p_em->GetComponent<Components::TransformComponent>(entity);
 		//TODO: Test here if the transform changed, or Event

@@ -5,10 +5,9 @@
 //#define STB_IMAGE_IMPLEMENTATION
 #include "STB/stb_image.hpp"
 
-Resources::TexturePtr Resources::Texture::_s_p_defaultTexture;
+Resources::TexturePtr Resources::Texture::s_p_defaultTexture;
 
-Resources::Texture::Texture(){type_ = ResourceType::Texture;}
-
+Resources::Texture::Texture() { type_ = ResourceType::Texture; }
 
 void Resources::Texture::Destroy()
 {
@@ -38,9 +37,6 @@ void Resources::Texture::ReadFile(const fs::path _path)
 
 void Resources::Texture::LoadFile()
 {
-	//if (!bRead_)
-	//	ReadFile(path);
-
 	if (bRead_)
 	{
 		ENGINE.RDR->LoadResource(shared_from_this());
@@ -58,8 +54,8 @@ void Resources::Texture::LoadFile()
 	else
 		DEBUG_WARNING("File not Read, cannot be loaded: %s", name.c_str());
 
-	if (!_s_p_defaultTexture)
-		_s_p_defaultTexture = shared_from_this();
+	if (!s_p_defaultTexture)
+		s_p_defaultTexture = shared_from_this();
 }
 
 void Resources::Texture::LoadFileForced()
@@ -81,22 +77,22 @@ void Resources::Texture::Use()
 		}
 	}
 	else
-		ENGINE.RDR->UseResource(_s_p_defaultTexture);
+		ENGINE.RDR->UseResource(s_p_defaultTexture);
 }
 
-void Resources::Texture::Use(Resources::TextureType _type)
+void Resources::Texture::Use(Resources::Textures::TextureType _type)
 {
 	if (this)
 	{
 		if (bLoaded_)
-			ENGINE.RDR->UseResource(shared_from_this(),_type);
+			ENGINE.RDR->UseResource(shared_from_this(), _type);
 		else
 		{
 			LoadFile();
 			if (bLoaded_)
-				ENGINE.RDR->UseResource(shared_from_this(),_type);
+				ENGINE.RDR->UseResource(shared_from_this(), _type);
 		}
 	}
 	else
-		ENGINE.RDR->UseResource(_s_p_defaultTexture, _type);
+		ENGINE.RDR->UseResource(s_p_defaultTexture, _type);
 }

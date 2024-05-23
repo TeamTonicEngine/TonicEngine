@@ -1,4 +1,5 @@
 #include "pch.hpp"
+
 #include "ECS/Components/AudioSourceComponent.hpp"
 #include "Resources/Sound.hpp"
 
@@ -28,8 +29,6 @@ void ECS::Components::AudioSourceComponent::SetLoop(bool _bLoop)
 	bLoop_ = _bLoop;
 	if (p_sound_)
 		p_sound_->SetLoop(_bLoop);
-	else
-		DEBUG_ERROR("CANNOT LOOP THIS SOUND");
 }
 
 void ECS::Components::AudioSourceComponent::SetIsSpatialized(bool _bSpatialized)
@@ -49,10 +48,14 @@ void ECS::Components::AudioSourceComponent::SetSound(Resources::SoundPtr _p_soun
 	p_sound_ = _p_sound;
 	if (p_sound_)
 	{
-		SetIsSpatialized(bSpatialized_);
-		SetLoop(bLoop_);
+		bool ye = p_sound_->IsFinished();
+		p_sound_->Stop();
+		p_sound_->Play();
 		SetVolume(volume_);
-		SetPitch(pitch_);
+		// TODO : DECODER
+		//SetPitch(pitch_);
+		//p_sound_->SetLoop(bLoop_);
+		//p_sound_->SetIsSpatialized(bSpatialized_);
 	}
 }
 
@@ -64,11 +67,20 @@ void ECS::Components::AudioSourceComponent::Play()
 		p_sound_->Play();
 }
 
+void ECS::Components::AudioSourceComponent::Stop()
+{
+	if (!p_sound_)
+		DEBUG_WARNING("No sound to stop")
+	else
+		p_sound_->Stop();
+}
+
 void ECS::Components::AudioSourceComponent::SetPosition(const Maths::Vec3& _position)
 {
 	if (p_sound_)
 		p_sound_->SetPosition(_position);
 }
+
 void ECS::Components::AudioSourceComponent::SetVelocity(const Maths::Vec3& _velocity)
 {
 	if (p_sound_)

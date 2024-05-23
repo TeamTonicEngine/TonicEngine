@@ -1,8 +1,6 @@
 #include "App.hpp"
-#include <iostream>
 #include <windows.h>
 #include <shlobj.h>
-#include <string>
 #include <shellapi.h>
 
 #include <ImGui/imgui.h>
@@ -12,7 +10,6 @@
 
 #include <glad/glad.hpp>
 
-#include <vector>
 
 #include "Images.hpp"
 
@@ -165,10 +162,8 @@ void App::Run()
                 }
 
                 ImGui::PushItemWidth(200);
-                //ImGui::InputText("##Search", SearchText, IM_ARRAYSIZE(SearchText));
                 ImGui::InputTextWithHint("##Search", "Search...", searchText_, IM_ARRAYSIZE(searchText_));
                 ImGui::PopItemWidth();
-                //ImGui::ImageButton()
                 
                 ImGui::SetCursorPos(ImVec2(740, scroll));
 

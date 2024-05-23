@@ -16,11 +16,11 @@ const bool CameraSystem::Init()
 {
 	bool success = true;
 	///////////////////////////////////////////////////////////////////////////////////////
-	// TODO: Uncomment when Shader is done
 	p_skyboxShader_ = ENGINE.RES_MNGR->Get<Resources::Shader>("Assets\\Shaders\\skybox.frag");
 	p_shaders_.push_back(ENGINE.RES_MNGR->Get<Resources::Shader>("Assets\\Shaders\\pbr.frag")); //"MESH"
 	p_shaders_.push_back(ENGINE.RES_MNGR->Get<Resources::Shader>("Assets\\Shaders\\phong.frag")); //"MESH"
 	p_shaders_.push_back(ENGINE.RES_MNGR->Get<Resources::Shader>("Assets\\Shaders\\unlit.frag")); //"MESH"
+	p_shaders_.push_back(ENGINE.RES_MNGR->Get<Resources::Shader>("Assets\\Shaders\\text.frag")); //"Font"
 
 	//p_shaders_.push_back(ENGINE.RES_MNGR->Get<Resources::Shader>("MODEL"));
 	//p_shaders_.push_back(ENGINE.RES_MNGR->Get<Resources::Shader>("OUTLINE"));
@@ -42,18 +42,15 @@ void CameraSystem::Destroy()
 }
 void ECS::Systems::CameraSystem::Update()
 {
-	///////////////////////////////////////////////////////////////////////////////////////
-	//Test Part TODO Remove
-	alpha++;
-	if (alpha > 360.f)
-		alpha = 0.f;
-	///////////////////////////////////////////////////////////////////////////////////////
 	EntityManager* p_em = ENGINE.ENT_MNGR;
 	for (auto entity : entities_)
 	{
 		using namespace Components;
 		TransformComponent& transform = p_em->GetComponent<TransformComponent>(entity);
 			CameraComponent& cameraComponent = p_em->GetComponent<CameraComponent>(entity);
+			if(!cameraComponent.bEnabled)
+				continue;
+
 			LowRenderer::Cameras::Camera* p_camera = &cameraComponent.camera_;
 		if (transform.HasChanged())
 		{
@@ -77,6 +74,9 @@ void ECS::Systems::CameraSystem::Render()
 		using namespace Components;
 
 		CameraComponent& cameraComponent = p_em->GetComponent<CameraComponent>(entity);
+		if (!cameraComponent.bEnabled)
+			continue;
+
 		LowRenderer::Cameras::Camera* p_camera = &cameraComponent.camera_;
 
 		if (!p_camera->bUsed)

@@ -1,11 +1,10 @@
 #pragma once
-#include "LowRenderer/Lights/DirectionalLight.hpp"
+
 #include "ECS/Base/BaseComponent.hpp"
 
-namespace ECS::Systems
-{
-	class DirectionalLightSystem;
-}
+#include "LowRenderer/Lights/DirectionalLight.hpp"
+
+namespace ECS::Systems { class DirectionalLightSystem; }
 
 namespace ECS::Components
 {
@@ -31,4 +30,3 @@ namespace ECS::Components
 		LowRenderer::Lights::DirectionalLight light_;
 	};
 }
-

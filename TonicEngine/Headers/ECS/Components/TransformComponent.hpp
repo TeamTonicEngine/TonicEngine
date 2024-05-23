@@ -6,11 +6,31 @@
 namespace ECS::Systems
 {
 	class TransformSystem;
+	class BoxRigidbodySystem;
+	class SphereRigidbodySystem;
+	class CapsuleRigidbodySystem;
 }
+
 namespace ECS::Components
 {
-	struct TONIC_ENGINE_API TransformComponent : public ECS::BaseComponent
+	struct TONIC_ENGINE_API TransformComponent : public BaseComponent
 	{
+	protected:
+		Maths::Vec3 position_ = (0.f);
+		Maths::Quat rotation_ = Maths::Quat::Identity();
+		Maths::Vec3 scale_ = (1.f);
+
+		Maths::Vec3 positionDiff_ = (0.f);
+		Maths::Quat rotationDiff_ = Maths::Quat::Identity();
+		Maths::Vec3 scaleDiff_ = (1.f);
+
+		bool bChanged_ = false;
+
+		friend class ECS::Systems::TransformSystem;
+		friend class ECS::Systems::BoxRigidbodySystem;
+		friend class ECS::Systems::SphereRigidbodySystem;
+		friend class ECS::Systems::CapsuleRigidbodySystem;
+
 	public:
 		//Properties
 		__declspec(property(get = GetPosition, put = SetPosition))
@@ -54,20 +74,6 @@ namespace ECS::Components
 		void LookAt(Maths::Vec3 _pointOfInterest);
 
 	protected:
-		//Members
-
-		Maths::Vec3 position_ = (0.f);
-		Maths::Quat rotation_ = Maths::Quat::Identity();
-		Maths::Vec3 scale_ = (1.f);
-
-		Maths::Vec3 positionDiff_ = (0.f);
-		Maths::Quat rotationDiff_ = Maths::Quat::Identity();
-		Maths::Vec3 scaleDiff_ = (1.f);
-
-		bool bChanged_ = false;
 		void ResetChanged();
-
-		friend class ECS::Systems::TransformSystem;
-
 	};
 }

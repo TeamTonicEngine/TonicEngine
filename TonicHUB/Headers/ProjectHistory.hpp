@@ -38,7 +38,7 @@ public:
 	~ProjectHistory();
 
 	void PlaceOnTop(std::string _projectPath); //called when a project is added or opened.
-	void Remove(std::string _projectPath);
+	FileData Remove(std::string _projectPath);
 	void Open();
 	void Save();
 

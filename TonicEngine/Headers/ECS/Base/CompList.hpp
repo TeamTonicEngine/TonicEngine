@@ -5,6 +5,11 @@
 
 #include "Core/Log.hpp"
 
+namespace Core::Applications
+{
+	class Engine;
+}
+
 namespace ECS
 {
 	class TONIC_ENGINE_API ICompList
@@ -62,5 +67,8 @@ namespace ECS
 		{
 			return data_;
 		}
+
+		//should be in a scene class
+		friend class Core::Applications::Engine;
 	};
 }

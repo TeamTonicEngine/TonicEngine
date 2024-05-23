@@ -1,6 +1,6 @@
 #pragma once
-
 #include "DLL_API.hpp"
+
 #include <functional>
 #include <unordered_map>
 
@@ -9,7 +9,7 @@ namespace Core::Applications
 	// ----------------------------------------
 	// THE KEYS/BUTTONS VALUE
 	// ----------------------------------------
-	enum class Keyboard
+	enum class TONIC_ENGINE_API Keyboard
 	{
 		KeyUnknown = -1,
 		KeySpace = 32,
@@ -135,7 +135,7 @@ namespace Core::Applications
 		KeyMenu = 348
 	};
 
-	enum class Mouse
+	enum class TONIC_ENGINE_API Mouse
 	{
 		Button1 = 0,
 		Button2 = 1,
@@ -151,19 +151,29 @@ namespace Core::Applications
 	};
 	// ----------------------------------------
 
-	enum class EventType
+	enum class TONIC_ENGINE_API EventType
 	{
 		Pressed,
 		Hold,
 		Released,
-		MoveMouse
+		MoveMouse,
+		ScrollChange,
+		ScrollStart,
+		ScrollEnd
 	};
 
 	class TONIC_ENGINE_API KeyTracker
 	{
+		/**********************************************
+				VARIABLES BLOC
+		**********************************************/
 	protected:
-		std::map< Keyboard, std::tuple<EventType, std::chrono::time_point<std::chrono::steady_clock>> > keyboardKeys_;
-		std::map< Mouse, std::tuple<EventType, std::chrono::time_point<std::chrono::steady_clock>> > mouseButtons_;
+		std::map< Keyboard, std::tuple<EventType, std::chrono::time_point<std::chrono::steady_clock>>TONIC_ENGINE_API> keyboardKeys_;
+		std::map< Mouse, std::tuple<EventType, std::chrono::time_point<std::chrono::steady_clock>>TONIC_ENGINE_API> mouseButtons_;
+
+		/*********************************************
+				FUNCTIONS BLOC
+		*********************************************/
 	public:
 		void Add(Keyboard _key, EventType _type);
 		void Add(Mouse _button, EventType _type);
@@ -177,28 +187,44 @@ namespace Core::Applications
 		EventType operator [] (Mouse _button);
 	};
 
-	struct Event
+	struct TONIC_ENGINE_API Event
 	{
-		EventType type;
-		s32 key;
+		EventType type = EventType::Pressed;
+		s32 key = -1;
 	};
 
 	class TONIC_ENGINE_API InputManager
 	{
+		/**********************************************
+				VARIABLES BLOC
+		**********************************************/
 	private:
 		std::queue<Event> eventQueue_;
 		std::vector<std::tuple< EventType, int, std::function<void()>>> handlers_;
 	public:
+		static void* s_p_windowIn;
 		KeyTracker keys;
 		f32_2 mousePosition = { 0,0 };
+		f32 scrollOffset = 0.f;
+
+		/*********************************************
+				FUNCTIONS BLOC
+		*********************************************/
 	public:
-		InputManager();
+		InputManager() = default;
+
+		static void SetCallBacks(void* _window);
+
 		void Init(); //used to init the GLFW callback
 		void StartHoldEvents();
+		void resetScrollOffset();
+
+		void SetCursorVisibility(bool _state);
+		void SetCursorPos(f32_2 _pos);
 
 		void OnEvent(EventType _type, Keyboard _key, std::function<void()>_function);
 		void OnEvent(EventType _type, Mouse _button, std::function<void()>_function);
-		void OnEvent(EventType _type, std::function<void()>_function);
+		void OnEvent(EventType _type, std::function<void()> _function);
 
 		void AddEvent(Event _event);
 		void ProcessEvent();

@@ -1,13 +1,11 @@
 #pragma once
 
-
 #include <set>
 
 #include "ECS/Base/Types.hpp"
 
 namespace ECS
 {
-
 	// forward declarations
 	class BaseSystem;
 	struct BaseComponent;
@@ -26,23 +24,20 @@ namespace ECS
 		return typeID++;
 	}
 
-	//Attach type id to Component class and return it
+	// Attach type id to Component class and return it
 	template<typename T>
-	inline const ComponentTypeID TONIC_ENGINE_API CompType() noexcept
+	TONIC_ENGINE_API inline const ComponentTypeID CompType() noexcept
 	{
-		static_assert((std::is_base_of<BaseComponent, T>::value && !std::is_same<BaseComponent, T>::value), "INVALID TEMPLATE TYPE");
+		static_assert(std::is_base_of<BaseComponent, T>::value && !std::is_same<BaseComponent, T>::value, "INVALID TEMPLATE TYPE");
 		static const ComponentTypeID typeID = GetRuntimeComponentTypeID();
 		return typeID;
 	}
-
-	//Attach type id to System class and return it
+	// Attach type id to System class and return it
 	template<typename T>
-	inline const SystemTypeID TONIC_ENGINE_API SystemType() noexcept
+	TONIC_ENGINE_API inline const SystemTypeID SystemType() noexcept
 	{
-		static_assert((std::is_base_of<BaseSystem, T>::value && !std::is_same<BaseSystem, T>::value), "INVALID TEMPLATE TYPE");
+		static_assert(std::is_base_of<BaseSystem, T>::value && !std::is_same<BaseSystem, T>::value, "INVALID TEMPLATE TYPE");
 		static const SystemTypeID typeID = GetRuntimeSystemTypeID();
 		return typeID;
 	}
-
-
 }

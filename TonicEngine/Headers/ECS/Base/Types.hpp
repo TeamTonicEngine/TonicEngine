@@ -1,5 +1,8 @@
 #pragma once
 
+#include <DLL_API.hpp>
+#include "Core/Utils/Type.hpp"
+
 #include <set>
 
 namespace ECS
@@ -24,12 +27,10 @@ namespace ECS
 
 	/* Attach a type id to a Component class and returns it */
 	template<typename T>
-	const  ComponentTypeID TONIC_ENGINE_API CompType() noexcept;
+	const ComponentTypeID TONIC_ENGINE_API CompType() noexcept;
 	/* Attach a type id to a System class and returns it */
 	template<typename T>
-	const  SystemTypeID TONIC_ENGINE_API SystemType() noexcept;
-
-
+	const SystemTypeID TONIC_ENGINE_API SystemType() noexcept;
 }
 
 #include "Types.inl"

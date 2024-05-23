@@ -14,17 +14,17 @@ void Resources::Mesh::ReadFile(const fs::path _path)
 {
 	// read file via ASSIMP
 	Assimp::Importer importer;
-	scene_ = importer.ReadFile(_path.string(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+	p_scene_ = importer.ReadFile(_path.string(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
 	// check for errors
-	if (!scene_ || ((aiScene*)scene_)->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !((aiScene*)scene_)->mRootNode) // if is Not Zero
+	if (!p_scene_ || ((aiScene*)p_scene_)->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !((aiScene*)p_scene_)->mRootNode) // if is Not Zero
 	{
 		DEBUG_ERROR("Resources::Mesh::ReadFile assimp failed to load %s: %s", name.c_str(), importer.GetErrorString());
 		return;
 	}
 
 	//process ASSIMP's root node recursively
-	ProcessNode(((aiScene*)scene_)->mRootNode);
+	ProcessNode(((aiScene*)p_scene_)->mRootNode);
 	bRead_ = true;
 }
 
@@ -73,7 +73,7 @@ void Resources::Mesh::ProcessNode(void* _node) //aiNode* _node
 	{
 		// the node object only contains indices to index the actual objects in the scene.
 		// the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
-		aiMesh* mesh = ((aiScene*)scene_)->mMeshes[((aiNode*)_node)->mMeshes[i]];
+		aiMesh* mesh = ((aiScene*)p_scene_)->mMeshes[((aiNode*)_node)->mMeshes[i]];
 		subMeshes_.push_back(ProcessSubMesh(mesh));
 	}
 
@@ -82,10 +82,7 @@ void Resources::Mesh::ProcessNode(void* _node) //aiNode* _node
 		ProcessNode(((aiNode*)_node)->mChildren[i]);
 }
 
-Maths::Vec3 Vec3FromAssimp(aiVector3D assimpVec3)
-{
-	return { assimpVec3.x, assimpVec3.y,  assimpVec3.z };
-}
+Maths::Vec3 Vec3FromAssimp(aiVector3D assimpVec3) { return { assimpVec3.x, assimpVec3.y,  assimpVec3.z }; }
 
 Resources::BasicMesh Resources::Mesh::ProcessSubMesh(void* _mesh) //aiMesh* _mesh
 {
@@ -129,23 +126,7 @@ Resources::BasicMesh Resources::Mesh::ProcessSubMesh(void* _mesh) //aiMesh* _mes
 			indices.push_back(face.mIndices[j]);
 	}
 	// process materials
-	aiMaterial* material = ((aiScene*)scene_)->mMaterials[currentMesh->mMaterialIndex];
-
-	/*
-	// 1. diffuse maps
-	std::vector<Texture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
-	textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-	// 2. specular maps
-	std::vector<Texture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
-	textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-	// 3. normal maps
-	std::vector<Texture> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
-	textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
-	// 4. height maps
-	std::vector<Texture> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
-	textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
-	*/
-	// return a mesh object created from the extracted mesh data
+	aiMaterial* material = ((aiScene*)p_scene_)->mMaterials[currentMesh->mMaterialIndex];
 
 	Resources::BasicMesh newMesh = { vertices, indices };
 	return newMesh;

@@ -1,10 +1,10 @@
-#pragma once
-
 #include "pch.hpp"
 
 #include "ECS/Systems/PointLightSystem.hpp"
+
 #include "ECS/Components/PointLightComponent.hpp"
 #include "ECS/Components/TransformComponent.hpp"
+
 #include "Resources/Shader.hpp"
 
 ECS::Systems::PointLightSystem::PointLightSystem()
@@ -12,6 +12,7 @@ ECS::Systems::PointLightSystem::PointLightSystem()
 	AddComponentSignature<Components::PointLightComponent>();
 	AddComponentSignature<Components::TransformComponent>();
 }
+
 const bool ECS::Systems::PointLightSystem::Init()
 {
 	//pbr Version
@@ -29,6 +30,7 @@ const bool ECS::Systems::PointLightSystem::Init()
 
 	return(success);
 }
+
 void ECS::Systems::PointLightSystem::Render()
 {
 	if (!p_shaders_.size())
@@ -39,17 +41,24 @@ void ECS::Systems::PointLightSystem::Render()
 
 	Core::Renderer::RHI* p_rhi = ENGINE.RDR;
 	ECS::EntityManager* p_em = ENGINE.ENT_MNGR;
-	for (auto shader : p_shaders_) {
-
+	for (auto& shader : p_shaders_)
+	{
 		shader->Use();
 		p_rhi->SetPointLightNumber((u32)entities_.size());
 
 		u32 index = 0;
 		for (auto& entity : entities_)
 		{
-			if (!p_em->HasComponent<Components::TransformComponent>(entity) || !p_em->HasComponent<Components::PointLightComponent>(entity))
+			auto& lightComp = p_em->GetComponent<Components::PointLightComponent>(entity);
+			if (!lightComp.bEnabled)
+			{
+				auto light = lightComp.light_;
+				light.color = TNCColors::BLACK;
+				p_rhi->SetLight(&light, index, { 0 });
+				++index;
 				continue;
-			auto& light = p_em->GetComponent<Components::PointLightComponent>(entity).light_;
+			}
+			auto& light = lightComp.light_;
 			auto& transform = p_em->GetComponent<Components::TransformComponent>(entity);
 
 			p_rhi->SetLight(&light, index, transform.position);
@@ -58,6 +67,7 @@ void ECS::Systems::PointLightSystem::Render()
 		}
 	}
 }
+
 void ECS::Systems::PointLightSystem::RenderEditorScene()
 {
 	Render();

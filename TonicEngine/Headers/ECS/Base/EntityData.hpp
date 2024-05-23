@@ -1,4 +1,11 @@
 #pragma once
+// Forward Declarations
+namespace ECS::Components
+{
+	struct CameraComponent;
+	struct TransformComponent;
+}
+
 
 namespace ECS
 {
@@ -15,7 +22,7 @@ namespace ECS
 		EntityID parent_ = ROOT_ENTITY_ID;
 		std::vector<EntityID> children_;
 		EntitySignature components_;
-		EntitySignature systems_;
+		EntitySignature systems_; /* not used for now*/
 		std::string name_;
 
 	public:
@@ -24,7 +31,7 @@ namespace ECS
 		__declspec(property(get = GetChildren))
 			std::vector<EntityID> children;
 		__declspec(property(get = GetParent))
-			EntityID parent; 
+			EntityID parent;
 		__declspec(property(get = GetName, put = SetName))
 			std::string name;
 		/**********************************************
@@ -60,7 +67,7 @@ namespace ECS
 
 		void TONIC_ENGINE_API AddChild(EntityID _entity);
 		void TONIC_ENGINE_API RemoveChild(EntityID _entity);
-		const bool TONIC_ENGINE_API HasChildren() const  { return !children_.empty(); };
+		const bool TONIC_ENGINE_API HasChildren() const { return !children_.empty(); };
 
 		std::vector<EntityID> TONIC_ENGINE_API GetChildren() const { return children_; };
 		EntityID TONIC_ENGINE_API GetChild(int _index) const { return children_.at(_index); };
@@ -72,3 +79,4 @@ namespace ECS
 		friend class EntityManager;
 	};
 }
+

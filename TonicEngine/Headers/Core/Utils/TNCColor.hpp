@@ -30,3 +30,15 @@ struct TONIC_ENGINE_API TNCColor
 
 	TNCColor operator*(float _mult) const;
 };
+
+namespace TNCColors
+{
+	static TNCColor WHITE{ 255,255,255,255 };
+	static TNCColor BLACK{ 0, 0, 0, 255 };
+	static TNCColor RED{ 255, 0, 0, 255 };
+	static TNCColor GREEN{ 0, 255, 0,255 };
+	static TNCColor BLUE{ 0, 0, 255, 255 };
+	static TNCColor MAGENTA{ 255, 0, 255, 255 };
+	static TNCColor YELLOW{ 255, 255, 0, 255 };
+	static TNCColor CYAN{ 0, 255, 255, 255 };
+}

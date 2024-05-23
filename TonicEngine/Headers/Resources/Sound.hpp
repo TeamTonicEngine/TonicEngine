@@ -1,36 +1,30 @@
 #pragma once
-
 #include "DLL_API.hpp"
 
 #include "IResource.hpp"
 
 class ma_decoder;
 class ma_device;
-class ma_spatializer;
-class ma_spatializer_listener;
 
-namespace Components
-{
-	struct AudioListenerComponent;
-}
+namespace Components { struct AudioListenerComponent; }
+
 namespace Resources
 {
 	class Sound : public IResource
 	{
-	public:
+	private:
 		float pitch_ = 1.0f;
-		ma_decoder* decoder;
-		ma_device* device;
-		ma_spatializer* spatializer;
-		ma_spatializer_listener* listener;
+		ma_device* p_device_;
+	public:
+		ma_decoder* p_decoder;
 		bool isSpatialized = false;
-
-		const char* name_ = "None";
+		void* p_spatializer;
+		void* p_listener;
 
 		TONIC_ENGINE_API Sound();
 		TONIC_ENGINE_API ~Sound();
 
-		void Destroy() override;
+		void Destroy() override {};
 
 		void TONIC_ENGINE_API LoadSound();
 		void TONIC_ENGINE_API Restart();
@@ -41,7 +35,6 @@ namespace Resources
 		void TONIC_ENGINE_API SetLoop(const bool& _bLoop);
 		void TONIC_ENGINE_API SetVolume(const float& _volume);
 		void TONIC_ENGINE_API InitSpatialization();
-		float TONIC_ENGINE_API GetOggFileDuration();
 
 		void TONIC_ENGINE_API SetPitch(const float& _pitch);
 		void TONIC_ENGINE_API SetIsSpatialized(const bool& _enabled);
@@ -50,9 +43,6 @@ namespace Resources
 
 		void TONIC_ENGINE_API ReadFile(const fs::path _path) override;
 		void TONIC_ENGINE_API LoadFile() override {};
-
-		void TONIC_ENGINE_API MetaWriteFile(const string _name) override {};
-		void TONIC_ENGINE_API MetaReadFile(const string _name) override {};
 
 		void TONIC_ENGINE_API ResourceUnload() override {};
 		void TONIC_ENGINE_API Use() override {};

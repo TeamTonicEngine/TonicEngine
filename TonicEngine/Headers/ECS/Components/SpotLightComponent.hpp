@@ -15,17 +15,11 @@ namespace ECS::Components
 		TONIC_ENGINE_API SpotLightComponent()  = default;
 		TONIC_ENGINE_API ~SpotLightComponent() = default;
 		TONIC_ENGINE_API SpotLightComponent(const SpotLightComponent&) = default;
-		TONIC_ENGINE_API SpotLightComponent(LowRenderer::Lights::SpotLight& _light) : light_(_light) {};
+		TONIC_ENGINE_API SpotLightComponent(LowRenderer::Lights::SpotLight& _light) : light(_light) {};
 
 		friend class ECS::Systems::SpotLightSystem;
 
-		_declspec(property(get = GetLight, put = SetLight))
-			LowRenderer::Lights::SpotLight light;
-		inline TONIC_ENGINE_API LowRenderer::Lights::SpotLight GetLight() const { return light_; };
-		inline TONIC_ENGINE_API void SetLight(LowRenderer::Lights::SpotLight _light) { light_ = _light; };
-
-	protected:
-		LowRenderer::Lights::SpotLight light_;
+		LowRenderer::Lights::SpotLight light;
 };
 }
 

@@ -1,20 +1,19 @@
 #pragma once
+#include <DLL_API.hpp>
 
 #include "Maths/Maths.hpp"
 
-#include <DLL_API.hpp>
-namespace Core::Renderer
-{
-	class OpenGLWrapper;
-}
+namespace Core::Renderer { class OpenGLWrapper; }
+
 namespace LowRenderer::Cameras
 {
 	class TONIC_ENGINE_API Camera
 	{
-		friend class Core::Renderer::OpenGLWrapper;
-
+		/**********************************************
+				VARIABLES BLOC
+		**********************************************/
 	public:
-		//Required only for active camera
+		// Required only for an active camera
 		Maths::Mat4 view;
 		Maths::Mat4 projection;
 		Maths::Mat4 viewProjection;
@@ -30,6 +29,12 @@ namespace LowRenderer::Cameras
 		bool bProjChanged;
 		bool bUsed = false;
 
+		friend class Core::Renderer::OpenGLWrapper;
+
+		/*********************************************
+				FUNCTIONS BLOC
+		*********************************************/
+
 		Camera(unsigned int _width, unsigned int _height);
 
 		void Update(Maths::Vec3 _position, Maths::Quat _rotation);
@@ -37,7 +42,6 @@ namespace LowRenderer::Cameras
 		void SetView(Maths::Vec3 _position, Maths::Quat _rotation);
 		void SetProjection();
 		void ComputeViewProjection();
-		//void TONIC_ENGINE_API ShowImGuiControls();
 
 	protected:
 		Maths::Mat4 Frustum(float _left, float _right, float _bottom, float _top, float _near, float _far);

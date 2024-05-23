@@ -8,4 +8,7 @@
 #include "ECS/Systems/DirectionalLightSystem.hpp"
 #include "ECS/Systems/AudioSourceSystem.hpp"
 #include "ECS/Systems/AudioListenerSystem.hpp"
-#include "ECS/Systems/CollisionDetectionSystem.hpp"
+#include "ECS/Systems/BoxRigidbodySystem.hpp"
+#include "ECS/Systems/SphereRigidbodySystem.hpp"
+#include "ECS/Systems/CapsuleRigidbodySystem.hpp"
+#include "ECS/Systems/TextRendererSystem.hpp"

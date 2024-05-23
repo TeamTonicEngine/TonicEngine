@@ -1,13 +1,14 @@
 #pragma once
+#include <DLL_API.hpp>
 
 #include "Maths/Maths.hpp"
 #include "Camera.hpp"
 
-#include <DLL_API.hpp>
-namespace Core::Renderer
-{
-	class OpenGLWrapper;
-}
+#include <Core/Utils/Type.hpp>
+#include <Core/Utils/f32_2.hpp>
+
+namespace Core::Renderer { class OpenGLWrapper; }
+
 namespace LowRenderer::Cameras
 {
 	struct TONIC_ENGINE_API CameraInput
@@ -31,17 +32,16 @@ namespace LowRenderer::Cameras
 		CameraInput cameraInput{};
 		struct Mouse
 		{
-			double x = 0.0;
-			double y = 0.0;
-			float deltaX = 0.f;
-			float deltaY = 0.f;
-			static float s_scrollOffset;
+			f32_2 pos;
 		};
 		Mouse mouse;
 	};
 
 	class FreeCamera : public Camera
 	{
+		/**********************************************
+				VARIABLES BLOC
+		**********************************************/
 	public:
 		Maths::Vec3 eye, center, up;
 		Maths::Vec3 forward;
@@ -49,6 +49,10 @@ namespace LowRenderer::Cameras
 		float camSpeed = 8.f;
 		float camRotationSpeed = 0.1f;
 		float zoomSpeed = 0.1f;
+
+		/*********************************************
+				FUNCTIONS BLOC
+		*********************************************/
 
 		TONIC_ENGINE_API FreeCamera(unsigned int _width, unsigned int _height);
 

@@ -10,7 +10,7 @@ void Resources::Shader::Destroy() { ENGINE.RDR->UnloadResource(shared_from_this(
 
 void Resources::Shader::ReadFile(const fs::path _path)
 {
-	string name = _path.filename().replace_extension("").string();
+	std::string name = _path.filename().replace_extension("").string();
 	SetFragment(name);
 	SetVertex(name);
 }
@@ -29,7 +29,7 @@ void Resources::Shader::LoadFile()
 		DEBUG_WARNING("File not Read, cannot be loaded: %s", name.c_str());
 }
 
-void Resources::Shader::SetVertex(const string _name)
+void Resources::Shader::SetVertex(const std::string _name)
 {
 	fs::path filePathVert = FindFile(_name + ".vert", type_);
 	if (filePathVert.empty()) // If no vertex shader found
@@ -48,7 +48,7 @@ void Resources::Shader::SetVertex(const string _name)
 	}
 }
 
-void Resources::Shader::SetFragment(const string _name)
+void Resources::Shader::SetFragment(const std::string _name)
 {
 	fs::path filePathFrag = FindFile(_name + ".frag", type_);
 	if (filePathFrag.empty()) // If no fragment shader found

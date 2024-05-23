@@ -32,6 +32,21 @@ Core::Applications::ImGuiEngine::~ImGuiEngine()
 	ImGui::DestroyContext();
 }
 
+void Core::Applications::ImGuiEngine::RunGuiMouseCallback(void* _window, int button, int action, int mods)
+{
+	ImGui_ImplGlfw_MouseButtonCallback((GLFWwindow*)(_window), button, action, mods);
+}
+
+void Core::Applications::ImGuiEngine::RunGuiScrollCallback(void* _window, double _xoffset, double _yoffset)
+{
+	ImGui_ImplGlfw_ScrollCallback((GLFWwindow*)(_window), _xoffset, _yoffset);
+}
+
+void Core::Applications::ImGuiEngine::RunGuiKeyCallback(void* _window, int _key, int _scancode, int _action, int _mods)
+{
+	ImGui_ImplGlfw_KeyCallback((GLFWwindow*)(_window), _key, _scancode, _action, _mods);
+}
+
 void* Core::Applications::ImGuiEngine::GetCurrentContext() { return ImGui::GetCurrentContext(); }
 
 void Core::Applications::ImGuiEngine::StartFrame()
@@ -44,11 +59,10 @@ void Core::Applications::ImGuiEngine::StartFrame()
 void Core::Applications::ImGuiEngine::EndFrame()
 {
 	ImGui::Render();
-	
+
 	u32* display = ENGINE.WDW->GetScreenSize();
 
 	Engine::GetRenderer()->ResizeViewPort(display[0], display[1]);
-	//Engine::GetRenderer()->ClearColor();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -59,10 +73,5 @@ void Core::Applications::ImGuiEngine::EndFrame()
 		glfwMakeContextCurrent(backup_current_context);
 	}
 
-
-	//glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
-	//glClear(GL_COLOR_BUFFER_BIT);
-	
 	ImGui::EndFrame();
-
 }

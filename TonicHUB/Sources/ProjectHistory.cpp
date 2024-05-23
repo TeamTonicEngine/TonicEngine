@@ -11,31 +11,25 @@ ProjectHistory::~ProjectHistory()
     data.clear();
 }
 
+FileData ProjectHistory::Remove(std::string _projectPath)
+{
+    FileData newData;
+    for (int i = 0; i < data.size(); i++)
+    {
+        if (_projectPath == data[i].projectPath)
+        {
+            newData = data[i];
+            data.erase(data.begin() + i);
+        }
+    }
+    return newData;
+}
+
 void ProjectHistory::PlaceOnTop(std::string _projectPath)
 {
-    FileData newData;
-    for (int i = 0; i < data.size(); i++)
-    {
-        if (_projectPath == data[i].projectPath)
-        {
-            newData = data[i];
-            data.erase(data.begin() + i);
-        }
-    }
+    FileData newData = Remove(_projectPath);
 
     data.insert(data.begin(), newData);
-}
-void ProjectHistory::Remove(std::string _projectPath)
-{
-    FileData newData;
-    for (int i = 0; i < data.size(); i++)
-    {
-        if (_projectPath == data[i].projectPath)
-        {
-            newData = data[i];
-            data.erase(data.begin() + i);
-        }
-    }
 }
 
 void ProjectHistory::Open()
@@ -77,7 +71,6 @@ void ProjectHistory::Save()
         for (const FileData& line : data)
         {
             file << line.projectPath << std::endl;
-
         }
 
         file.close();
@@ -126,10 +119,8 @@ void ProjectHistory::CreateProject(std::string _projectPath, std::string _projec
             reinterpret_cast<char*>(_prevData)
         });
 
-        //file.read(reinterpret_cast<char*>(&value), sizeof(value));
         file.write(reinterpret_cast<char*>(&projectFile->staticData), sizeof(projectFile->staticData));
         file.write(_projectName.c_str(), _projectName.length());
-        //file.write(projectFile->description, projectFile->staticData.descLength);
         file.write(projectFile->preview, projectFile->staticData.sizeOfPreview);
 
         file.close();

@@ -2,13 +2,11 @@
 
 #include "ECS/Base/BaseSystem.hpp"
 
-namespace Resources {
-	class Shader;
-}
+namespace Resources { class Shader; }
 
 namespace ECS::Systems
 {
-	class PointLightSystem: public ECS::BaseSystem
+	class PointLightSystem : public ECS::BaseSystem
 	{
 	private:
 		std::vector<Resources::ShaderPtr> p_shaders_;

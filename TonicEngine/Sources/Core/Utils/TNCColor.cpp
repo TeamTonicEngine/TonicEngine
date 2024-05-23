@@ -5,29 +5,30 @@
 #include <algorithm>
 #include <cmath>
 
-void Clamp(s32& _value, s32 min, s32 max)
+void Clamp(s32& _value, s32 _min, s32 _max)
 {
-	if (_value < min)
+	if (_value < _min)
 	{
-		_value = min;
+		_value = _min;
 		return;
 	}
-	if (_value > max)
+	if (_value > _max)
 	{
-		_value = max;
+		_value = _max;
 		return;
 	}
 }
-void Clamp(f32& _value, f32 min, f32 max)
+
+void Clamp(f32& _value, f32 _min, f32 _max)
 {
-	if (_value < min)
+	if (_value < _min)
 	{
-		_value = min;
+		_value = _min;
 		return;
 	}
-	if (_value > max)
+	if (_value > _max)
 	{
-		_value = max;
+		_value = _max;
 		return;
 	}
 }
@@ -87,6 +88,7 @@ Maths::Vec3 TNCColor::ToVector3() const
 {
 	return Maths::Vec3(r / 255.f, g / 255.f, b / 255.f);
 }
+
 Maths::Vec4 TNCColor::ToVector4() const
 {
 	return Maths::Vec4(r / 255.f, g / 255.f, b / 255.f, a / 255.f);
@@ -174,6 +176,7 @@ TNCColor TNCColor::CreateHexRGB(s32 _hex)
 	s32 b = _hex & 0xFF;
 	return { static_cast<u8>(r),static_cast<u8>(g),static_cast<u8>(b) ,255 };
 }
+
 TNCColor TNCColor::CreateHexRGB_A(u32 _hex)
 {
 	s32 r = (_hex >> 24) & 0xFF;

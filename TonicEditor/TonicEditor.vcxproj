@@ -20,6 +20,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\TonicEngine\Externals\src\glad\glad.cpp" />
+    <ClCompile Include="Externals\src\ImGuizmo\GraphEditor.cpp" />
+    <ClCompile Include="Externals\src\ImGuizmo\ImCurveEdit.cpp" />
+    <ClCompile Include="Externals\src\ImGuizmo\ImGradient.cpp" />
+    <ClCompile Include="Externals\src\ImGuizmo\ImGuizmo.cpp" />
+    <ClCompile Include="Externals\src\ImGuizmo\ImSequencer.cpp" />
     <ClCompile Include="Externals\src\ImGui\imgui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -65,8 +70,7 @@
     <ClCompile Include="Sources\Core\Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Externals\include\GLFW\glfw3.hpp" />
-    <ClInclude Include="Externals\include\GLFW\glfw3native.hpp" />
+    <ClInclude Include="Assets\Script\LightController.hpp" />
     <ClInclude Include="Externals\include\ImGui\imconfig.h" />
     <ClInclude Include="Externals\include\ImGui\imgui.h" />
     <ClInclude Include="Externals\include\ImGui\imgui_impl_glfw.h" />
@@ -75,6 +79,9 @@
     <ClInclude Include="Externals\include\ImGui\imstb_rectpack.h" />
     <ClInclude Include="Externals\include\ImGui\imstb_textedit.h" />
     <ClInclude Include="Externals\include\ImGui\imstb_truetype.h" />
+    <ClInclude Include="Assets\Script\PlayerController.hpp" />
+    <ClInclude Include="Externals\include\GLFW\glfw3.hpp" />
+    <ClInclude Include="Externals\include\GLFW\glfw3native.hpp" />
     <ClInclude Include="Externals\include\KHR\khrplatform.hpp" />
     <ClInclude Include="Headers\Core\AppEditor.hpp" />
     <ClInclude Include="Headers\Core\EditorWindow.hpp" />
@@ -84,9 +91,6 @@
     <ProjectReference Include="..\TonicEngine\TonicEngine.vcxproj">
       <Project>{1b531902-a45d-4f97-842e-d18c220a3920}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="Externals\libs\glfw3.lib" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -194,7 +198,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)TonicEditor\Externals\include;$(SolutionDir)TonicEditor\Headers;$(SolutionDir)TonicEngine\Headers;./Externals/include/GLM;./Externals/include/GLFW/include;./Externals/include/stb-master/;./Externals/include/tinyobjloader;./Externals/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)TonicEditor\Externals\include;$(SolutionDir)TonicEditor\Headers;$(SolutionDir)TonicEngine\Headers;./Externals/include/GLM;./Externals/include/GLFW/include;./Externals/include/stb-master/;./Externals/include/tinyobjloader;$(ProjectDir)Externals\include\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -212,7 +216,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)TonicEditor\Externals\include;$(SolutionDir)TonicEditor\Headers;$(SolutionDir)TonicEngine\Headers;./Externals/include/GLM;./Externals/include/GLFW/include;./Externals/include/stb-master/;./Externals/include/tinyobjloader;./Externals/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)TonicEditor\Externals\include;$(SolutionDir)TonicEditor\Headers;$(SolutionDir)TonicEngine\Headers;./Externals/include/GLM;./Externals/include/GLFW/include;./Externals/include/stb-master/;./Externals/include/tinyobjloader;$(ProjectDir)Externals\include\ImGuizmo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>

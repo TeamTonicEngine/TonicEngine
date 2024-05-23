@@ -552,6 +552,9 @@ static void ImGui_ImplGlfw_WindowSizeCallback(GLFWwindow* window, int, int)
 	}
 }
 
+#include "pch.hpp"
+#include "Core/InputManager.hpp"
+
 static void ImGui_ImplGlfw_CreateWindow(ImGuiViewport* viewport)
 {
 	ImGuiViewportDataGlfw* data = IM_NEW(ImGuiViewportDataGlfw)();
@@ -578,13 +581,13 @@ static void ImGui_ImplGlfw_CreateWindow(ImGuiViewport* viewport)
 	glfwSetWindowPos(data->Window, (int)viewport->Pos.x, (int)viewport->Pos.y);
 
 	// Install GLFW callbacks for secondary viewports
-	glfwSetMouseButtonCallback(data->Window, ImGui_ImplGlfw_MouseButtonCallback);
-	glfwSetScrollCallback(data->Window, ImGui_ImplGlfw_ScrollCallback);
-	glfwSetKeyCallback(data->Window, ImGui_ImplGlfw_KeyCallback);
 	glfwSetCharCallback(data->Window, ImGui_ImplGlfw_CharCallback);
 	glfwSetWindowCloseCallback(data->Window, ImGui_ImplGlfw_WindowCloseCallback);
 	glfwSetWindowPosCallback(data->Window, ImGui_ImplGlfw_WindowPosCallback);
 	glfwSetWindowSizeCallback(data->Window, ImGui_ImplGlfw_WindowSizeCallback);
+
+	Core::Applications::InputManager::SetCallBacks(data->Window);
+
 	if (g_ClientApi == GlfwClientApi_OpenGL)
 	{
 		glfwMakeContextCurrent(data->Window);

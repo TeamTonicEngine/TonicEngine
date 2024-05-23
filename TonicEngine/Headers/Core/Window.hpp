@@ -1,8 +1,10 @@
 #pragma once
-
 #include "DLL_API.hpp"
+
 #include "LowRenderer/Cameras/FreeCamera.hpp"
+
 #include "Utils/u32_2.hpp"
+
 #include <string>
 
 namespace Core::Applications
@@ -13,15 +15,13 @@ namespace Core::Applications
 				VARIABLES BLOC
 		**********************************************/
 	private:
-		static void* p_s_handle_;
+		static void* s_p_handle_;
 
 		unsigned width_ = 0, height_ = 0;
 
 		bool bFramebufferResized_ = false;
 
 		const char* nameWindow_ = "";
-
-		LowRenderer::Cameras::Input input_;
 
 		float deltaTime_ = 0.0f;
 		float lastFrame_ = 0.0f;
@@ -42,6 +42,7 @@ namespace Core::Applications
 		/* Output : Returns unsigned array size 2, width & height */
 		TONIC_ENGINE_API unsigned* GetScreenSize();
 		u32_2 TONIC_ENGINE_API GetWindowSize();
+		f32_2 TONIC_ENGINE_API GetWindowPos();
 
 		/* Called when window gets resized */
 		void TONIC_ENGINE_API Resized();
@@ -61,11 +62,11 @@ namespace Core::Applications
 		void TONIC_ENGINE_API Destroy();
 
 		const float TONIC_ENGINE_API GetDeltaTime() const;
-		const LowRenderer::Cameras::Input* GetFrameInput() const;
 
-		void TONIC_ENGINE_API ProcessInput();
-	private:
-		void TONIC_ENGINE_API ProcessCameraInput();
-		void TONIC_ENGINE_API ProcessMouseInput();
+		void TONIC_ENGINE_API RegisterInputHandler();
+
+		void TONIC_ENGINE_API SetFullScreen(bool _state = false);
+
+		TONIC_ENGINE_API void* GetWindowsHwnd();
 	};
 }

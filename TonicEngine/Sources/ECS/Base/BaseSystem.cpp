@@ -2,7 +2,10 @@
 
 #include "ECS/Base/BaseSystem.hpp"
 
-void ECS::BaseSystem::AddEntity(const EntityID _entity) { entities_.insert(_entity); }
+void ECS::BaseSystem::AddEntity(const EntityID _entity) 
+{
+	entities_.insert(_entity); 
+}
 
 void ECS::BaseSystem::RemoveEntity(const EntityID _entity) { entities_.erase(_entity); }
 

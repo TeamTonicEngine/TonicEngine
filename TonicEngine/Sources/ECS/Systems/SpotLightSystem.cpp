@@ -1,5 +1,3 @@
-#pragma once
-
 #include "pch.hpp"
 
 #include "ECS/Systems/SpotLightSystem.hpp"
@@ -12,6 +10,7 @@ ECS::Systems::SpotLightSystem::SpotLightSystem()
 	AddComponentSignature<Components::SpotLightComponent>();
 	AddComponentSignature<Components::TransformComponent>();
 }
+
 const bool ECS::Systems::SpotLightSystem::Init()
 {
 	//Pbr version
@@ -29,6 +28,7 @@ const bool ECS::Systems::SpotLightSystem::Init()
 
 	return(success);
 }
+
 void ECS::Systems::SpotLightSystem::Render()
 {
 	if (!p_shaders_.size())
@@ -47,9 +47,16 @@ void ECS::Systems::SpotLightSystem::Render()
 		u32 index = 0;
 		for (auto& entity : entities_)
 		{
-			if (!p_em->HasComponent<Components::TransformComponent>(entity) || !p_em->HasComponent<Components::SpotLightComponent>(entity))
+			auto& lightComp = p_em->GetComponent<Components::SpotLightComponent>(entity);
+			if (!lightComp.bEnabled)
+			{
+				auto light = lightComp.light;
+				light.color = TNCColors::BLACK;
+				p_rhi->SetLight(&light, index, Maths::Vec3{ 0 },Maths::Quat::Identity());
+				++index;
 				continue;
-			auto& light = p_em->GetComponent<Components::SpotLightComponent>(entity).light_;
+			}
+			auto& light = lightComp.light;
 			auto* transform = &p_em->GetComponent<Components::TransformComponent>(entity);
 
 			p_rhi->SetLight(&light, index, transform->position, transform->rotation);
@@ -58,7 +65,5 @@ void ECS::Systems::SpotLightSystem::Render()
 		}
 	}
 }
-void ECS::Systems::SpotLightSystem::RenderEditorScene()
-{
-	Render();
-}
+
+void ECS::Systems::SpotLightSystem::RenderEditorScene() { Render(); }

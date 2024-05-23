@@ -3,7 +3,9 @@
 #include "LowRenderer/Cameras/FreeCamera.hpp"
 
 using namespace Maths;
-LowRenderer::Cameras::FreeCamera::FreeCamera(unsigned int _width, unsigned int _height) : Camera(_width, _height)
+
+LowRenderer::Cameras::FreeCamera::FreeCamera(unsigned int _width, unsigned int _height)
+	: Camera(_width, _height)
 {
 	bUsed = true;
 
@@ -17,6 +19,9 @@ LowRenderer::Cameras::FreeCamera::FreeCamera(unsigned int _width, unsigned int _
 	camSpeed = 8.f;
 	camRotationSpeed = 1.f;
 	zoomSpeed = 0.1f;
+
+	zFar = 100000.f;
+	zNear = 0.001f;
 
 	SetView();
 	SetProjection();
@@ -37,15 +42,13 @@ void LowRenderer::Cameras::FreeCamera::Turn(float _angle, Vec3 _axis)
 	Quat rotator = Quaternions::FromAngleAxis(_angle, _axis);
 	forward = rotator.RotateVector(forward);
 	up = rotator.RotateVector(up);
+
 	//Insure the normalization
 	forward = (forward).GetNormalized();
 	up = (up).GetNormalized();
 
 	if (bPerspectiveMode)
-	{
 		center = eye + forward;
-		return;
-	}
 	else
 		eye = center - forward * orthoScale;
 }
@@ -147,6 +150,7 @@ void LowRenderer::Cameras::FreeCamera::Update()
 	bViewChanged = false;
 	bProjChanged = false;
 }
+
 bool LowRenderer::Cameras::CameraInput::NoInputs() const
 {
 	return !(deltaX != 0.f || deltaY != 0.f || bMoveForward || bMoveBackward || bMoveUp || bMoveDown || bMoveLeft || bMoveRight);

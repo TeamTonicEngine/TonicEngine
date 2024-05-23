@@ -1,4 +1,5 @@
 #include "pch.hpp"
+
 #include "Core/Log.hpp"
 
 #include <iostream>
@@ -12,7 +13,7 @@ void Core::Debug::FormatString(char* _buffer, size_t _bufferSize, const char* _f
 	va_end(args);
 }
 
-Core::Debug::Log* Core::Debug::Log::p_s_instance_ = nullptr;
+Core::Debug::Log* Core::Debug::Log::s_p_instance_ = nullptr;
 
 Core::Debug::Log::~Log()
 {
@@ -26,15 +27,15 @@ Core::Debug::Log::~Log()
 
 Core::Debug::Log* Core::Debug::Log::GetInstance()
 {
-	if (p_s_instance_ == nullptr)
-		p_s_instance_ = new Core::Debug::Log();
-	return p_s_instance_;
+	if (s_p_instance_ == nullptr)
+		s_p_instance_ = new Core::Debug::Log();
+	return s_p_instance_;
 }
 
 void Core::Debug::Log::DeleteInstance()
 {
 	// Useless to check: delete nullptr is safe
-	delete p_s_instance_;
+	delete s_p_instance_;
 }
 
 void Core::Debug::Log::OpenFile(std::filesystem::path const& _fileName, bool _erase)
@@ -56,6 +57,7 @@ void Core::Debug::Log::InstanceOpenFile(std::filesystem::path const& _fileName, 
 		output_.open(_fileName, std::ios::out | std::ios::trunc);
 	else
 		output_.open(_fileName, std::ios::out | std::ios::app);
+
 	if (output_.is_open())
 	{
 		time_t now = time(0);
@@ -78,25 +80,13 @@ void Core::Debug::Log::InstancePrint(const char* _format, va_list _args)
 	output_.flush();
 }
 
-void Core::Debug::Log::SuccessColor()
-{
-	GetInstance()->ChangeColor(Color::Green_Black_BG);
-}
+void Core::Debug::Log::SuccessColor() { GetInstance()->ChangeColor(Color::Green_Black_BG); }
 
-void Core::Debug::Log::WarningColor()
-{
-	GetInstance()->ChangeColor(Color::Yellow_Black_BG);
-}
+void Core::Debug::Log::WarningColor() { GetInstance()->ChangeColor(Color::Yellow_Black_BG); }
 
-void Core::Debug::Log::ErrorColor()
-{
-	GetInstance()->ChangeColor(Color::White_Red_BG);
-}
+void Core::Debug::Log::ErrorColor() { GetInstance()->ChangeColor(Color::White_Red_BG); }
 
-void Core::Debug::Log::ResetColor()
-{
-	SetConsoleTextAttribute(GetInstance()->handle_, 15); // Text in white (default)
-}
+void Core::Debug::Log::ResetColor() { SetConsoleTextAttribute(GetInstance()->handle_, 15); } // Text in white (default)
 
 void Core::Debug::Log::ChangeColor(unsigned char _handleWindowsId) const
 {

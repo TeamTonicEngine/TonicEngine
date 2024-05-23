@@ -1,3 +1,4 @@
+#pragma once
 #include "Core/EditorWindow.hpp"
 #include "Core/Utils.hpp"
 
@@ -5,6 +6,42 @@
 #include <iostream>
 
 #include <GLFW/glfw3.hpp>
+
+//Open the windows file saver --------------------------------------------------------------------------------------------------
+#include <windows.h>
+#include <commdlg.h>
+std::string SaveFile(const char* _filter)
+{
+	OPENFILENAMEA ofn;
+	CHAR szFile[260] = { 0 };
+	ZeroMemory(&ofn, sizeof(OPENFILENAMEA));
+	ofn.lStructSize = sizeof(OPENFILENAMEA);
+	ofn.hwndOwner = static_cast<HWND>(ENGINE.WDW->GetWindowsHwnd());
+	ofn.lpstrFile = szFile;
+	ofn.nMaxFile = sizeof(szFile);
+	ofn.lpstrFilter = _filter;
+	ofn.nFilterIndex = 1;
+	ofn.lpstrFileTitle = NULL;
+	ofn.nMaxFileTitle = 0;
+	ofn.lpstrInitialDir = NULL;
+	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
+	if (GetSaveFileNameA(&ofn) == TRUE)
+	{
+		return ofn.lpstrFile;
+	}
+	return std::string();
+}
+//------------------------------------------------------------------------------------------------------------------------------
+
+bool EndsWithIc3(const std::string& str) {
+	const std::string extension = ".ic3";
+	if (str.length() >= extension.length()) {
+		return (0 == str.compare(str.length() - extension.length(), extension.length(), extension));
+	}
+	else {
+		return false;
+	}
+}
 
 Core::Applications::EditorWindow::EditorWindow(ImGuiEngine* _p_imguiEngine) { p_imguiEngine_ = _p_imguiEngine; p_projectArchi_ = Engine::GetResourceManager()->p_files; }
 
@@ -18,8 +55,6 @@ void Core::Applications::EditorWindow::SetUpWindows()
 
 void Core::Applications::EditorWindow::InitUIWindow()
 {
-	//ImGui::ShowDemoWindow();
-
 	ImGuiWindowClass windowClass;
 	windowClass.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar;
 	ImGui::SetNextWindowClass(&windowClass);
@@ -47,30 +82,55 @@ void Core::Applications::EditorWindow::InitUIWindow()
 	{
 		ImGui::PopStyleVar();
 
-		// MENU BAR
+		//Menu Bar ---------------------------------------------------------------------------------------------------------------------
 		if (ImGui::BeginMenuBar())
 		{
 			float barWidth = ImGui::GetCurrentWindow()->MenuBarRect().GetWidth();
 
 			if (ImGui::BeginMenu("File"))
 			{
-				ImGui::MenuItem("Dummy");
+				if (curentScenePath.size() > 0)
+				{
+					if (ImGui::MenuItem("Save Scene"))
+						Resources::Scene::SaveFile(curentScenePath.c_str());
+				}
+				else
+					ImGui::TextDisabled("Save Scene");
+
+				if (ImGui::MenuItem("Save Scene As..."))
+				{
+					std::string newPath;
+					newPath = SaveFile("Project File (*.ic3)\0*.IC3\0");
+
+					if (newPath.size() > 0)
+					{
+						if (!EndsWithIc3(newPath))
+						{
+							newPath += ".ic3";
+						}
+
+						curentScenePath = newPath;
+						Resources::Scene::SaveFile(curentScenePath.c_str());
+					}
+				}
+
 				ImGui::Separator();
 				if (ImGui::MenuItem("Exit"))
 					Engine::GetWindow()->IsClosing(true);
 				ImGui::EndMenu();
 			}
+
 			if (ImGui::BeginMenu("Edit"))
 			{
 				ImGui::MenuItem("Dummy");
 				ImGui::EndMenu();
 			}
+
 			if (ImGui::BeginMenu("Settings"))
 			{
 				ImGui::Text("Settings:");
 
 				f32_4 cColor = Engine::GetRenderer()->GetClearColor().ToFloat();
-				//static float cColor[3];
 
 				if (ImGui::ColorEdit3("Clear color", &cColor.x, ImGuiColorEditFlags_NoInputs))
 				{
@@ -78,6 +138,7 @@ void Core::Applications::EditorWindow::InitUIWindow()
 				}
 				ImGui::EndMenu();
 			}
+
 			if (ImGui::BeginMenu("Windows"))
 			{
 				ImGui::Checkbox("Game##opt", &gameWindow);
@@ -87,10 +148,9 @@ void Core::Applications::EditorWindow::InitUIWindow()
 				ImGui::Checkbox("Debug##opt", &debugWindow);
 				ImGui::EndMenu();
 			}
-			// CENTER BUTTONS
 
-			//ImGui::GetCurrentWindow()->MenuBarRect().GetWidth()
 
+			//Game state button ------------------------------------------------------------------------------------------------------------
 			ImGui::PushStyleColor(ImGuiCol_Button, { 0, 0, 0, 0 });
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 0.5, 0.5, 0.5, 0.5 });
 
@@ -101,7 +161,8 @@ void Core::Applications::EditorWindow::InitUIWindow()
 				)
 			{
 				gameWindow = true;
-				bIsPlaying_ = true;
+				ENGINE.SELF->bIsPlaying = true;
+				ENGINE.SELF->bIsStarting = true;
 			}
 
 			ImGui::SetCursorPosX(barWidth * 0.5f);
@@ -111,7 +172,7 @@ void Core::Applications::EditorWindow::InitUIWindow()
 				)
 			{
 				// PAUSE
-				bIsPlaying_ = false;
+				ENGINE.SELF->bIsPlaying = false;
 			}
 
 			ImGui::SetCursorPosX((barWidth * 0.5f) + 45.f);
@@ -121,13 +182,17 @@ void Core::Applications::EditorWindow::InitUIWindow()
 				)
 			{
 				//STOP
-				bIsReset = true;
+				ENGINE.SELF->bIsReset = true;
+				ENGINE.SELF->bIsPlaying = false;
 			}
 
 			ImGui::PopStyleColor(2);
+			//------------------------------------------------------------------------------------------------------------------------------
+
 
 			ImGui::EndMenuBar();
 		}
+		//------------------------------------------------------------------------------------------------------------------------------
 
 		// CREATE DOCK SPACE
 		ImGuiID mainDockSpaceId = ImGui::GetID("MainDockSpace");
@@ -140,6 +205,7 @@ void Core::Applications::EditorWindow::InitUIWindow()
 		{
 			ImGui::Begin("Property", &propertyWindow, windowFlags);
 			{
+				bPropertyHovered = ImGui::IsWindowHovered();
 				DrawProperty(selectedId);
 			}
 			ImGui::End();
@@ -149,15 +215,17 @@ void Core::Applications::EditorWindow::InitUIWindow()
 		{
 			ImGui::Begin("Scene Tree", &sceneTreeWindow, windowFlags);
 			{
+				bSceneTreeHovered = ImGui::IsWindowHovered();
+
 				DrawTree(ECS::ROOT_ENTITY_ID);
 
 				ImGui::PushStyleColor(ImGuiCol_Button, { 0, 0, 0, 0 });
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 0.5, 0.5, 0.5, 0.5 });
-				
+
 				if (ImGui::ImageButton((ImTextureID)(u64)ENGINE.RES_MNGR->Get<Resources::Texture>("StaticAssets\\Images\\plus.png")->ID,
 					{ 19,19 }, { 0,1 }, { 1,0 }, 0))
 				{
-					ENGINE.ENT_MNGR->AddNewEntity();
+					selectedId = ENGINE.ENT_MNGR->AddNewEntity();
 				}
 
 				ImGui::PopStyleColor(2);
@@ -169,6 +237,8 @@ void Core::Applications::EditorWindow::InitUIWindow()
 		{
 			ImGui::Begin("Project", &projectWindow, windowFlags);
 			{
+				bProjectHovered = ImGui::IsWindowHovered();
+
 				DrawContentBrowser();
 			}
 			ImGui::End();
@@ -178,6 +248,8 @@ void Core::Applications::EditorWindow::InitUIWindow()
 		{
 			ImGui::Begin("Debug", &debugWindow, windowFlags);
 			{
+				bDebugHovered = ImGui::IsWindowHovered();
+
 				float fps = 1 / Engine::GetWindow()->GetDeltaTime();//We may want that in the Engine directly
 				static float moySta = 0;
 				float moy = 0;
@@ -236,31 +308,53 @@ void Core::Applications::EditorWindow::FirstFrame(ImGuiID& _mainDockSpaceId, con
 	ImGui::DockBuilderDockWindow("Project", dockIdBottom);
 	ImGui::DockBuilderDockWindow("Debug", dockIdBottomRight);
 
-	//
 	ImGui::DockBuilderDockWindow("Scene", _mainDockSpaceId);
 	ImGui::DockBuilderDockWindow("Game", _mainDockSpaceId);
 
 	ImGui::DockBuilderFinish(_mainDockSpaceId);
 }
 
-void Core::Applications::EditorWindow::StartWindow(std::string _name, bool* isOpen)
+void Core::Applications::EditorWindow::StartWindow(std::string _name, bool* _bOpen)
 {
-	ImGui::Begin(_name.c_str(), isOpen, ImGuiWindowFlags_NoCollapse);
+	ImGui::Begin(_name.c_str(), _bOpen, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoFocusOnAppearing);
 	width_ = ImGui::GetContentRegionAvail().x;
 	height_ = ImGui::GetContentRegionAvail().y;
 	pos_ = ImGui::GetCursorScreenPos();
 	ImGui::GetForegroundDrawList();
 
-	if (ImGui::IsWindowFocused())
+	if (_name == "Scene")
 	{
-		if (_name == "Scene")
-		{
-			bIsSceneOpen_ = true;
-		}
-		else if (_name == "Game")
-		{
-			bIsGameOpen_ = true;
-		}
+		bIsSceneFocused = ImGui::IsWindowFocused();
+		bSceneHovered = ImGui::IsWindowHovered();
+	}
+	else if (_name == "Game")
+	{
+		bIsGameFocused = ImGui::IsWindowFocused();
+		bGameHovered = ImGui::IsWindowHovered();
+	}
+}
+
+void Core::Applications::EditorWindow::FocusHoveredWindow()
+{
+	bIsSceneFocused = bIsGameFocused = false;
+
+	if (bPropertyHovered)
+		ImGui::FocusWindow(ImGui::FindWindowByID(ImHashStr("Property")));
+	else if (bSceneTreeHovered)
+		ImGui::FocusWindow(ImGui::FindWindowByID(ImHashStr("Scene Tree")));
+	else if (bProjectHovered)
+		ImGui::FocusWindow(ImGui::FindWindowByID(ImHashStr("Project")));
+	else if (bDebugHovered)
+		ImGui::FocusWindow(ImGui::FindWindowByID(ImHashStr("Debug")));
+	else if (bSceneHovered)
+	{
+		ImGui::FocusWindow(ImGui::FindWindowByID(ImHashStr("Scene")));
+		bIsSceneFocused = true;
+	}
+	else if (bGameHovered)
+	{
+		ImGui::FocusWindow(ImGui::FindWindowByID(ImHashStr("Game")));
+		bIsGameFocused = true;
 	}
 }
 
@@ -272,9 +366,4 @@ void Core::Applications::EditorWindow::DrawWindow(u64 texture_id)
 		ImVec2(0, 1),
 		ImVec2(1, 0)
 	);
-
-	// END
-	bIsSceneOpen_ = false;
-	bIsGameOpen_ = false;
-	ImGui::End();
 }

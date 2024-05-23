@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Core/EditorWindow.hpp"
 #include "Core/Utils.hpp"
 
@@ -21,8 +23,7 @@ Maths::Vec4 Core::Applications::EditorWindow::DrawTree(u64 _id)
 
 		if (bg)
 		{
-
-			float y1 = (ImGui::GetCursorScreenPos().y - 2);// +(23 * (int)row_n);
+			float y1 = (ImGui::GetCursorScreenPos().y - 2);
 			ImGui::GetWindowDrawList()->AddRectFilled(ImVec2(
 				ImGui::GetCurrentWindow()->WorkRect.Min.x,
 				y1
@@ -30,28 +31,19 @@ Maths::Vec4 Core::Applications::EditorWindow::DrawTree(u64 _id)
 				ImGui::GetCurrentWindow()->WorkRect.Max.x,
 				y1 + 23
 			), ImGui::GetColorU32(ImVec4(0.3f, 0.3f, 0.3f, 0.3f)));
-
 		}
 
 		std::string name = ENGINE.ENT_MNGR->GetEntityData(_id)->name;
-		//ImGui::SetNextItemWidth(10);
-		//ImGui::PushStyleVar(ImGuiStyleVar_FrameWid, ImVec2(10.f, 50.f));
 
 		ImGuiWindow* window = ImGui::GetCurrentWindow();
 
 		float backup_work_max_x = window->WorkRect.Max.x;
-		//window->WorkRect.Max.x = ImGui::GetWindowWidth() + 99;//window->DC.CursorPos.x + ImGui::GetWindowWidth() - 50;
 		float maxRect = window->WorkRect.Max.x -= 50;
 		recurse = ImGui::TreeNodeEx(name.c_str(), nodeFlags);
 		window->WorkRect.Max.x = backup_work_max_x;
-		//recurse = ImGui::TreeNodeEx(name.c_str(), nodeFlags);
-		//ImGui::PopStyleVar();
-
 
 		if (ImGui::IsItemClicked())
-		{
 			selectedId = _id;
-		}
 
 		ImGui::SameLine();
 
@@ -65,24 +57,19 @@ Maths::Vec4 Core::Applications::EditorWindow::DrawTree(u64 _id)
 		{
 			selectedId = ECS::ROOT_ENTITY_ID;
 			ENGINE.ENT_MNGR->DestroyEntity(_id);
+			selectedHasTransform = false;
 		}
 
 		ImGui::SameLine();
 		if (ImGui::ImageButton((ImTextureID)(u64)ENGINE.RES_MNGR->Get<Resources::Texture>("StaticAssets\\Images\\plus.png")->ID,
 			{ 19,19 }, { 0,1 }, { 1,0 }, 0))
 		{
-			//ENGINE.ENT_MNGR->AddNewEntity();
-			//ENGINE.ENT_MNGR->ParentEntity(_id, ENGINE.ENT_MNGR->AddNewEntity());
-			ENGINE.ENT_MNGR->AddChild(_id, ENGINE.ENT_MNGR->AddNewEntity());
+			selectedId = ENGINE.ENT_MNGR->AddNewEntity();
+			ENGINE.ENT_MNGR->AddChild(_id, selectedId);
 		}
 
 		ImGui::PopStyleColor(2);
 		ImGui::PopID();
-
-
-
-
-		//row_n++;
 	}
 
 	const ImRect nodeRect = ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());

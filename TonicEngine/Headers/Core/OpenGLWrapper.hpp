@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Core/RHI.hpp"
 
 namespace Core::Renderer
@@ -7,11 +6,17 @@ namespace Core::Renderer
 	class OpenGLWrapper : public RHI
 	{
 		/*********************************************
+				VARIABLES BLOC
+		*********************************************/
+	private:
+		unsigned int skyboxVAO_ = -1;
+		unsigned int skyboxVBO_ = -1;
+
+		Resources::FontPtr p_currentFont_ = Resources::Font::s_p_defaultFont;
+		/*********************************************
 				FUNCTIONS BLOC
 		*********************************************/
 	public:
-		unsigned int skyboxVAO_ = -1;
-		unsigned int skyboxVBO_ = -1;
 
 		const bool Init(Core::Applications::Window* _p_window) override;
 
@@ -40,13 +45,15 @@ namespace Core::Renderer
 
 		//---Low-Renderer-----------------------------------------------
 		//------Matrices---(call to set uniform)------------------------
+		//
 		//-----------Model----------------------------------------------
 		void SetModel(Maths::Mat4 _modelMatrix) override;
+
 		//-----------Camera---------------------------------------------
 		void SetCamera(const LowRenderer::Cameras::Camera* _p_camera, Maths::Vec3 _position) override;
 		void SetFixedCamera(const LowRenderer::Cameras::Camera* _p_camera) override;
 		void SetDefaultCamera() override;
-		void UpdateCurrentCamera(const LowRenderer::Cameras::CameraInput* _camInputs) override;
+
 		//-----------Light----------------------------------------------
 		void SetDirectionalLightNumber(u32 _number) const override;
 		void SetPointLightNumber(u32 _number) const override;
@@ -56,28 +63,42 @@ namespace Core::Renderer
 		void SetLight(const LowRenderer::Lights::SpotLight* _p_light, u32 _index, Maths::Vec3 _position, Maths::Quat _rotation)const override;
 
 		//---Resources---------------------------------------------------
+		//
 		//------Materials-----------------------------------------------
 		void LoadResource(Resources::MaterialPtr _p_material) override;
 		void UseResource(const Resources::MaterialPtr _p_material) override;
 		void UseResource(const Resources::MaterialPtr _p_material, const int _shaderProgramIndex) override;
 		void UnloadResource(const Resources::MaterialPtr _p_material) override;
+		//
 		//------Textures-----------------------------------------------
 		void LoadResource(Resources::TexturePtr _p_texture) override;
 		unsigned int LoadCubemap(std::vector<std::string> faces) override;
 		void RenderCubeMap() override;
-		//----//Takes the type inside the texture class
+		//	 Takes the type inside the texture class
 		void UseResource(const Resources::TexturePtr _p_texture) override;
-		//----//Overrides the type inside the texture class
-		void UseResource(const Resources::TexturePtr _p_texture, Resources::TextureType _type);
+		//   Overrides the type inside the texture class
+		void UseResource(const Resources::TexturePtr _p_texture, Resources::Textures::TextureType _type);
 		void StopUseTexture() override;
 		void UnloadResource(const Resources::TexturePtr _p_texture) override;
-		//------Shader-------------------------------------------------
+		//
+		//------Fonts--------------------------------------------------
+		void LoadResource(Resources::FontPtr _p_font) override;
+		void UseResource(const Resources::FontPtr _p_font) override;
+		//   Avoid to send a Mat4 buffer twice and reset font Settings every call
+		void UseResourceWithoutSafety(const Resources::FontPtr _p_font) override;
+		void RenderText(std::string _text, float _x, float _y, Maths::Vec2 _scale, TNCColor _color = TNCColor{ 255,255,255,255 }) override;
+		void TransformText(Maths::Mat4 _model) override;
+		void DrawOnTop() override;
+		void StopUseFonts() override;
+		void UnloadResource(const Resources::FontPtr _p_font) override;
+		//
+		//------Shaders------------------------------------------------
 		void LoadResource(Resources::ShaderPtr _p_shader) override;
 		void UseResource(const Resources::ShaderPtr _p_shader) override;
 		void StopUseShader() override;
-		void AddPostprocessShader(const Resources::ShaderPtr _p_shader) override;
 		void UnloadResource(const Resources::ShaderPtr _p_shader) override;
-		//------Mesh-----------------------------------------------
+		//
+		//------Meshes-----------------------------------------------
 		void LoadResource(Resources::MeshPtr _p_mesh) override;
 		void UseResource(const Resources::MeshPtr _p_mesh) override;
 		void UseResource(const Resources::MeshPtr _p_mesh, std::vector<Resources::MaterialPtr> p__materials) override;

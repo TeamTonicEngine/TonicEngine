@@ -1,9 +1,17 @@
+#pragma once
 #include "Core/AppEditor.hpp"
 
 #include <iostream>
 
-#include <Resources/Physics.hpp>
 #include <LowRenderer/Cameras/FreeCamera.hpp>
+
+#include "../Assets/Script/PlayerController.hpp"
+#include "../Assets/Script/LightController.hpp"
+
+
+#include "ECS/Components.hpp"
+
+#include <ImGuizmo/ImGuizmo.h>
 
 Core::Applications::AppEditor::AppEditor(std::string _appName, u32 _width, u32 _height)
 {
@@ -14,8 +22,8 @@ Core::Applications::AppEditor::AppEditor(std::string _appName, u32 _width, u32 _
 	else
 		throw ("FAILED TO INITIALIZE ENGINE");
 
-	p_sceneFBO = p_engine_->InitFBO();
-	p_gameFBO = p_engine_->InitFBO();
+	p_sceneFBO_ = p_engine_->InitFBO();
+	p_gameFBO_ = p_engine_->InitFBO();
 
 	Init();
 
@@ -24,22 +32,14 @@ Core::Applications::AppEditor::AppEditor(std::string _appName, u32 _width, u32 _
 		DEBUG_SUCCESS("INITIALIZED EDITOR WINDOW")
 	else
 		throw ("FAILED TO INITIALIZE EDITOR WINDOW");
-
-	p_freeCamera_ = new LowRenderer::Cameras::FreeCamera(_width, _height);
-
-	//p_GameCamera_ = new LowRenderer::Cameras::Camera(_width, _height);
-	ENGINE.RDR->SetCamera(p_freeCamera_);
-	//ENGINE.RDR->SetCamera(p_GameCamera_, Maths::Vec3(0.f, 0.f, -10.f));
-	//p_GameCamera_->bUsed = true;
-	p_freeCamera_->bUsed = true;
 }
 
 Core::Applications::AppEditor::~AppEditor()
 {
-	delete p_freeCamera_;
-	delete p_sceneFBO;
-	delete p_gameFBO;
+	delete p_sceneFBO_;
+	delete p_gameFBO_;
 	delete p_editorWindow_;
+
 	// End of app
 	p_engine_->Destroy();
 	delete p_engine_;
@@ -65,7 +65,12 @@ void Core::Applications::AppEditor::Init()
 	p_RM->Create<Resources::Texture>("StaticAssets\\Images\\lock.png", false, false);
 	p_RM->Create<Resources::Texture>("StaticAssets\\Images\\unlock.png", false, false);
 	///////////////////////////////////////////////////////////////////////////////////////////
-//Should go in Engine
+	//Should go in Engine
+
+	p_RM->Create<Resources::Font>("StaticAssets\\Fonts\\arial.ttf", false, false);
+	p_RM->Create<Resources::Font>("StaticAssets\\Fonts\\LITTLE NIGHTMARE.ttf");
+	p_RM->Create<Resources::Font>("StaticAssets\\Fonts\\ghoulishintent.ttf");
+	p_RM->Create<Resources::Font>("StaticAssets\\Fonts\\Jesus Franco.ttf");
 
 	p_RM->Create<Resources::Texture>("StaticAssets\\Textures\\white25pc.png");
 	std::vector<Resources::TexturePtr> textures = {
@@ -80,132 +85,254 @@ void Core::Applications::AppEditor::Init()
 	p_RM->Create<Resources::Mesh>("StaticAssets\\Meshes\\capsule.obj"),
 	p_RM->Create<Resources::Mesh>("StaticAssets\\Meshes\\cone.obj"),
 	};
+
+	RegisterScripts();
+
+	HandleEvent();
+}
+void Core::Applications::AppEditor::RegisterScripts() 
+{
+	ECS::ScriptFactories::RegisterScript<PlayerController>(ECS::ScriptType::PlayerController);
+	ECS::ScriptFactories::RegisterScript<LightController>(ECS::ScriptType::LightController);
+}
+
+void Core::Applications::AppEditor::HandleEvent()
+{
+	//Focus an imgui window when right click
+	ENGINE.INP_MNGR->OnEvent(Core::Applications::EventType::Pressed, Core::Applications::Mouse::ButtonRight, [&]()
+		{
+			p_editorWindow_->FocusHoveredWindow();
+		});
+
+	//Save the cursor position when clicked on the scene
+	ENGINE.INP_MNGR->OnEvent(Core::Applications::EventType::Pressed, Core::Applications::Mouse::ButtonRight, [&]()
+		{
+			if (p_editorWindow_->bIsSceneFocused)
+			{
+				input_.mouse.pos = ENGINE.INP_MNGR->mousePosition;
+			}
+		});
+
+	//Hide the cursor when right click is hold on the scene
+	ENGINE.INP_MNGR->OnEvent(Core::Applications::EventType::Hold, Core::Applications::Mouse::ButtonRight, [&]()
+		{
+			if (p_editorWindow_->bIsSceneFocused)
+			{
+				ENGINE.INP_MNGR->SetCursorVisibility(false);
+			}
+		});
+
+	ENGINE.INP_MNGR->OnEvent(Core::Applications::EventType::Released, Core::Applications::Mouse::ButtonRight, [&]()
+		{
+			if (p_editorWindow_->bIsSceneFocused)
+			{
+				ENGINE.INP_MNGR->SetCursorVisibility(true);
+			}
+		});
+
+	//move the editor cam -----------------------------------------------------------------------------------------------------------------------------------------
+	ENGINE.INP_MNGR->OnEvent(Core::Applications::EventType::Hold, Core::Applications::Keyboard::KeyW, [&]()
+		{
+			if (p_editorWindow_->bIsSceneFocused && ENGINE.INP_MNGR->keys[Core::Applications::Mouse::ButtonRight] == Core::Applications::EventType::Hold)
+			{
+				input_.cameraInput.bMoveForward = true;
+			}
+		});
+
+	ENGINE.INP_MNGR->OnEvent(Core::Applications::EventType::Hold, Core::Applications::Keyboard::KeyA, [&]()
+		{
+			if (p_editorWindow_->bIsSceneFocused && ENGINE.INP_MNGR->keys[Core::Applications::Mouse::ButtonRight] == Core::Applications::EventType::Hold)
+			{
+				input_.cameraInput.bMoveLeft = true;
+			}
+		});
+
+	ENGINE.INP_MNGR->OnEvent(Core::Applications::EventType::Hold, Core::Applications::Keyboard::KeyD, [&]()
+		{
+			if (p_editorWindow_->bIsSceneFocused && ENGINE.INP_MNGR->keys[Core::Applications::Mouse::ButtonRight] == Core::Applications::EventType::Hold)
+			{
+				input_.cameraInput.bMoveRight = true;
+			}
+		});
+
+	ENGINE.INP_MNGR->OnEvent(Core::Applications::EventType::Hold, Core::Applications::Keyboard::KeyS, [&]()
+		{
+			if (p_editorWindow_->bIsSceneFocused && ENGINE.INP_MNGR->keys[Core::Applications::Mouse::ButtonRight] == Core::Applications::EventType::Hold)
+			{
+				input_.cameraInput.bMoveBackward = true;
+			}
+		});
+
+	ENGINE.INP_MNGR->OnEvent(Core::Applications::EventType::Hold, Core::Applications::Keyboard::KeyE, [&]()
+		{
+			if (p_editorWindow_->bIsSceneFocused && ENGINE.INP_MNGR->keys[Core::Applications::Mouse::ButtonRight] == Core::Applications::EventType::Hold)
+			{
+				input_.cameraInput.bMoveUp = true;
+			}
+		});
+
+	ENGINE.INP_MNGR->OnEvent(Core::Applications::EventType::Hold, Core::Applications::Keyboard::KeyQ, [&]()
+		{
+			if (p_editorWindow_->bIsSceneFocused && ENGINE.INP_MNGR->keys[Core::Applications::Mouse::ButtonRight] == Core::Applications::EventType::Hold)
+			{
+				input_.cameraInput.bMoveDown = true;
+			}
+		});
+	//-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+	//rotate editor cam
+	ENGINE.INP_MNGR->OnEvent(Core::Applications::EventType::MoveMouse, [&]()
+		{
+			if (p_editorWindow_->bIsSceneFocused && ENGINE.INP_MNGR->keys[Core::Applications::Mouse::ButtonRight] == Core::Applications::EventType::Hold)
+			{
+				f32_2 newPos = ENGINE.INP_MNGR->mousePosition;
+
+				input_.cameraInput.deltaX = -(newPos.x - input_.mouse.pos.x);
+				input_.cameraInput.deltaY = (newPos.y - input_.mouse.pos.y);
+
+				ENGINE.INP_MNGR->SetCursorPos(input_.mouse.pos);
+			}
+		});
+
+	//The Zoom of the editor cam
+	ENGINE.INP_MNGR->OnEvent(Core::Applications::EventType::ScrollChange, [&]()
+		{
+			if (p_editorWindow_->bIsSceneFocused && ENGINE.INP_MNGR->keys[Core::Applications::Mouse::ButtonRight] == Core::Applications::EventType::Hold)
+			{
+				input_.cameraInput.zoom = ENGINE.INP_MNGR->scrollOffset;
+			}
+		});
+
+	//Set the gizmo to rotation
+	ENGINE.INP_MNGR->OnEvent(Core::Applications::EventType::Pressed, Core::Applications::Keyboard::KeyR, [&]()
+		{
+			if (p_editorWindow_->bIsSceneFocused)
+			{
+				p_editorWindow_->gizmod = GizmoMod::ROTATE;
+			}
+		});
+
+	//Set the gizmo to translate
+	ENGINE.INP_MNGR->OnEvent(Core::Applications::EventType::Pressed, Core::Applications::Keyboard::KeyT, [&]()
+		{
+			if (p_editorWindow_->bIsSceneFocused)
+			{
+				p_editorWindow_->gizmod = GizmoMod::TRANSLATE;
+			}
+		});
+
+	//Set the gizmo to scale
+	ENGINE.INP_MNGR->OnEvent(Core::Applications::EventType::Pressed, Core::Applications::Keyboard::KeyY, [&]()
+		{
+			if (p_editorWindow_->bIsSceneFocused)
+			{
+				p_editorWindow_->gizmod = GizmoMod::SCALE;
+			}
+		});
+
+	//Open the popup for the the content browser
+	ENGINE.INP_MNGR->OnEvent(Core::Applications::EventType::Pressed, Core::Applications::Mouse::ButtonRight, [&]()
+		{
+			if (p_editorWindow_->bProjectHovered)
+			{
+				p_editorWindow_->bOpenProjectPopup = true;
+			}
+		});
+
+	//Save the Scene on ctrl + S
+	ENGINE.INP_MNGR->OnEvent(Core::Applications::EventType::Hold, Core::Applications::Keyboard::KeyLeftControl, [&]()
+		{
+			if (ENGINE.INP_MNGR->keys[Core::Applications::Keyboard::KeyS] == Core::Applications::EventType::Pressed && p_editorWindow_->curentScenePath.size() > 0)
+			{
+				Resources::Scene::SaveFile(p_editorWindow_->curentScenePath.c_str());
+			}
+		});
+
+	//"Launch" the game when F10
+	ENGINE.INP_MNGR->OnEvent(Core::Applications::EventType::Released, Core::Applications::Keyboard::KeyF10, [&]()
+		{
+			bGame = !bGame;
+			ENGINE.WDW->SetFullScreen(bGame);
+			if (bGame)
+			{
+				if (ENGINE.SELF->bIsPlaying)
+					return;
+				ENGINE.SELF->bIsStarting = true;
+				ENGINE.SELF->bIsPlaying = true;
+			}
+			else
+			{
+				ENGINE.SELF->bIsPlaying = false;
+			}
+		});
 }
 
 #include <ECS/Components.hpp> //TODO Test ECS TODELETE
+
 void Core::Applications::AppEditor::Run()
 {
-	//Physics::Physics p;
-	//p.Test();
-
-	//////////////////////////////////////////////////////////////////////////////////////////////////////
-	//Test ECS TODELETE
-	ECS::EntityManager* p_em = ENGINE.ENT_MNGR;
-
-	//Empty entity(Not the root)
-	ECS::EntityID e0 = p_em->AddNewEntity();
-
-	//PointLight1
-	ECS::EntityID e1 = p_em->AddNewEntity();
-	ECS::Components::TransformComponent& t = p_em->AddComponent<ECS::Components::TransformComponent>(e1);
-	ECS::Components::PointLightComponent& pl = p_em->AddComponent<ECS::Components::PointLightComponent>(e1);
-	ECS::Components::MeshRendererComponent* m1 = &p_em->AddComponent<ECS::Components::MeshRendererComponent>(e1, "StaticAssets\\Meshes\\sphere.obj");
-	auto white = ENGINE.RES_MNGR->Get<Resources::Texture>("StaticAssets\\Textures\\white.png");
-	white->textureType = Resources::TextureType::Diffuse;
-	m1->renderer.p_materials.push_back(std::make_shared<Resources::Material>(white, white));
-	t.position = Maths::Vec3(0.f, 0.f, 10.f);
-
-	//DirectionalLight1
-	ECS::EntityID e2 = p_em->AddNewEntity();
-	ECS::Components::TransformComponent* t2 = &p_em->AddComponent<ECS::Components::TransformComponent>(e2);
-	p_em->AddComponent<ECS::Components::DirectionalLightComponent>(e2);
-	t2->position = Maths::Vec3(0.f, -1.f, 0.f);
-
-	//SpotLight1
-	ECS::EntityID e3 = p_em->AddNewEntity();
-	ECS::Components::TransformComponent* t3 = &p_em->AddComponent<ECS::Components::TransformComponent>(e3);
-	ECS::Components::SpotLightComponent& spl = p_em->AddComponent<ECS::Components::SpotLightComponent>(e3);
-	t3->position = Maths::Vec3(0.f, 0.f, -10.f);
-	//t3->rotation = Maths::Quaternions::FromEulerAngles({ 0.f, 180.f * Maths::Constants::DEG2RAD, 0.f });
-
-	//Camera1
-	ECS::EntityID e4 = p_em->AddNewEntity();
-	ECS::Components::TransformComponent& t4 = p_em->AddComponent<ECS::Components::TransformComponent>(e4);
-	ECS::Components::CameraComponent& c1 = p_em->AddComponent<ECS::Components::CameraComponent>(e4);
-	c1.StopUseCamera();
-	t4.position = Maths::Vec3(0.f, 0.f, -10.f);
-
-	//Mesh1
-	ECS::EntityID e5 = p_em->AddNewEntity();
-	ECS::Components::TransformComponent* t5 = &p_em->AddComponent<ECS::Components::TransformComponent>(e5);
 	auto bakupakumeshu = ENGINE.RES_MNGR->Create<Resources::Mesh>("Assets\\Meshes\\backpack.obj");
-	ECS::Components::MeshRendererComponent& m2 = p_em->AddComponent<ECS::Components::MeshRendererComponent>(e5, bakupakumeshu);
 	auto diffuse = ENGINE.RES_MNGR->Create<Resources::Texture>("Assets\\Textures\\Back\\backpack_diffuse.jpg");
-	diffuse->textureType = Resources::TextureType::Diffuse;
 
 	auto specular = ENGINE.RES_MNGR->Create<Resources::Texture>("Assets\\Textures\\Back\\backpack_specular.jpg");
-	specular->textureType = Resources::TextureType::Specular;
 
 	auto normal = ENGINE.RES_MNGR->Create<Resources::Texture>("Assets\\Textures\\Back\\backpack_normal.png");
-	normal->textureType = Resources::TextureType::Normal;
 	auto roughness = ENGINE.RES_MNGR->Create<Resources::Texture>("Assets\\Textures\\Back\\backpack_roughness.jpg");
-	roughness->textureType = Resources::TextureType::Roughness;
 	auto ao = ENGINE.RES_MNGR->Create<Resources::Texture>("Assets\\Textures\\Back\\backpack_ao.jpg");
-	ao->textureType = Resources::TextureType::AO;
-	m2.renderer.p_materials.push_back(std::make_shared<Resources::Material>(diffuse, specular, ao, normal, roughness));
-	t5->position = Maths::Vec3(0.f, 0.f, -20.f);
-	p_em->AddChild(e0, e3);
-	p_em->AddChild(e3, e5);
 
-	ENGINE.INP_MNGR->OnEvent(Core::Applications::EventType::Pressed, Core::Applications::Keyboard::KeyW, []() {std::cout << "W Event\n"; });
-	ENGINE.INP_MNGR->OnEvent(Core::Applications::EventType::Pressed, Core::Applications::Keyboard::KeyA, []() {std::cout << "A Event\n"; });
-	ENGINE.INP_MNGR->OnEvent(Core::Applications::EventType::Pressed, Core::Applications::Keyboard::KeyS, []() {std::cout << "S Event\n"; });
-	ENGINE.INP_MNGR->OnEvent(Core::Applications::EventType::Pressed, Core::Applications::Keyboard::KeyD, []() {std::cout << "D Event\n"; });
-	ENGINE.INP_MNGR->OnEvent(Core::Applications::EventType::Pressed, Core::Applications::Mouse::ButtonLeft, []() {std::cout << "Mouse Left Event\n"; });
-	ENGINE.INP_MNGR->OnEvent(Core::Applications::EventType::Pressed, Core::Applications::Mouse::ButtonRight, []() {std::cout << "Mouse Right Event\n"; });
-	ENGINE.INP_MNGR->OnEvent(Core::Applications::EventType::Pressed, Core::Applications::Mouse::ButtonMiddle, []() {std::cout << "Mouse Middle Event\n"; });
-
-	//ENGINE.INP_MNGR->OnEvent(Core::Applications::EventType::MoveMouse, []() {std::cout << "Move Mouse Event\n"; });
-
-	//HERE For Performance tests
-	/*
-	for (size_t i = 7; i < ECS::MAX_ENTITY_COUNT; i++)
-	{
-		auto e = p_em->AddNewEntity();
-		p_em->AddComponent<ECS::Components::TransformComponent>(e);
-		if (i % 3)
-		{
-			p_em->ParentEntity(i, i - 1);
-		}
-	}
-	*/
+	//Script test
+	auto p_em = ENGINE.ENT_MNGR;
+	ECS::EntityID e0 = p_em->AddNewEntity();
+	p_em->AddComponent<ECS::Components::TransformComponent>(e0);
+	LowRenderer::Cameras::Camera cam = LowRenderer::Cameras::Camera(ENGINE.WDW->GetWindowSize().x, ENGINE.WDW->GetWindowSize().y);
+	p_em->AddComponent<ECS::Components::CameraComponent>(e0, cam);
+	p_em->AddComponent<ECS::Components::CppScriptComponent>(e0).Bind<PlayerController>();
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	// Main Loop
-	static float angle = 180.f * Maths::Constants::DEG2RAD;
+	// Load the game scene to add scripts
+
+	ENGINE.RES_MNGR->Create<Resources::Scene>("Assets\\Scenes\\scene.ic3", false, false)->Use();
+	p_editorWindow_->curentScenePath = "Assets\\Scenes\\scene.ic3";
+	////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	while (!p_engine_->IsClosing())
 	{
-		//////////////////////////////////////////////////////////////////////////////////////////////////////
-	//Test ECS TODELETE
-		if (p_editorWindow_->bIsPlaying_)
-		{
-			t3 = &p_em->GetComponent<ECS::Components::TransformComponent>(e3);
-			angle += .005f;
-			t3->rotation = Maths::Quaternions::FromEulerAngles({ 0.f, angle,0.f });
-			t3->position += Maths::Vec3(0.f, 0.1f, 0.f);
-
-			t5 = &p_em->GetComponent<ECS::Components::TransformComponent>(e5);
-			//t5->position.x += 0.1f;
-			t5->rotation = Maths::Quaternions::FromEulerAngles({ angle, 0.f,0.f });
-		}
 		///////////////////////////////////////////////////////////////////////////////
 		//UPDATE
-		p_engine_->UpdateScene();
 
 		// START
-		p_engine_->StartFrame();
-		p_editorWindow_->SetUpWindows();
 
-		/*u32_2 size = ENGINE.WDW->GetWindowSize();
-		ENGINE.RDR->ResizeViewPort(size.x, size.y);
-		p_freeCamera_->aspect = static_cast<float>(size.x) / size.y;
-		p_freeCamera_->SetProjection();
-		p_freeCamera_->bProjChanged = true;
-		p_engine_->RunFrame();*/
+		if (bGame)
+		{
+			p_engine_->StartFrame();
 
-		PlayScene();
-		PlayGame();
+			//-- GAME -------------------------------------------------------------------------------
+			if (ENGINE.SELF->bIsStarting)
+			{
+				// UPDATE
+				// ------
+				p_engine_->StartGame();
+				ENGINE.SELF->bIsStarting = false;
+			}
+
+			p_engine_->UpdateGame();
+
+			p_engine_->RunFrame();
+
+			//---------------------------------------------------------------------------------------
+		}
+		else
+		{
+			UpdateCurrentCamera();
+			p_engine_->UpdateScene();
+
+			p_engine_->StartFrame();
+			p_editorWindow_->SetUpWindows();
+
+			PlayScene();
+			PlayGame();
+		}
 
 		// END
 		p_engine_->EndFrame();
@@ -214,36 +341,38 @@ void Core::Applications::AppEditor::Run()
 
 void Core::Applications::AppEditor::PlayScene()
 {
-	p_engine_->BindFrame(p_sceneFBO);
+	ImGuizmo::BeginFrame();
+	p_engine_->BindFrame(p_sceneFBO_);
 	{
 		// CREATE THE SCENE WINDOW
 		// -----------------------
 		p_editorWindow_->StartWindow("Scene");
-
-		//static ImVec2 preSize = ImGui::GetWindowSize();
 		ImVec2 size = ImGui::GetWindowSize();
+		ImVec2 pos = ImGui::GetWindowPos();
+		ImGuizmo::SetDrawlist();
+		ImGuizmo::SetRect(pos.x, pos.y, size.x, size.y);
 
 		//ENGINE.RDR
 
-		p_freeCamera_->aspect = static_cast<float>(size.x) / size.y;
-		p_freeCamera_->SetProjection();
-		p_freeCamera_->bProjChanged = true;
+		ENGINE.SELF->p_freeCamera->aspect = static_cast<float>(size.x) / size.y;
 
-		// CURRENT WINDOW
-		// --------------
-		if (p_editorWindow_->bIsSceneOpen_)
-		{
-			// TODO : Don't forget to reuse the freeCamera if you turn off it  (exemple of turning of : p_freeCamera_->bUsed = false)
+		ENGINE.SELF->p_freeCamera->SetProjection();
 
-			// UPDATE
-			// ------
-			//p_engine_->UpdateScene();
-		}
+		ENGINE.SELF->p_freeCamera->bProjChanged = true;
 
 		// RENDERING
 		// ---------
 		p_engine_->RunFrame(true);
-		p_editorWindow_->DrawWindow(p_sceneFBO->ID);
+		p_editorWindow_->DrawWindow(p_sceneFBO_->ID);
+
+		if (p_editorWindow_->selectedHasTransform)
+		{
+			ImGuizmo::Manipulate(ENGINE.SELF->p_freeCamera->view.data, ENGINE.SELF->p_freeCamera->projection.data, (ImGuizmo::OPERATION)p_editorWindow_->gizmod, ImGuizmo::WORLD, p_editorWindow_->selectedTransform.data);
+
+			p_editorWindow_->gizmoUsed = ImGuizmo::IsUsing();
+		}
+
+		ImGui::End();
 	}
 	p_engine_->UnBindFrame();
 }
@@ -252,48 +381,68 @@ void Core::Applications::AppEditor::PlayGame()
 {
 	if (p_editorWindow_->gameWindow)
 	{
-		p_engine_->BindFrame(p_gameFBO);
+		p_engine_->BindFrame(p_gameFBO_);
 		// CREATE THE GAME WINDOW
 		// ----------------------
 		p_editorWindow_->StartWindow("Game", &p_editorWindow_->gameWindow);
 
-		//static ImVec2 preSize = ImGui::GetWindowSize();
 		ImVec2 size = ImGui::GetWindowSize();
-		p_freeCamera_->aspect = static_cast<float>(size.x) / size.y;
-		p_freeCamera_->SetProjection();
-		p_freeCamera_->bProjChanged = true;
 
-		// CURRENT WINDOW
-		// --------------
-		if (p_editorWindow_->bIsGameOpen_)
-		{
-			// TODO: Use default Game Camera
+		ENGINE.SELF->p_freeCamera->aspect = static_cast<float>(size.x) / size.y;
 
-			//c1.UseCamera();
-			//p_freeCamera_->bUsed = false;
-		}
+		ENGINE.SELF->p_freeCamera->SetProjection();
+
+		ENGINE.SELF->p_freeCamera->bProjChanged = true;
 
 		// PLAY
 		// ----
-		if (p_editorWindow_->bIsPlaying_)
+		if (ENGINE.SELF->bIsStarting)
+		{
+			// UPDATE
+			// ------
+			p_engine_->StartGame();
+			ENGINE.SELF->bIsStarting = false;
+		}
+		if (ENGINE.SELF->bIsPlaying)
 		{
 			// UPDATE
 			// ------
 			p_engine_->UpdateGame();
 		}
-		else if (p_editorWindow_->bIsReset)
+		else if (ENGINE.SELF->bIsReset)
 		{
 			// TODO : Add a reset of entities transform
-			p_editorWindow_->bIsReset = false;
+			ENGINE.SELF->bIsReset = false;
 		}
-
 		// TODO: Stop Using default Game Camera
 
 		// RENDERING
 		// ---------
 		p_engine_->RunFrame();
 
-		p_editorWindow_->DrawWindow(p_gameFBO->ID);
+		p_editorWindow_->DrawWindow(p_gameFBO_->ID);
+		ImGui::End();
+
 		p_engine_->UnBindFrame();
 	}
+}
+
+void Core::Applications::AppEditor::UpdateCurrentCamera()
+{
+	if (!ENGINE.RDR->GetCamera())
+	{
+		DEBUG_ERROR("Core::Renderer::OpenGLWrapper::UpdateCurrentCamera called but no current camera is set");
+		return;
+	}
+
+	ENGINE.SELF->p_freeCamera->ProcessInput(ENGINE.SELF->GetDeltaTime(), input_.cameraInput);
+	input_.cameraInput.bMoveForward = false;
+	input_.cameraInput.bMoveBackward = false;
+	input_.cameraInput.bMoveRight = false;
+	input_.cameraInput.bMoveLeft = false;
+	input_.cameraInput.bMoveUp = false;
+	input_.cameraInput.bMoveDown = false;
+	input_.cameraInput.deltaX = 0.f;
+	input_.cameraInput.deltaY = 0.f;
+	ENGINE.SELF->p_freeCamera->Update();
 }

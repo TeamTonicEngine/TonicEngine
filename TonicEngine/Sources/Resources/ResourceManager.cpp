@@ -1,16 +1,14 @@
 #include "pch.hpp"
 
-#include "Resources\ResourceManager.hpp"
-
+#include "Resources/ResourceManager.hpp"
 #include "Resources/Resources.hpp"
 
 Resources::FileExt Resources::GetExt(std::string _ext)
 {
 	_ext = [_ext] {std::string result; for (const char& ch : _ext) { result += std::tolower(ch); } return result; }();
 
-	if (stringToFileExt.find(_ext) != stringToFileExt.end()) {
+	if (stringToFileExt.find(_ext) != stringToFileExt.end())
 		return stringToFileExt[_ext];
-	}
 
 	return FileExt::none;
 }
@@ -23,6 +21,7 @@ void Resources::ResourceManager::RegisterAllFileFrom(const char* _path, Archi* _
 		std::cout << _path << std::endl;
 		std::cout << "------------------------------------------------------------\n";
 		std::cout << "    \xe2\x94\x82   \n";
+		_arch->path = _path;
 	}
 
 	std::string tab = "";
@@ -37,23 +36,27 @@ void Resources::ResourceManager::RegisterAllFileFrom(const char* _path, Archi* _
 
 	std::filesystem::path executionPath = _path;
 
-	if (std::filesystem::exists(executionPath) && std::filesystem::is_directory(executionPath)) {
+	if (std::filesystem::exists(executionPath) && std::filesystem::is_directory(executionPath))
+	{
 		std::filesystem::directory_entry lastEntry;
-		for (const auto& entry : std::filesystem::directory_iterator(executionPath, std::filesystem::directory_options::skip_permission_denied)) {
+		for (const auto& entry : std::filesystem::directory_iterator(executionPath, std::filesystem::directory_options::skip_permission_denied))
 			lastEntry = entry;
-		}
-		try {
-			for (const auto& entry : std::filesystem::directory_iterator(executionPath, std::filesystem::directory_options::skip_permission_denied)) {
+
+		try
+		{
+			for (const auto& entry : std::filesystem::directory_iterator(executionPath, std::filesystem::directory_options::skip_permission_denied))
+			{
 				std::string caseTab = "";
 				if (entry == lastEntry)
 					caseTab = "    \xe2\x94\x94\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80";
 				else
 					caseTab = "    \xe2\x94\x9c\xe2\x94\x80\xe2\x94\x80\xe2\x94\x80";
 
-				if (entry.is_directory()) {
+				if (entry.is_directory())
+				{
 					std::cout << tab << caseTab << "Folder: " << entry.path().filename().string().c_str() << std::endl;
 
-					Archi* nArchi = new Archi(entry.path().filename().string(), _arch);
+					Archi* nArchi = new Archi(entry.path().filename().string(), entry.path().string(), _arch);
 					_arch->subFolder.push_back(nArchi);
 
 					if (entry == lastEntry)
@@ -115,13 +118,13 @@ void Resources::ResourceManager::RegisterAllFileFrom(const char* _path, Archi* _
 				}
 			}
 		}
-		catch (const std::filesystem::filesystem_error& e) {
+		catch (const std::filesystem::filesystem_error& e)
+		{
 			std::cerr << "Error: " << e.what() << std::endl;
 		}
 	}
-	else {
+	else
 		std::cerr << "The specified path is not a valid directory." << std::endl;
-	}
 }
 
 Resources::ResourceManager::ResourceManager() { p_files = new Archi(); }
@@ -131,13 +134,10 @@ Resources::ResourceManager::~ResourceManager()
 	resourcePool_.Destroy();
 
 	for (auto IRes : resources_)
-	{
-		if (IRes.second.use_count() > 1) // TODO figure out why its not one, no clues rn ngl
-			DEBUG_WARNING("Destroying resource %s, but it is not unique! Current count: %ld", IRes.second->name.c_str(), IRes.second.use_count())
 		IRes.second->Destroy();
-	}
 
 	resources_.clear();
+	Font::s_p_defaultFont.reset();
 	delete p_files;
 }
 
@@ -158,7 +158,7 @@ u64 Resources::ResourceManager::GenerateId(const std::string& str)
 	const u64 fnv_prime = 1099511628211ull;
 	u64 hash = 14695981039346656037ull; // FNV offset basis
 
-	for (char c : str) 
+	for (char c : str)
 	{
 		hash ^= static_cast<u64>(c);
 		hash *= fnv_prime;
@@ -178,31 +178,25 @@ void Resources::ResourceManager::Reload(u64 _id)
 	switch (resources_[_id].get()->type_)
 	{
 	case ResourceType::Material:
-		//Create<Material>(_rmi.path, true);
+		Create<Material>(resources_[_id]->name, true);
 		break;
 	case ResourceType::Mesh:
-		//Create<Mesh>(_rmi.path, true);
+		Create<Mesh>(resources_[_id]->name, true);
 		break;
-	case ResourceType::Physical:
-		//Create<Physical>(_name, true);
-		DEBUG_ERROR("Resources::ResourceManager::Reload() Resource type not handled for %d", _id);
+	case ResourceType::Font:
+		Create<Font>(resources_[_id]->name, true);
 		break;
 	case ResourceType::Scene:
-		//Create<Scene>(_name, true);
-		DEBUG_ERROR("Resources::ResourceManager::Reload() Resource type not handled for %d", _id);
-		break;
-	case ResourceType::Script:
-		//Create<Script>(_name, true);
-		DEBUG_ERROR("Resources::ResourceManager::Reload() Resource type not handled for %d", _id);
+		Create<Scene>(resources_[_id]->name, true);
 		break;
 	case ResourceType::Shader:
-		//Create<Shader>(_rmi.path, true);
+		Create<Shader>(resources_[_id]->name, true);
 		break;
 	case ResourceType::Sound:
-		//Create<Sound>(_rmi.path, true);
+		Create<Sound>(resources_[_id]->name, true);
 		break;
 	case ResourceType::Texture:
-		//Create<Texture>(_rmi.path, true);
+		Create<Texture>(resources_[_id]->name, true);
 		break;
 
 	case ResourceType::Unset:
