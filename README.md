@@ -77,6 +77,6 @@ This project is a game Engine with an Editor written in [![C++](https://img.shie
 
 ## ✒ Authors
 - <a href = "mailto: f.becaud@student.isartdigital.com">Félix BECAUD</a>
-- <a href = "mailto: j.perrochaud@student.isartdigital.com">Jessica PERROCHAUD</a>
+- <a href = "mailto: jessicaperrochaud@gmail.com">Jessica PERROCHAUD</a>
 - <a href = "mailto: m.robion@student.isartdigital.com">Mathieu ROBION</a>
 - <a href = "mailto: m.dero@student.isartdigital.com">Morgane DERO</a>
